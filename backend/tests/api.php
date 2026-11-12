@@ -107,6 +107,26 @@ $csv = Leady::csv($sl->leady());
 $check('CSV má BOM, hlavičku a 2 riadky', [true, 3], [str_starts_with($csv, "\xEF\xBB\xBFid;vytvorene"), count(array_filter(explode("\n", $csv)))]);
 $check('CSV obsahuje telefón ako text', true, str_contains($csv, "'+421 900 123 456"));
 
+// duplicity
+[$gd, $sd] = $nova();
+$gd->handle('POST', '/api/odhad', $valid);
+for ($i = 0; $i < 3; $i++) { $gd->handle('POST', '/api/kontakt/pdf', ['email' => 'Jozo@Example.SK', 'odhad_id' => 1]); }
+$check('3× to isté PDF = 1 záznam', 1, count($sd->kontakty('pdf')));
+$gd->handle('POST', '/api/kontakt/pdf', ['email' => 'jozo@example.sk', 'odhad_id' => 1, 'suhlas' => true]);
+$check('opakovanie so súhlasom doplní súhlas, nie nový záznam', [1, 1], [count($sd->kontakty('pdf')), $sd->kontakty('pdf')[0]['suhlas']]);
+$gd->handle('POST', '/api/kontakt/pdf', ['email' => 'jozo@example.sk', 'odhad_id' => 1]);
+$check('opakovanie bez súhlasu súhlas nezruší', 1, $sd->kontakty('pdf')[0]['suhlas']);
+$gd->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 123 456', 'odhad_id' => 1]);
+$gd->handle('POST', '/api/kontakt/makler', ['telefon' => '0900123456', 'odhad_id' => 1]);
+$gd->handle('POST', '/api/kontakt/makler', ['telefon' => '0900-123-456', 'odhad_id' => 1]);
+$check('telefón v rôznom zápise = 1 záznam', 1, count($sd->kontakty('makler')));
+$gd->handle('POST', '/api/kontakt/makler', ['telefon' => '0911 222 333', 'odhad_id' => 1]);
+$check('iný telefón = nový záznam', 2, count($sd->kontakty('makler')));
+$id1 = $sd->ulozKontakt('mimo_regionu', 'x@y.sk', null, false, null, 600, 1000);
+$check('po uplynutí okna sa uloží znova', true, $id1 !== $sd->ulozKontakt('mimo_regionu', 'x@y.sk', null, false, null, 600, 1000 + 601));
+$check('v okne sa neuloží', true, ($id2 = $sd->ulozKontakt('mimo_regionu', 'z@y.sk', null, false, null, 600, 5000)) === $sd->ulozKontakt('mimo_regionu', 'z@y.sk', null, false, null, 600, 5100));
+$check('rovnaký e-mail pre iný odhad = nový záznam', true, $sd->ulozKontakt('pdf', 'jozo@example.sk', null, false, null) !== $sd->kontakty('pdf')[0]['id']);
+
 // GDPR
 [$g2, $s2] = $nova();
 $g2->handle('POST', '/api/odhad', $valid);

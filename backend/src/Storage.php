@@ -107,10 +107,27 @@ SQL);
         return (bool) $s->fetchColumn();
     }
 
-    public function ulozKontakt(string $druh, ?string $email, ?string $telefon, bool $suhlas, ?int $odhadId): int
+    /**
+     * Uloží kontakt. Rovnaký kontakt (e-mail bez ohľadu na veľkosť písmen, telefón podľa číslic) pre ten istý odhad
+     * a druh v okne `$oknoSekund` sa neukladá znova (dvojklik, opakované odoslanie). Ak sa pri opakovaní
+     * pridá súhlas, doplní sa k existujúcemu záznamu. Vráti id záznamu.
+     */
+    public function ulozKontakt(string $druh, ?string $email, ?string $telefon, bool $suhlas, ?int $odhadId, int $oknoSekund = 600, ?int $teraz = null): int
     {
-        $s = $this->pdo->prepare('INSERT INTO kontakty (vytvorene, druh, email, telefon, suhlas, odhad_id) VALUES (?, ?, ?, ?, ?, ?)');
-        $s->execute([gmdate('c'), $druh, $email, $telefon, (int) $suhlas, $odhadId]);
+        $teraz ??= time();
+        $s = $this->pdo->prepare('SELECT id, email, telefon, suhlas FROM kontakty WHERE druh = :d AND odhad_id IS :o AND vytvorene >= :od');
+        $s->execute(['d' => $druh, 'o' => $odhadId, 'od' => gmdate('c', $teraz - $oknoSekund)]);
+        $kluc = fn(?string $e, ?string $t): string => $e !== null ? 'e:' . mb_strtolower($e) : 't:' . preg_replace('/\D/', '', (string) $t);
+        foreach ($s->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            if ($kluc($r['email'], $r['telefon']) === $kluc($email, $telefon)) {
+                if ($suhlas && !(int) $r['suhlas']) {
+                    $this->pdo->prepare('UPDATE kontakty SET suhlas = 1 WHERE id = ?')->execute([$r['id']]);
+                }
+                return (int) $r['id'];
+            }
+        }
+        $i = $this->pdo->prepare('INSERT INTO kontakty (vytvorene, druh, email, telefon, suhlas, odhad_id) VALUES (?, ?, ?, ?, ?, ?)');
+        $i->execute([gmdate('c', $teraz), $druh, $email, $telefon, (int) $suhlas, $odhadId]);
         return (int) $this->pdo->lastInsertId();
     }
 
