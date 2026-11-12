@@ -55,5 +55,6 @@ $check('adresa bez kľúča = záloha', true, $req('GET', '/api/adresa?q=' . raw
 $check('obec cez query', 'Ružomberok', $req('GET', '/api/obec?obec=' . rawurlencode('ruzomberok'))[1]['obec'] ?? null);
 
 $err = (string) @file_get_contents("$tmp/err.log");
-$check('žiadne PHP warningy v logu', false, (bool) preg_match('/Warning|Notice|Deprecated|Fatal/', $err));
+$zle = array_values(array_filter(explode("\n", $err), fn($r) => preg_match('/Warning|Notice|Deprecated|Fatal/', $r) === 1));
+$check('žiadne PHP warningy v logu', [], array_map(fn($r) => mb_substr($r, 0, 300), array_slice($zle, 0, 5)));
 exit($fail > 0 ? 1 : 0);
