@@ -77,6 +77,14 @@ $d = $g->handle('GET', '/api/adresa/detail', [], ['id' => 'ChIJabcdefghijk'])[1]
 $check('detail: obec mimo regiónu', [false, 49.07], [$d['v_regione'], $d['lat']]);
 $check('detail: neplatné id', 422, $g->handle('GET', '/api/adresa/detail', [], ['id' => '../x'])[0]);
 
+// regresie z fuzz testu
+$check('?obec[]=x nespôsobí chybu', 422, $api->handle('GET', '/api/obec', [], ['obec' => ['x']])[0]);
+$check('?q[]=x je prázdne hľadanie', [200, []], [($x = $api->handle('GET', '/api/adresa', [], ['q' => ['x']]))[0], $x[1]['navrhy']]);
+[$gz] = $nova(['NACENIME_GOOGLE_API_KEY' => 'k'], fn() => [200, '{"suggestions":"x"}']);
+$check('Google vráti nezmysel = bez výnimky', [200, []], [($x = $gz->handle('GET', '/api/adresa', [], ['q' => 'Bystrická']))[0], $x[1]['navrhy']]);
+[$gz2] = $nova(['NACENIME_GOOGLE_API_KEY' => 'k'], fn() => [200, '{"location":{"latitude":"a","longitude":null},"addressComponents":"x"}']);
+$check('detail s nezmyslom = záloha', true, $gz2->handle('GET', '/api/adresa/detail', [], ['id' => 'ChIJabcdefghijk'])[1]['zaloha'] ?? false);
+
 // health
 $check('health ok', [200, ['stav' => 'ok']], $api->handle('GET', '/api/health'));
 $check('health POST = 405', 405, $api->handle('POST', '/api/health')[0]);

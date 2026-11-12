@@ -44,14 +44,15 @@ final class Adresy
             return [200, ['zaloha' => true, 'navrhy' => []]];
         }
         $out = [];
-        foreach (array_slice($r['suggestions'] ?? [], 0, 5) as $s) {
-            $p = $s['placePrediction'] ?? null;
-            if (!isset($p['placeId'])) {
+        $navrhy = is_array($r['suggestions'] ?? null) ? $r['suggestions'] : [];
+        foreach (array_slice($navrhy, 0, 5) as $s) {
+            $p = is_array($s) ? ($s['placePrediction'] ?? null) : null;
+            if (!is_array($p) || !is_string($p['placeId'] ?? null)) {
                 continue;
             }
             $out[] = ['id' => $p['placeId'],
-                'hlavny' => $p['structuredFormat']['mainText']['text'] ?? '',
-                'vedlajsi' => $p['structuredFormat']['secondaryText']['text'] ?? ''];
+                'hlavny' => self::text($p['structuredFormat']['mainText']['text'] ?? null),
+                'vedlajsi' => self::text($p['structuredFormat']['secondaryText']['text'] ?? null)];
         }
         return [200, ['navrhy' => $out]];
     }
@@ -64,21 +65,28 @@ final class Adresy
         }
         $url = self::DETAIL . $placeId . '?languageCode=sk' . (self::tokenOk($token) ? '&sessionToken=' . $token : '');
         $r = $this->google('GET', $url, null, 'formattedAddress,addressComponents,location'); // Essentials
-        if ($r === null || !isset($r['location']['latitude'], $r['location']['longitude'])) {
+        $lat = is_array($r['location'] ?? null) ? ($r['location']['latitude'] ?? null) : null;
+        $lng = is_array($r['location'] ?? null) ? ($r['location']['longitude'] ?? null) : null;
+        if ($r === null || !is_numeric($lat) || !is_numeric($lng)) {
             return [200, ['zaloha' => true]];
         }
         $c = [];
-        foreach ($r['addressComponents'] ?? [] as $a) {
-            foreach ($a['types'] ?? [] as $t) {
-                $c[$t] ??= $a['longText'] ?? '';
+        foreach (is_array($r['addressComponents'] ?? null) ? $r['addressComponents'] : [] as $a) {
+            if (!is_array($a) || !is_array($a['types'] ?? null)) {
+                continue;
+            }
+            foreach ($a['types'] as $t) {
+                if (is_string($t)) {
+                    $c[$t] ??= self::text($a['longText'] ?? null);
+                }
             }
         }
         $obec = $c['locality'] ?? $c['sublocality'] ?? $c['administrative_area_level_3'] ?? '';
         $ulica = trim(($c['route'] ?? '') . ' ' . ($c['street_number'] ?? ''));
         return [200, [
             'ulica' => $ulica, 'psc' => $c['postal_code'] ?? '', 'obec' => $obec,
-            'adresa' => $r['formattedAddress'] ?? '',
-            'lat' => (float) $r['location']['latitude'], 'lng' => (float) $r['location']['longitude'],
+            'adresa' => self::text($r['formattedAddress'] ?? null),
+            'lat' => (float) $lat, 'lng' => (float) $lng,
             'v_regione' => $this->odhad->najdiObec($obec) !== null,
         ]];
     }
@@ -92,6 +100,11 @@ final class Adresy
         }
         $n = $this->odhad->najdiObec($o);
         return [200, ['v_regione' => $n !== null, 'obec' => $n['obec'] ?? $o, 'okres' => $n['okres'] ?? null]];
+    }
+
+    private static function text(mixed $v): string
+    {
+        return is_string($v) ? $v : '';
     }
 
     private static function tokenOk(string $t): bool

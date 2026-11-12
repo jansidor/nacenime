@@ -54,6 +54,8 @@ php backend/bin/kontrola-cennika.php   # konzistencia cenníka
 php backend/tests/run.php              # výpočet odhadu
 php backend/tests/api.php              # endpointy, validácia, limity, Google (s falošným klientom)
 php backend/tests/pdf.php              # PDF a odosielanie e-mailov (s falošným odosielateľom)
+php backend/tests/http.php             # skutočný HTTP server: kódy, hlavičky, limity veľkosti
+php backend/tests/fuzz.php [seed]      # náhodné a škodlivé vstupy: žiadna výnimka, varovanie ani 5xx
 backend/tests/parity.sh                # PHP vs. JS referencia na všetkých kombináciách
 ```
 Volania na skutočné Google API sa v testoch nespúšťajú (treba kľúč). Overené sú len s falošným klientom.

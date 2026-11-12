@@ -40,9 +40,9 @@ final class Api
         }
         return match (true) {
             $path === '/api/odhad' => $method === 'POST' ? $this->odhad($body) : $this->chyba(405, 'Použite POST.'),
-            $path === '/api/adresa' => $method === 'GET' ? $this->adresy->navrhy((string) ($query['q'] ?? ''), (string) ($query['token'] ?? '')) : $this->chyba(405, 'Použite GET.'),
-            $path === '/api/adresa/detail' => $method === 'GET' ? $this->adresy->detail((string) ($query['id'] ?? ''), (string) ($query['token'] ?? '')) : $this->chyba(405, 'Použite GET.'),
-            $path === '/api/obec' => $method === 'GET' ? $this->adresy->obec((string) ($query['obec'] ?? '')) : $this->chyba(405, 'Použite GET.'),
+            $path === '/api/adresa' => $method === 'GET' ? $this->adresy->navrhy(self::param($query, 'q'), self::param($query, 'token')) : $this->chyba(405, 'Použite GET.'),
+            $path === '/api/adresa/detail' => $method === 'GET' ? $this->adresy->detail(self::param($query, 'id'), self::param($query, 'token')) : $this->chyba(405, 'Použite GET.'),
+            $path === '/api/obec' => $method === 'GET' ? $this->adresy->obec(self::param($query, 'obec')) : $this->chyba(405, 'Použite GET.'),
             $path === '/api/kontakt/pdf' => $method === 'POST' ? $this->pdf($body) : $this->chyba(405, 'Použite POST.'),
             $path === '/api/kontakt/makler' => $method === 'POST' ? $this->makler($body) : $this->chyba(405, 'Použite POST.'),
             $path === '/api/kontakt/mimo-regionu' => $method === 'POST' ? $this->mimoRegionu($body) : $this->chyba(405, 'Použite POST.'),
@@ -151,6 +151,12 @@ final class Api
         }
         $id = is_int($b['odhad_id']) ? $b['odhad_id'] : null;
         return $id !== null && $this->storage->odhadExistuje($id) ? $id : false;
+    }
+
+    /** Query parameter ako reťazec; polia (`?q[]=x`) a iné typy sa berú ako prázdne. @param array<string, mixed> $query */
+    private static function param(array $query, string $kluc): string
+    {
+        return is_string($query[$kluc] ?? null) ? $query[$kluc] : '';
     }
 
     /** Bez detailov: monitoring potrebuje len ok/chyba. @return array{0: int, 1: array<string, mixed>} */

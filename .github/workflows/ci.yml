@@ -28,5 +28,9 @@ jobs:
         run: php backend/tests/api.php
       - name: PHP testy PDF a e-mailov
         run: php backend/tests/pdf.php
+      - name: HTTP integračné testy
+        run: php backend/tests/http.php
+      - name: Fuzz test
+        run: php backend/tests/fuzz.php 2>/dev/null
       - name: Parita PHP a JS
         run: backend/tests/parity.sh
