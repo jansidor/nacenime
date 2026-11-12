@@ -19,5 +19,5 @@
 12. **Zdroj dát a aktualizácia cenníka:** odkiaľ pochádzajú predaje a ponuky, ako často sa cenník obnovuje a akou metódou sa počítajú kvartily (aby sa dal skript na aktualizáciu napísať).
 
 ## D. Nasadenie a GitHub
-13. **Hosting:** server, doména, verzia PHP (min. 8.1 s `mbstring`, `pdo_sqlite`, `curl`, odporúčané `intl`), či je za reverse proxy (`NACENIME_TRUSTED_PROXY=1`), kde bežia cron úlohy.
+13. **Hosting:** zistené, že doména `nacenime.sk` smeruje na Hostcreators (`s24.hostcreators.sk`, nginx, PHP 8.1), zatiaľ prázdny (403) a bez platného HTTPS certifikátu. Postup nasadenia je v `deploy/HOSTCREATORS.md`. Od kolegu treba: **prístup do hosting panelu** (FTP alebo SSH), **zapnutie SSL**, rozhodnutie, na ktorej (pod)doméne má API bežať (napr. `crm.nacenime.sk` už existuje?), a odpovede na otázky pre podporu (SSH, `pdo_sqlite`, odchádzajúce spojenia na Google a SMTP, cron).
 14. **GitHub:** schválenie pull requestu od `jansidor` a zapnutie „Require review from Code Owners“ na `main` v pôvodnom repe.

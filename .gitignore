@@ -6,3 +6,4 @@ backend/var/*
 !backend/var/.gitkeep
 
 backend/vendor/
+dist/

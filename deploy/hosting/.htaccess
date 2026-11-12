@@ -1,0 +1,13 @@
+# Apache (Hostcreators zvyčajne beží nginx pred Apache, takže .htaccess funguje).
+# Ak by sa .htaccess ignoroval, pozri deploy/HOSTCREATORS.md (nginx variant).
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^api(/|$) api.php [L,QSA]
+</IfModule>
+
+# Skryté súbory nikdy nezverejňovať
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
