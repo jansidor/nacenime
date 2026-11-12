@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Zablokuje commit, ktorý mení zmrazený frontend.
+# Výnimka (vedomá zmena dizajnu): ALLOW_FRONTEND_CHANGE=1 git commit ...
+root="$(git rev-parse --show-toplevel)"
+list="$root/.githooks/protected-paths.txt"
+[ "${ALLOW_FRONTEND_CHANGE:-}" = "1" ] && exit 0
+blocked=()
+while IFS= read -r f; do
+  while IFS= read -r p; do
+    [[ -z "$p" || "$p" == \#* ]] && continue
+    if [[ "$p" == */ ]]; then [[ "$f" == "$p"* ]] && blocked+=("$f")
+    else [[ "$f" == "$p" ]] && blocked+=("$f"); fi
+  done < "$list"
+done < <(git diff --cached --name-only)
+if [ ${#blocked[@]} -gt 0 ]; then
+  echo "✖ Commit mení zmrazený frontend:" >&2
+  printf '  - %s\n' "${blocked[@]}" >&2
+  echo "Ak je to zámer: ALLOW_FRONTEND_CHANGE=1 git commit ..." >&2
+  exit 1
+fi

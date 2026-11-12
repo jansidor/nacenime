@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(design_handoff_nacenime/Nacenime.dc.html)",
+      "Edit(design_handoff_nacenime/Nacenime Prehlad.dc.html)",
+      "Edit(design_handoff_nacenime/support.js)",
+      "Edit(design_handoff_nacenime/img/**)",
+      "Write(design_handoff_nacenime/Nacenime.dc.html)",
+      "Write(design_handoff_nacenime/Nacenime Prehlad.dc.html)",
+      "Write(design_handoff_nacenime/support.js)",
+      "Write(design_handoff_nacenime/img/**)"
+    ]
+  }
+}
