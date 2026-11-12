@@ -1,0 +1,45 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none   # bez Xdebug: inak PHP pri štarte hlási varovanie o JIT a spomaľuje testy
+          extensions: mbstring, pdo_sqlite, curl
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Composer závislosti
+        run: composer install --no-interaction --no-progress --working-dir=backend
+      - name: Audit závislostí
+        run: composer audit --working-dir=backend
+      - name: Syntax PHP (lint)
+        run: find backend/src backend/public backend/bin backend/tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+      - name: Cenník je konzistentný
+        run: php backend/bin/kontrola-cennika.php
+      - name: JS referencia
+        run: node --test design_handoff_nacenime/reference/odhad.test.js
+      - name: PHP testy odhadu
+        run: php backend/tests/run.php
+      - name: PHP testy API
+        run: php backend/tests/api.php
+      - name: PHP testy PDF a e-mailov
+        run: php backend/tests/pdf.php
+      - name: Testy prevádzky (konfigurácia, záloha)
+        run: php backend/tests/prevadzka.php
+      - name: Testy zostavenia cenníka
+        run: php backend/tests/cennik.php
+      - name: HTTP integračné testy
+        run: php backend/tests/http.php
+      - name: Súbežné zápisy
+        run: php backend/tests/subeznost.php
+      - name: Fuzz test
+        run: php backend/tests/fuzz.php 2>/dev/null
+      - name: Parita PHP a JS
+        run: backend/tests/parity.sh

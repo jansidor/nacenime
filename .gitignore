@@ -1,1 +1,8 @@
 .DS_Store
+
+# backend
+backend/.env
+backend/var/*
+!backend/var/.gitkeep
+
+backend/vendor/

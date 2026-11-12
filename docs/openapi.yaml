@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: nacenime.sk API
+  version: 1.0.0
+  description: Backend pre kalkulačku ceny nehnuteľnosti. POST vyžaduje Content-Type application/json.
+servers:
+  - url: /
+paths:
+  /api/odhad:
+    post:
+      summary: Vypočíta a uloží odhad ceny
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OdhadVstup' }
+      responses:
+        '200': { description: Výsledok, content: { application/json: { schema: { $ref: '#/components/schemas/OdhadVystup' } } } }
+        '422': { $ref: '#/components/responses/Validacia' }
+        '429': { $ref: '#/components/responses/Limit' }
+  /api/adresa:
+    get:
+      summary: Našepkávač adresy (Google Places proxy)
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string, maxLength: 200 }, description: Hľadá sa od 3 znakov. }
+        - { name: token, in: query, schema: { type: string, pattern: '^[A-Za-z0-9_-]{8,64}$' }, description: Session token, jeden na písanie a výber jednej adresy. }
+      responses:
+        '200': { description: Návrhy alebo záloha, content: { application/json: { schema: { $ref: '#/components/schemas/Navrhy' } } } }
+        '422': { $ref: '#/components/responses/Validacia' }
+  /api/adresa/detail:
+    get:
+      summary: Detail vybraného návrhu (adresa, PSČ, obec, súradnice)
+      parameters:
+        - { name: id, in: query, required: true, schema: { type: string } }
+        - { name: token, in: query, schema: { type: string } }
+      responses:
+        '200': { description: Detail alebo záloha, content: { application/json: { schema: { $ref: '#/components/schemas/Detail' } } } }
+        '422': { $ref: '#/components/responses/Validacia' }
+  /api/obec:
+    get:
+      summary: Záloha bez Google. Overí obec zo zoznamu 7 okresov.
+      parameters:
+        - { name: obec, in: query, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Obec' } } } }
+        '422': { $ref: '#/components/responses/Validacia' }
+  /api/kontakt/pdf:
+    post:
+      summary: Žiadosť o odhad v PDF e-mailom
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/KontaktPdf' } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Sprava' }
+        '422': { $ref: '#/components/responses/Validacia' }
+  /api/kontakt/makler:
+    post:
+      summary: Žiadosť o telefonát od makléra
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/KontaktMakler' } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Sprava' }
+        '422': { $ref: '#/components/responses/Validacia' }
+  /api/kontakt/mimo-regionu:
+    post:
+      summary: E-mail z obrazovky Mimo regiónu
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/KontaktMimo' } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Sprava' }
+        '422': { $ref: '#/components/responses/Validacia' }
+  /api/health:
+    get:
+      summary: Monitoring (mimo limitu)
+      responses:
+        '200': { description: ok }
+        '503': { description: chyba }
+components:
+  responses:
+    Validacia:
+      description: Neplatný vstup. Hodnoty sú vety pripravené pre používateľa.
+      content: { application/json: { schema: { type: object, properties: { chyby: { type: object, additionalProperties: { type: string } } } } } }
+    Limit:
+      description: Príliš veľa požiadaviek
+      content: { application/json: { schema: { type: object, properties: { chyba: { type: string } } } } }
+    Sprava:
+      description: Potvrdenie
+      content: { application/json: { schema: { type: object, properties: { sprava: { type: string } } } } }
+  schemas:
+    OdhadVstup:
+      type: object
+      required: [typ, obec, vymera]
+      properties:
+        typ: { type: string, enum: [Byt, Apartmán, Dom, Chata, Pozemok] }
+        obec: { type: string, maxLength: 100 }
+        stav: { type: string, enum: [Pôvodný, Čiastočná rekonštrukcia, Kompletná rekonštrukcia, Novostavba], description: Povinné okrem pozemku. }
+        vymera: { oneOf: [{ type: number }, { type: string }], description: 10 až 2000, povolená desatinná čiarka. }
+        dovod: { type: string, maxLength: 60 }
+        balkon: { type: string, maxLength: 10 }
+        predstava_ceny: { oneOf: [{ type: number }, { type: string }], description: Nepovinná, bez validácie. }
+        adresa:
+          type: object
+          properties:
+            ulica: { type: string }
+            psc: { type: string }
+            lat: { type: number }
+            lng: { type: number }
+            zo_zalohy: { type: boolean }
+            bez_adresy: { type: boolean }
+    OdhadVystup:
+      type: object
+      properties:
+        stav: { type: string, enum: [ok, málo dát, mimo regiónu, maklér] }
+        od: { type: integer, nullable: true }
+        do: { type: integer, nullable: true }
+        pocet: { type: integer, nullable: true }
+        zdroj: { type: string, nullable: true, enum: [Predaje, Ponuky] }
+        uroven: { type: string, nullable: true, enum: [obec, okres] }
+        pouzity_stav: { type: string, nullable: true }
+        veta: { type: string, nullable: true, description: Veta o zdroji. }
+        nadpis: { type: string, nullable: true, description: Nadpis pre stavy málo dát a maklér. }
+        poznamka: { type: string, description: Len pri stav=ok. Veta pod stupnicou. }
+        makler: { type: string }
+        odhad_id: { type: integer, description: Chýba pri stav=mimo regiónu. Posiela sa do /api/kontakt/*. }
+    Navrhy:
+      type: object
+      properties:
+        zaloha: { type: boolean, description: true = prepnúť na polia Ulica a Obec. }
+        navrhy:
+          type: array
+          maxItems: 5
+          items: { type: object, properties: { id: { type: string }, hlavny: { type: string }, vedlajsi: { type: string } } }
+    Detail:
+      type: object
+      properties:
+        zaloha: { type: boolean }
+        ulica: { type: string }
+        psc: { type: string }
+        obec: { type: string }
+        adresa: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        v_regione: { type: boolean }
+    Obec:
+      type: object
+      properties:
+        v_regione: { type: boolean }
+        obec: { type: string }
+        okres: { type: string, nullable: true }
+    KontaktPdf:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        suhlas: { type: boolean, description: Posielať len true pri zaškrtnutí. Predvolene nezaškrtnuté. }
+        odhad_id: { type: integer }
+        web: { type: string, description: Honeypot. Skryté pole, musí zostať prázdne. }
+    KontaktMakler:
+      type: object
+      required: [telefon]
+      properties:
+        telefon: { type: string, description: Aspoň 9 číslic. }
+        odhad_id: { type: integer }
+        web: { type: string }
+    KontaktMimo:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        web: { type: string }
