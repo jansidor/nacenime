@@ -40,6 +40,25 @@ final class Odhad
         return new self(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
     }
 
+    /** Nájde obec bez ohľadu na diakritiku a veľkosť písmen. @return array{obec: string, okres: string}|null */
+    public function najdiObec(string $obec): ?array
+    {
+        return $this->lokality[self::norm($obec)] ?? null;
+    }
+
+    /** @return list<string> */
+    public function typy(): array
+    {
+        return array_keys($this->zlavy);
+    }
+
+    /** Stavy bez zástupného „všetky“. @return list<string> */
+    public function stavy(): array
+    {
+        $s = array_unique(array_column($this->skupiny, 'stav'));
+        return array_values(array_filter($s, fn($x) => $x !== 'všetky'));
+    }
+
     /** Malé písmená bez diakritiky a okrajových medzier. */
     public static function norm(?string $t): string
     {

@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, curl
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Cenník je konzistentný
+        run: php backend/bin/kontrola-cennika.php
+      - name: JS referencia
+        run: node --test design_handoff_nacenime/reference/odhad.test.js
+      - name: PHP testy odhadu
+        run: php backend/tests/run.php
+      - name: PHP testy API
+        run: php backend/tests/api.php
+      - name: Parita PHP a JS
+        run: backend/tests/parity.sh
