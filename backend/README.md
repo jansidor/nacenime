@@ -41,7 +41,7 @@ Skutočné odoslanie cez SMTP som neskúšal (nemám údaje), testované je s fa
 ## Nástroje (CLI)
 - Leady pre makléra: `php backend/bin/leady.php [YYYY-MM-DD] > leady.csv` (telefonáty a PDF so súhlasom; vzorce v bunkách sú neutralizované).
 - GDPR: `php backend/bin/gdpr.php export|zmaz|retencia`. Retenciu pusti z cronu (napr. denne).
-- Cenník: `php backend/bin/kontrola-cennika.php`.
+- Cenník: `php backend/bin/kontrola-cennika.php` (kontrola) a `php backend/bin/zostav-cennik.php vstup.csv [--zapis]` (zostavenie zo surových predajov a ponúk, stĺpce `zdroj,typ,obec,stav,cena,plocha`). Metóda kvartilov je lineárna interpolácia, **predpoklad na potvrdenie**.
 
 ## Nasadenie
 Pozri `deploy/`: `Dockerfile` (php-fpm), `nginx.conf` (servíruje len `backend/public`, zakazuje `.env`, `var`, `vendor`) a `docker-compose.yml`.
@@ -54,6 +54,7 @@ php backend/bin/kontrola-cennika.php   # konzistencia cenníka
 php backend/tests/run.php              # výpočet odhadu
 php backend/tests/api.php              # endpointy, validácia, limity, Google (s falošným klientom)
 php backend/tests/pdf.php              # PDF a odosielanie e-mailov (s falošným odosielateľom)
+php backend/tests/cennik.php           # zostavenie cenníka a formát JSON
 php backend/tests/http.php             # skutočný HTTP server: kódy, hlavičky, limity veľkosti
 php backend/tests/fuzz.php [seed]      # náhodné a škodlivé vstupy: žiadna výnimka, varovanie ani 5xx
 backend/tests/parity.sh                # PHP vs. JS referencia na všetkých kombináciách

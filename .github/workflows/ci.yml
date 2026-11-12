@@ -30,6 +30,8 @@ jobs:
         run: php backend/tests/api.php
       - name: PHP testy PDF a e-mailov
         run: php backend/tests/pdf.php
+      - name: Testy zostavenia cenníka
+        run: php backend/tests/cennik.php
       - name: HTTP integračné testy
         run: php backend/tests/http.php
       - name: Fuzz test
