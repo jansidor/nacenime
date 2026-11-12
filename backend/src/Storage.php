@@ -13,7 +13,9 @@ final class Storage
         if ($cesta !== ':memory:' && !is_dir(dirname($cesta))) {
             mkdir(dirname($cesta), 0750, true);
         }
-        $this->pdo = new \PDO('sqlite:' . $cesta, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+        $this->pdo = new \PDO('sqlite:' . $cesta, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 5]);
+        // WAL: čitatelia neblokujú zapisovateľa (pri súbežných požiadavkách rýchlejšie); čakanie na zámok najviac 5 s.
+        $this->pdo->exec('PRAGMA journal_mode=WAL');
         $this->pdo->exec(<<<'SQL'
 CREATE TABLE IF NOT EXISTS odhady (
   id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,

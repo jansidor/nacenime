@@ -36,6 +36,8 @@ jobs:
         run: php backend/tests/cennik.php
       - name: HTTP integračné testy
         run: php backend/tests/http.php
+      - name: Súbežné zápisy
+        run: php backend/tests/subeznost.php
       - name: Fuzz test
         run: php backend/tests/fuzz.php 2>/dev/null
       - name: Parita PHP a JS

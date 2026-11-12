@@ -36,6 +36,7 @@ Skutočné odoslanie cez SMTP som neskúšal (nemám údaje), testované je s fa
 - Google API kľúč je len v `.env`, nikdy v odpovediach ani v logoch.
 - Limit `NACENIME_RATE_LIMIT` požiadaviek za minútu na IP (predvolene 60). Za proxy nastav `NACENIME_TRUSTED_PROXY=1`.
 - Cenník a databázu (`var/`) drž mimo verejného priečinka. Webserver má servírovať len `backend/public/`.
+- Databáza používa WAL (vedľa `.sqlite` vznikajú súbory `-wal` a `-shm`, patria do `var/` a zálohuje ich `zaloha-db.php` konzistentne).
 - Chyby idú len do logu, klient dostane všeobecnú správu.
 
 ## Nástroje (CLI)
@@ -59,6 +60,7 @@ php backend/tests/pdf.php              # PDF a odosielanie e-mailov (s falošný
 php backend/tests/prevadzka.php        # kontrola konfigurácie a záloha DB
 php backend/tests/cennik.php           # zostavenie cenníka a formát JSON
 php backend/tests/http.php             # skutočný HTTP server: kódy, hlavičky, limity veľkosti
+php backend/tests/subeznost.php        # 200 paralelných zápisov na 8 workeroch bez chýb
 php backend/tests/fuzz.php [seed]      # náhodné a škodlivé vstupy: žiadna výnimka, varovanie ani 5xx
 backend/tests/parity.sh                # PHP vs. JS referencia na všetkých kombináciách
 ```
