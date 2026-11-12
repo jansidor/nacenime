@@ -35,6 +35,11 @@ $check('RUŽOMBEROK veľké', 131000, $o->odhad(['typ' => 'Byt', 'obec' => ' RU�
 $nfd = "Ruz\u{030C}omberok"; // z + kombinujúci mäkčeň (rozložený zápis)
 $check('rozložené znaky (NFD)', 131000, $o->odhad(['typ' => 'Byt', 'obec' => $nfd, 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66])['od']);
 $check('norm: ľ ť ň ô', 'lt no', Nacenime\Odhad::norm('Ľť Ňô'));
+foreach (['Tvrdošín', 'Turčianske Teplice', 'Námestovo', 'Zuberec', 'Čremošné', 'Oravská Lesná'] as $obec) {
+    $check("obec $obec je v regióne", true, $o->odhad(['typ' => 'Byt', 'obec' => $obec, 'stav' => 'Pôvodný', 'vymera' => 50])['stav'] !== 'mimo regiónu');
+}
+$check('Trstená (Tvrdošín) a Trstené (Liptov) sú rozlíšené', ['Tvrdošín', 'Liptovský Mikuláš'], [$o->najdiObec('Trstená')['okres'], $o->najdiObec('Trstené')['okres']]);
+$check('všetkých 7 okresov má obce', 7, count(array_unique(array_column((new ReflectionProperty($o, 'lokality'))->getValue($o), 'okres'))));
 $r = $o->odhad(['typ' => 'Byt', 'obec' => 'Martin', 'stav' => 'Pôvodný', 'vymera' => 60], ['Byt']);
 $check('typ bez rozpätia', ['maklér', 'Cenu vám povie maklér'], [$r['stav'], $r['nadpis']]);
 

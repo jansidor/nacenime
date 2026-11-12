@@ -60,4 +60,4 @@ Volania na skutočné Google API sa v testoch nespúšťajú (treba kľúč). Ov
 
 ## Známe obmedzenia
 - Filter okresov pre návrhy je obdĺžnik okolo regiónu. Presná kontrola je podľa obce v Place Details (`v_regione`).
-- Cenník nemá úplné dáta pre okresy Tvrdošín, Turčianske Teplice a Námestovo (`bin/kontrola-cennika.php` na to upozorní).
+- Zoznam obcí je úplný (213 + `Dovalovo` z pôvodných dát), ale cenník nemá cenové dáta pre okresy Tvrdošín, Turčianske Teplice a Námestovo, takže tam výsledok býva „málo dát“ (`bin/kontrola-cennika.php` na to upozorní).
