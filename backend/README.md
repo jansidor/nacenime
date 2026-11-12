@@ -38,6 +38,15 @@ Skutočné odoslanie cez SMTP som neskúšal (nemám údaje), testované je s fa
 - Cenník a databázu (`var/`) drž mimo verejného priečinka. Webserver má servírovať len `backend/public/`.
 - Chyby idú len do logu, klient dostane všeobecnú správu.
 
+## Nástroje (CLI)
+- Leady pre makléra: `php backend/bin/leady.php [YYYY-MM-DD] > leady.csv` (telefonáty a PDF so súhlasom; vzorce v bunkách sú neutralizované).
+- GDPR: `php backend/bin/gdpr.php export|zmaz|retencia`. Retenciu pusti z cronu (napr. denne).
+- Cenník: `php backend/bin/kontrola-cennika.php`.
+
+## Nasadenie
+Pozri `deploy/`: `Dockerfile` (php-fpm), `nginx.conf` (servíruje len `backend/public`, zakazuje `.env`, `var`, `vendor`) a `docker-compose.yml`.
+`/api/health` slúži na monitoring. Cron: `odosli-pdf.php` každú minútu, `gdpr.php retencia` denne.
+
 ## Testy
 ```bash
 php backend/bin/kontrola-cennika.php   # konzistencia cenníka
@@ -50,5 +59,4 @@ Volania na skutočné Google API sa v testoch nespúšťajú (treba kľúč). Ov
 
 ## Známe obmedzenia
 - Filter okresov pre návrhy je obdĺžnik okolo regiónu. Presná kontrola je podľa obce v Place Details (`v_regione`).
-- GDPR: `php backend/bin/gdpr.php export|zmaz|retencia`. Retenciu pusti z cronu (napr. denne).
 - Cenník nemá úplné dáta pre okresy Tvrdošín, Turčianske Teplice a Námestovo (`bin/kontrola-cennika.php` na to upozorní).

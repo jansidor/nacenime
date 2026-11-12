@@ -16,6 +16,8 @@ jobs:
           node-version: '22'
       - name: Composer závislosti
         run: composer install --no-interaction --no-progress --working-dir=backend
+      - name: Audit závislostí
+        run: composer audit --working-dir=backend
       - name: Cenník je konzistentný
         run: php backend/bin/kontrola-cennika.php
       - name: JS referencia

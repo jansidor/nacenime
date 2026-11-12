@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-foreach (['Config', 'Odhad', 'Validator', 'Storage', 'Adresy', 'Api'] as $c) { require __DIR__ . "/../src/$c.php"; }
+foreach (['Config', 'Odhad', 'Validator', 'Storage', 'Adresy', 'Api', 'Leady'] as $c) { require __DIR__ . "/../src/$c.php"; }
 
-use Nacenime\{Adresy, Api, Config, Odhad, Storage};
+use Nacenime\{Adresy, Api, Config, Leady, Odhad, Storage};
 
 $odhad = Odhad::zo_suboru(__DIR__ . '/../../design_handoff_nacenime/data/nacenime-cennik.json');
 $fail = 0;
@@ -84,6 +84,20 @@ $check('health POST = 405', 405, $api->handle('POST', '/api/health')[0]);
 $apiL->handle('GET', '/api/obec', [], ['obec' => 'Martin'], '9.9.9.9');
 $apiL->handle('GET', '/api/obec', [], ['obec' => 'Martin'], '9.9.9.9');
 $check('health nie je limitovaný', 200, $apiL->handle('GET', '/api/health', [], [], '9.9.9.9')[0]);
+
+// leady a CSV
+[$gl, $sl] = $nova();
+$gl->handle('POST', '/api/odhad', ['obec' => 'Martin', 'stav' => 'Pôvodný'] + $valid);
+$gl->handle('POST', '/api/kontakt/makler', ['telefon' => '+421 900 123 456', 'odhad_id' => 1]);
+$gl->handle('POST', '/api/kontakt/pdf', ['email' => 'bez@suhlasu.sk', 'odhad_id' => 1]);
+$gl->handle('POST', '/api/kontakt/pdf', ['email' => '=HYPERLINK("http://zle")@x.sk', 'suhlas' => true]); // neplatný e-mail
+$gl->handle('POST', '/api/kontakt/pdf', ['email' => 'so@suhlasom.sk', 'suhlas' => true, 'odhad_id' => 1]);
+$check('leady: makler + pdf so súhlasom', ['makler', 'pdf'], array_column($sl->leady(), 'druh'));
+$check('leady od dátumu v budúcnosti', [], $sl->leady('2999-01-01'));
+$check('CSV neutralizuje vzorce', ["'=SUM(A1)", "'+421900", "'-1", "'@x", 'bežný', ''], array_map([Leady::class, 'bezpecne'], ['=SUM(A1)', '+421900', '-1', '@x', 'bežný', '']));
+$csv = Leady::csv($sl->leady());
+$check('CSV má BOM, hlavičku a 2 riadky', [true, 3], [str_starts_with($csv, "\xEF\xBB\xBFid;vytvorene"), count(array_filter(explode("\n", $csv)))]);
+$check('CSV obsahuje telefón ako text', true, str_contains($csv, "'+421 900 123 456"));
 
 // GDPR
 [$g2, $s2] = $nova();

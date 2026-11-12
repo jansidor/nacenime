@@ -128,6 +128,16 @@ SQL);
         return $s->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** Leady pre makléra: žiadosti o telefonát a PDF so súhlasom s kontaktovaním. @return list<array<string, mixed>> */
+    public function leady(?string $od = null): array
+    {
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny
+            FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
+            WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.vytvorene >= ? ORDER BY k.id");
+        $s->execute([$od ?? '0000']);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** Zmaže kontakty podľa e-mailu/telefónu aj odhady, na ktoré už neodkazuje iný kontakt. Vráti počet zmazaných kontaktov. */
     public function zmazKontakty(string $hodnota): int
     {
