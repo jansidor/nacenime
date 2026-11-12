@@ -79,7 +79,7 @@ final class Api
             'bez_adresy' => (int) !empty($a['bez_adresy']), 'zo_zalohy' => (int) !empty($a['zo_zalohy']),
             'dovod' => $txt($body['dovod'] ?? null, 60), 'typ' => $v['typ'], 'vymera' => $v['vymera'], 'stav' => $v['stav'],
             'balkon' => $txt($body['balkon'] ?? null, 10), 'predstava_ceny' => $predstava === null ? null : (int) $predstava,
-            'vysledok' => $r['stav'], 'cena_od' => $r['od'], 'cena_do' => $r['do'], 'pocet' => $r['pocet'],
+            'vysledok' => $r['stav'], 'cena_od' => $r['od'], 'cena_do' => $r['do'], 'pocet' => $r['pocet'], 'veta' => $r['veta'],
         ]);
     }
 

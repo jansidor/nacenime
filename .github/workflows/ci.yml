@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Composer závislosti
+        run: composer install --no-interaction --no-progress --working-dir=backend
       - name: Cenník je konzistentný
         run: php backend/bin/kontrola-cennika.php
       - name: JS referencia
@@ -22,5 +24,7 @@ jobs:
         run: php backend/tests/run.php
       - name: PHP testy API
         run: php backend/tests/api.php
+      - name: PHP testy PDF a e-mailov
+        run: php backend/tests/pdf.php
       - name: Parita PHP a JS
         run: backend/tests/parity.sh

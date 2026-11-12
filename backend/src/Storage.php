@@ -19,23 +19,36 @@ CREATE TABLE IF NOT EXISTS odhady (
   id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
   adresa TEXT, psc TEXT, obec TEXT NOT NULL, lat REAL, lng REAL, bez_adresy INTEGER NOT NULL DEFAULT 0, zo_zalohy INTEGER NOT NULL DEFAULT 0,
   dovod TEXT, typ TEXT NOT NULL, vymera REAL NOT NULL, stav TEXT, balkon TEXT, predstava_ceny INTEGER,
-  vysledok TEXT NOT NULL, cena_od INTEGER, cena_do INTEGER, pocet INTEGER
+  vysledok TEXT NOT NULL, cena_od INTEGER, cena_do INTEGER, pocet INTEGER, veta TEXT
 );
 CREATE TABLE IF NOT EXISTS limity (kluc TEXT NOT NULL, okno INTEGER NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, okno));
 CREATE TABLE IF NOT EXISTS kontakty (
   id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
   druh TEXT NOT NULL CHECK (druh IN ('pdf','makler','mimo_regionu')),
   email TEXT, telefon TEXT, suhlas INTEGER NOT NULL DEFAULT 0, odhad_id INTEGER REFERENCES odhady(id),
-  odoslane INTEGER NOT NULL DEFAULT 0
+  odoslane INTEGER NOT NULL DEFAULT 0, pokusy INTEGER NOT NULL DEFAULT 0
 );
 SQL);
+        $this->doplnStlpec('odhady', 'veta', 'TEXT');
+        $this->doplnStlpec('kontakty', 'pokusy', 'INTEGER NOT NULL DEFAULT 0');
+    }
+
+    /** Jednoduchá migrácia pre databázy vytvorené staršou verziou schémy. */
+    private function doplnStlpec(string $tabulka, string $stlpec, string $typ): void
+    {
+        foreach ($this->pdo->query("PRAGMA table_info($tabulka)") as $r) {
+            if ($r['name'] === $stlpec) {
+                return;
+            }
+        }
+        $this->pdo->exec("ALTER TABLE $tabulka ADD COLUMN $stlpec $typ");
     }
 
     /** @param array<string, mixed> $d */
     public function ulozOdhad(array $d): int
     {
-        $s = $this->pdo->prepare('INSERT INTO odhady (vytvorene, adresa, psc, obec, lat, lng, bez_adresy, zo_zalohy, dovod, typ, vymera, stav, balkon, predstava_ceny, vysledok, cena_od, cena_do, pocet)
-            VALUES (:vytvorene, :adresa, :psc, :obec, :lat, :lng, :bez_adresy, :zo_zalohy, :dovod, :typ, :vymera, :stav, :balkon, :predstava_ceny, :vysledok, :cena_od, :cena_do, :pocet)');
+        $s = $this->pdo->prepare('INSERT INTO odhady (vytvorene, adresa, psc, obec, lat, lng, bez_adresy, zo_zalohy, dovod, typ, vymera, stav, balkon, predstava_ceny, vysledok, cena_od, cena_do, pocet, veta)
+            VALUES (:vytvorene, :adresa, :psc, :obec, :lat, :lng, :bez_adresy, :zo_zalohy, :dovod, :typ, :vymera, :stav, :balkon, :predstava_ceny, :vysledok, :cena_od, :cena_do, :pocet, :veta)');
         $s->execute($d + ['vytvorene' => gmdate('c')]);
         return (int) $this->pdo->lastInsertId();
     }
@@ -49,6 +62,33 @@ SQL);
         $s = $this->pdo->prepare('SELECT pocet FROM limity WHERE kluc = ? AND okno = ?');
         $s->execute([$kluc, $okno]);
         return (int) $s->fetchColumn();
+    }
+
+    /** @return array<string, mixed>|null */
+    public function odhad(int $id): ?array
+    {
+        $s = $this->pdo->prepare('SELECT * FROM odhady WHERE id = ?');
+        $s->execute([$id]);
+        return $s->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /** E-maily s PDF, ktoré ešte neboli odoslané. @return list<array<string, mixed>> */
+    public function cakajucePdf(int $maxPokusov, int $limit = 50): array
+    {
+        $s = $this->pdo->prepare("SELECT * FROM kontakty WHERE druh = 'pdf' AND odoslane = 0 AND pokusy < ? ORDER BY id LIMIT ?");
+        $s->execute([$maxPokusov, $limit]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** @param int $stav 1 = odoslané, 2 = preskočené (kontakt bez odhadu) */
+    public function oznacOdoslane(int $kontaktId, int $stav = 1): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET odoslane = ? WHERE id = ?')->execute([$stav, $kontaktId]);
+    }
+
+    public function pokusZlyhal(int $kontaktId): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET pokusy = pokusy + 1 WHERE id = ?')->execute([$kontaktId]);
     }
 
     public function odhadExistuje(int $id): bool
