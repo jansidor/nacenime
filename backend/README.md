@@ -42,5 +42,6 @@ Volania na skutočné Google API sa v testoch nespúšťajú (treba kľúč). Ov
 
 ## Známe obmedzenia
 - Filter okresov pre návrhy je obdĺžnik okolo regiónu. Presná kontrola je podľa obce v Place Details (`v_regione`).
+- GDPR: `php backend/bin/gdpr.php export|zmaz|retencia`. Retenciu pusti z cronu (napr. denne).
 - PDF a e-maily sa zatiaľ len ukladajú do tabuľky `kontakty` (stĺpec `odoslane`).
 - Cenník nemá úplné dáta pre okresy Tvrdošín, Turčianske Teplice a Námestovo (`bin/kontrola-cennika.php` na to upozorní).

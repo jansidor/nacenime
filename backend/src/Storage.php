@@ -72,4 +72,56 @@ SQL);
         $s->execute([$druh]);
         return $s->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    /** Kontakty podľa e-mailu alebo telefónu (export na žiadosť o prístup k údajom). @return list<array<string, mixed>> */
+    public function najdiKontakty(string $hodnota): array
+    {
+        $s = $this->pdo->prepare('SELECT k.*, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.cena_od, o.cena_do FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id WHERE k.email = :h OR k.telefon = :h ORDER BY k.id');
+        $s->execute(['h' => $hodnota]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** Zmaže kontakty podľa e-mailu/telefónu aj odhady, na ktoré už neodkazuje iný kontakt. Vráti počet zmazaných kontaktov. */
+    public function zmazKontakty(string $hodnota): int
+    {
+        return $this->vTransakcii(function () use ($hodnota): int {
+            $ids = $this->pdo->prepare('SELECT DISTINCT odhad_id FROM kontakty WHERE (email = :h OR telefon = :h) AND odhad_id IS NOT NULL');
+            $ids->execute(['h' => $hodnota]);
+            $odhady = $ids->fetchAll(\PDO::FETCH_COLUMN);
+            $n = $this->pdo->prepare('DELETE FROM kontakty WHERE email = :h OR telefon = :h');
+            $n->execute(['h' => $hodnota]);
+            // Len odhady zmazaného kontaktu a len ak na ne neodkazuje iný kontakt.
+            $d = $this->pdo->prepare('DELETE FROM odhady WHERE id = ? AND id NOT IN (SELECT odhad_id FROM kontakty WHERE odhad_id IS NOT NULL)');
+            foreach ($odhady as $id) {
+                $d->execute([$id]);
+            }
+            return $n->rowCount();
+        });
+    }
+
+    /** Retencia: zmaže kontakty a odhady staršie ako N mesiacov. @return array{kontakty: int, odhady: int} */
+    public function zmazStarsie(int $mesiace, ?int $teraz = null): array
+    {
+        $hranica = gmdate('c', strtotime("-$mesiace months", $teraz ?? time()));
+        return $this->vTransakcii(function () use ($hranica): array {
+            $k = $this->pdo->prepare('DELETE FROM kontakty WHERE vytvorene < ?');
+            $k->execute([$hranica]);
+            $o = $this->pdo->prepare('DELETE FROM odhady WHERE vytvorene < ? AND id NOT IN (SELECT odhad_id FROM kontakty WHERE odhad_id IS NOT NULL)');
+            $o->execute([$hranica]);
+            return ['kontakty' => $k->rowCount(), 'odhady' => $o->rowCount()];
+        });
+    }
+
+    private function vTransakcii(callable $f): mixed
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $r = $f();
+            $this->pdo->commit();
+            return $r;
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
 }

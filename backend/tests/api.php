@@ -77,4 +77,21 @@ $d = $g->handle('GET', '/api/adresa/detail', [], ['id' => 'ChIJabcdefghijk'])[1]
 $check('detail: obec mimo regiónu', [false, 49.07], [$d['v_regione'], $d['lat']]);
 $check('detail: neplatné id', 422, $g->handle('GET', '/api/adresa/detail', [], ['id' => '../x'])[0]);
 
+// GDPR
+[$g2, $s2] = $nova();
+$g2->handle('POST', '/api/odhad', $valid);
+$g2->handle('POST', '/api/kontakt/pdf', ['email' => 'jozo@example.sk', 'odhad_id' => 1]);
+$g2->handle('POST', '/api/kontakt/makler', ['telefon' => '0900123456', 'odhad_id' => 1]);
+$check('export podľa e-mailu', ['jozo@example.sk'], array_column($s2->najdiKontakty('jozo@example.sk'), 'email'));
+$check('zmazanie e-mailu', 1, $s2->zmazKontakty('jozo@example.sk'));
+$check('telefón ostal (odhad ešte potrebný)', 1, count($s2->najdiKontakty('0900123456')));
+$check('zmazanie telefónu', 1, $s2->zmazKontakty('0900123456'));
+$check('odhad zmazaného kontaktu je preč', false, $s2->odhadExistuje(1));
+$g2->handle('POST', '/api/odhad', $valid); // cudzí odhad bez kontaktu
+$check('cudzí odhad ostáva', true, $s2->odhadExistuje(2));
+$check('po zmazaní nič', [], $s2->najdiKontakty('0900123456'));
+$g2->handle('POST', '/api/kontakt/mimo-regionu', ['email' => 'stary@example.sk']);
+$check('retencia: čerstvé ostáva', ['kontakty' => 0, 'odhady' => 0], $s2->zmazStarsie(24));
+$check('retencia: staré ide preč', 1, $s2->zmazStarsie(24, strtotime('+30 months'))['kontakty']);
+
 exit($fail > 0 ? 1 : 0);
