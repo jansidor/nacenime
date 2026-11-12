@@ -67,7 +67,12 @@ final class Odhad
             'ĺ' => 'l', 'ľ' => 'l', 'ň' => 'n', 'ó' => 'o', 'ô' => 'o', 'ö' => 'o', 'ŕ' => 'r',
             'ř' => 'r', 'š' => 's', 'ť' => 't', 'ú' => 'u', 'ů' => 'u', 'ü' => 'u', 'ý' => 'y', 'ž' => 'z',
         ];
-        return strtr(mb_strtolower(trim($t ?? ''), 'UTF-8'), $mapa);
+        $t = mb_strtolower(trim($t ?? ''), 'UTF-8');
+        if (class_exists(\Normalizer::class)) {
+            $t = \Normalizer::normalize($t, \Normalizer::FORM_D) ?: $t;
+        }
+        // Rozložené znaky (základ + kombinujúci znak) aj bez intl; potom zloženia podľa tabuľky.
+        return strtr(preg_replace('/\p{Mn}/u', '', $t) ?? $t, $mapa);
     }
 
     /** Zaokrúhlenie na tisíce, nie pod nulu (rovnako ako Math.round v JS). */

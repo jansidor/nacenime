@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { pripravCennik, odhad } from '../../design_handoff_nacenime/reference/odhad.js';
 const d = JSON.parse(readFileSync('../../design_handoff_nacenime/data/nacenime-cennik.json','utf8'));
 const c = pripravCennik(d);
-const obce = [...Object.keys(d.lokality), 'Žilina', 'ruzomberok'];
+const obce = [...Object.keys(d.lokality), 'Žilina', 'ruzomberok', ...Object.keys(d.lokality).slice(0, 20).map(o => o.normalize('NFD').toUpperCase())];
 const stavy = [...c.stavy, null];
 const out = [];
 for (const typ of c.typy) for (const obec of obce) for (const stav of stavy) for (const vymera of [10, 33.5, 66, 120, 800, 2000])

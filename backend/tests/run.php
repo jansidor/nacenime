@@ -32,6 +32,9 @@ $check('Byt Námestovo málo dát', 'málo dát', $o->odhad(['typ' => 'Byt', 'ob
 $check('mimo regiónu', 'mimo regiónu', $o->odhad(['typ' => 'Byt', 'obec' => 'Žilina', 'stav' => 'Pôvodný', 'vymera' => 50])['stav']);
 $check('diakritika/veľkosť', 131000, $o->odhad(['typ' => 'Byt', 'obec' => 'ruzomberok', 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66])['od']);
 $check('RUŽOMBEROK veľké', 131000, $o->odhad(['typ' => 'Byt', 'obec' => ' RUŽOMBEROK ', 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66])['od']);
+$nfd = "Ruz\u{030C}omberok"; // z + kombinujúci mäkčeň (rozložený zápis)
+$check('rozložené znaky (NFD)', 131000, $o->odhad(['typ' => 'Byt', 'obec' => $nfd, 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66])['od']);
+$check('norm: ľ ť ň ô', 'lt no', Nacenime\Odhad::norm('Ľť Ňô'));
 $r = $o->odhad(['typ' => 'Byt', 'obec' => 'Martin', 'stav' => 'Pôvodný', 'vymera' => 60], ['Byt']);
 $check('typ bez rozpätia', ['maklér', 'Cenu vám povie maklér'], [$r['stav'], $r['nadpis']]);
 

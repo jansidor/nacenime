@@ -18,6 +18,7 @@ Všetky odpovede sú JSON. `POST` vyžaduje `Content-Type: application/json` (in
 | `POST /api/odhad` | `typ`, `obec`, `stav` (pri pozemku netreba), `vymera`; voliteľne `dovod`, `balkon`, `predstava_ceny`, `adresa {ulica, psc, lat, lng, zo_zalohy, bez_adresy}` | výsledok odhadu (`stav`: `ok`, `málo dát`, `mimo regiónu`, `maklér`), `odhad_id`, `makler` |
 | `GET /api/adresa?q=&token=` | od 3 znakov, `token` = session token | `{navrhy: [{id, hlavny, vedlajsi}]}` alebo `{zaloha: true}` |
 | `GET /api/adresa/detail?id=&token=` | `id` z návrhu | `{ulica, psc, obec, lat, lng, v_regione}` alebo `{zaloha: true}` |
+| `GET /api/health` | | `{stav: ok}` (200) alebo `{stav: chyba}` (503), mimo limitu |
 | `GET /api/obec?obec=` | záloha bez Google | `{v_regione, obec, okres}` |
 | `POST /api/kontakt/pdf` | `email`, `suhlas` (len `true`), `odhad_id` | `{sprava}` |
 | `POST /api/kontakt/makler` | `telefon` (min. 9 číslic), `odhad_id` | `{sprava}` |

@@ -64,6 +64,13 @@ SQL);
         return (int) $s->fetchColumn();
     }
 
+    /** Kontrola dostupnosti databázy (zápis aj čítanie). */
+    public function ping(): bool
+    {
+        $this->pdo->exec('DELETE FROM limity WHERE okno < 0'); // overí aj zápis
+        return (int) $this->pdo->query('SELECT 1')->fetchColumn() === 1;
+    }
+
     /** @return array<string, mixed>|null */
     public function odhad(int $id): ?array
     {

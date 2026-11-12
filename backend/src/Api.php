@@ -31,6 +31,9 @@ final class Api
     public function handle(string $method, string $path, array $body = [], array $query = [], string $ip = ''): array
     {
         $path = rtrim($path, '/') ?: '/';
+        if ($path === '/api/health') {
+            return $method === 'GET' ? $this->health() : $this->chyba(405, 'Použite GET.'); // mimo limitu, pre monitoring
+        }
         $limit = (int) $this->config->get('RATE_LIMIT', '60');
         if ($ip !== '' && $limit > 0 && $this->storage->zvysLimit(hash('sha256', $ip)) > $limit) {
             return [429, ['chyba' => 'Príliš veľa požiadaviek. Skúste to o chvíľu.']];
@@ -148,6 +151,18 @@ final class Api
         }
         $id = is_int($b['odhad_id']) ? $b['odhad_id'] : null;
         return $id !== null && $this->storage->odhadExistuje($id) ? $id : false;
+    }
+
+    /** Bez detailov: monitoring potrebuje len ok/chyba. @return array{0: int, 1: array<string, mixed>} */
+    private function health(): array
+    {
+        try {
+            $ok = $this->odhad->typy() !== [] && $this->storage->ping();
+        } catch (\Throwable $e) {
+            error_log('health: ' . $e->getMessage());
+            $ok = false;
+        }
+        return $ok ? [200, ['stav' => 'ok']] : [503, ['stav' => 'chyba']];
     }
 
     /** @return array{0: int, 1: array<string, mixed>} */

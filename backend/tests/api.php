@@ -77,6 +77,14 @@ $d = $g->handle('GET', '/api/adresa/detail', [], ['id' => 'ChIJabcdefghijk'])[1]
 $check('detail: obec mimo regiónu', [false, 49.07], [$d['v_regione'], $d['lat']]);
 $check('detail: neplatné id', 422, $g->handle('GET', '/api/adresa/detail', [], ['id' => '../x'])[0]);
 
+// health
+$check('health ok', [200, ['stav' => 'ok']], $api->handle('GET', '/api/health'));
+$check('health POST = 405', 405, $api->handle('POST', '/api/health')[0]);
+[$apiL] = $nova(['NACENIME_RATE_LIMIT' => '1']);
+$apiL->handle('GET', '/api/obec', [], ['obec' => 'Martin'], '9.9.9.9');
+$apiL->handle('GET', '/api/obec', [], ['obec' => 'Martin'], '9.9.9.9');
+$check('health nie je limitovaný', 200, $apiL->handle('GET', '/api/health', [], [], '9.9.9.9')[0]);
+
 // GDPR
 [$g2, $s2] = $nova();
 $g2->handle('POST', '/api/odhad', $valid);
