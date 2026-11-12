@@ -18,6 +18,8 @@ jobs:
         run: composer install --no-interaction --no-progress --working-dir=backend
       - name: Audit závislostí
         run: composer audit --working-dir=backend
+      - name: Syntax PHP (lint)
+        run: find backend/src backend/public backend/bin backend/tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
       - name: Cenník je konzistentný
         run: php backend/bin/kontrola-cennika.php
       - name: JS referencia
