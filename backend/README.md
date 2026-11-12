@@ -45,6 +45,7 @@ Skutočné odoslanie cez SMTP som neskúšal (nemám údaje), testované je s fa
 
 ## Nasadenie
 Pozri `deploy/`: `Dockerfile` (php-fpm), `nginx.conf` (servíruje len `backend/public`, zakazuje `.env`, `var`, `vendor`) a `docker-compose.yml`.
+**Neoverené:** Dockerfile a nginx konfiguráciu som nemohol zostaviť ani spustiť (v mojom prostredí nebeží Docker), pred nasadením ich otestuj. Prototyp frontendu číta `data/nacenime-cennik.json` z prehliadača, preto `nginx.conf` blokuje `.json`. V produkcii má byť cenník len na serveri.
 `/api/health` slúži na monitoring. Cron: `odosli-pdf.php` každú minútu, `gdpr.php retencia` denne.
 
 ## Testy
