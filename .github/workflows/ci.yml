@@ -10,6 +10,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          coverage: none   # bez Xdebug: inak PHP pri štarte hlási varovanie o JIT a spomaľuje testy
           extensions: mbstring, pdo_sqlite, curl
       - uses: actions/setup-node@v4
         with:
