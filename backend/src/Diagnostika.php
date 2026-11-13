@@ -38,7 +38,10 @@ final class Diagnostika
             }
         }
 
-        $db = self::cesta($c->get('DB_PATH', 'var/nacenime.sqlite'), $root);
+        if (($ch = Cesty::chybaNasadenia($root, $c)) !== null) {
+            $chyba($ch);
+        }
+        $db = Cesty::dbCesta($c, $root);
         $dir = dirname($db);
         is_dir($dir) && is_writable($dir) ? $ok("priečinok databázy je zapisovateľný: $dir") : $chyba("priečinok databázy neexistuje alebo nie je zapisovateľný: $dir");
         $verejny = realpath($root . '/public') ?: '';
@@ -46,7 +49,7 @@ final class Diagnostika
             $chyba('databáza je vo verejnom priečinku');
         }
 
-        $env = $root . '/.env';
+        $env = Cesty::envSubor($root);
         if (is_file($env)) {
             (fileperms($env) & 0004) ? $varuj('.env je čitateľný pre všetkých (chmod 600)') : $ok('.env má bezpečné práva');
         } else {

@@ -2,12 +2,13 @@
 declare(strict_types=1);
 // Kontrola konfigurácie a prostredia. Exit 1 pri chybe. Tajomstvá sa nevypisujú, len či sú nastavené.
 require __DIR__ . '/../src/Config.php';
+require __DIR__ . '/../src/Cesty.php';
 require __DIR__ . '/../src/Diagnostika.php';
 
-use Nacenime\{Config, Diagnostika};
+use Nacenime\{Cesty, Config, Diagnostika};
 
 $root = dirname(__DIR__);
-$vysledky = Diagnostika::skontroluj(Config::nacitaj($root . '/.env'), $root);
+$vysledky = Diagnostika::skontroluj(Config::nacitaj(Cesty::envSubor($root)), $root);
 $chyby = 0;
 foreach ($vysledky as [$uroven, $sprava]) {
     echo sprintf("%-9s %s\n", $uroven, $sprava);

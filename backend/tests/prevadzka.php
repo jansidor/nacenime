@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-foreach (['Config', 'Odhad', 'Validator', 'Storage', 'Diagnostika', 'Zaloha'] as $c) { require __DIR__ . "/../src/$c.php"; }
+foreach (['Config', 'Cesty', 'Odhad', 'Validator', 'Storage', 'Diagnostika', 'Zaloha'] as $c) { require __DIR__ . "/../src/$c.php"; }
 
 use Nacenime\{Config, Diagnostika, Storage, Zaloha};
 

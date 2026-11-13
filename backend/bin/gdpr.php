@@ -5,14 +5,14 @@ declare(strict_types=1);
 //   php bin/gdpr.php zmaz <email|telefon>     zmaže kontakty a súvisiace odhady
 //   php bin/gdpr.php retencia [mesiace]       zmaže údaje staršie ako N mesiacov (predvolene NACENIME_RETENCIA_MESIACE, inak 24); pustiť z cronu
 require __DIR__ . '/../src/Config.php';
+require __DIR__ . '/../src/Cesty.php';
 require __DIR__ . '/../src/Storage.php';
 
-use Nacenime\{Config, Storage};
+use Nacenime\{Cesty, Config, Storage};
 
 $root = dirname(__DIR__);
-$config = Config::nacitaj($root . '/.env');
-$db = $config->get('DB_PATH', 'var/nacenime.sqlite');
-$st = new Storage($db[0] === '/' || $db === ':memory:' ? $db : $root . '/' . $db);
+$config = Config::nacitaj(Cesty::envSubor($root));
+$st = new Storage(Cesty::dbCesta($config, $root));
 [$prikaz, $arg] = [$argv[1] ?? '', $argv[2] ?? ''];
 
 switch ($prikaz) {
