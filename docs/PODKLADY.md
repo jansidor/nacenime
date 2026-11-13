@@ -10,7 +10,7 @@
 ## B. Obsah a texty
 6. **Fotky** Martina, Dolného Kubína a Námestova (v štýle fotiek Ružomberka a Liptovského Mikuláša).
 7. **Stránky miest** (5 miest): priemerná cena bytu a domu za m², počet predajov, text o štvrtiach a cenách, riadok „Naposledy predané“ (typ, výmera, štvrť, cena za m²).
-8. **Právne texty:** Ochrana osobných údajov, Cookies, Kontakt. Aj znenie súhlasu s kontaktovaním makléra.
+8. **Právne texty** (cookie lišta s návrhom textov už je, treba právnu kontrolu a odkaz na stránku zásad): Ochrana osobných údajov, Cookies, Kontakt. Aj znenie súhlasu s kontaktovaním makléra.
 9. **Texty chýbajúcich stavov** (zatiaľ nenakreslené): načítava sa, žiadny výsledok adresy, chyba servera pri odhade, PDF a makléri, odosielanie, mapa sa nenačítala, prázdne odoslanie adresy.
 
 ## C. Rozhodnutia
