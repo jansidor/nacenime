@@ -34,6 +34,7 @@ Skutočné odoslanie cez SMTP som neskúšal (nemám údaje), testované je s fa
 
 ## Bezpečnosť
 - Google API kľúč je len v `.env`, nikdy v odpovediach ani v logoch.
+- **Denný strop volaní na Google** (`NACENIME_GOOGLE_DENNY_LIMIT`, predvolene 3000 za deň UTC, 0 = bez stropu): Google limity pre Places API (New) sa nedajú znížiť (vysoké, nie sú nastaviteľné), preto strop drží backend. Po vyčerpaní sa použije záloha bez Google (dve polia Ulica a Obec) a do logu sa zapíše jedno upozornenie.
 - Limit `NACENIME_RATE_LIMIT` požiadaviek za minútu na IP (predvolene 60). Za proxy nastav `NACENIME_TRUSTED_PROXY=1`.
 - Cenník a databázu (`var/`) drž mimo verejného priečinka. Webserver má servírovať len `backend/public/`.
 - Databáza používa WAL (vedľa `.sqlite` vznikajú súbory `-wal` a `-shm`, patria do `var/` a zálohuje ich `zaloha-db.php` konzistentne).

@@ -21,8 +21,8 @@ final class Api
 
     public function __construct(private Odhad $odhad, private Config $config, private ?Storage $storage = null, private ?Adresy $adresy = null)
     {
-        $this->adresy ??= new Adresy($odhad, $config);
         $this->storage ??= new Storage($config->get('DB_PATH', dirname(__DIR__) . '/var/nacenime.sqlite'));
+        $this->adresy ??= new Adresy($odhad, $config, null, $this->storage);
         $this->typy = $odhad->typy();
         $this->stavy = $odhad->stavy();
     }

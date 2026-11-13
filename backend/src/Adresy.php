@@ -18,7 +18,7 @@ final class Adresy
     private $http;
 
     /** @param (callable(string, string, array<string, string>, ?string): array{0: int, 1: string})|null $http */
-    public function __construct(private Odhad $odhad, private Config $config, ?callable $http = null)
+    public function __construct(private Odhad $odhad, private Config $config, ?callable $http = null, private ?Storage $storage = null)
     {
         $this->http = $http ?? self::curl(...);
     }
@@ -118,6 +118,17 @@ final class Adresy
         $kluc = $this->config->get('GOOGLE_API_KEY');
         if ($kluc === '') {
             return null;
+        }
+        // Vlastný denný strop volaní na Google (Google limity nejdú znížiť). Po vyčerpaní sa použije záloha bez Google.
+        $strop = (int) $this->config->get('GOOGLE_DENNY_LIMIT', '3000');
+        if ($this->storage !== null && $strop > 0) {
+            $dnes = $this->storage->zvysDenne('google');
+            if ($dnes > $strop) {
+                if ($dnes === $strop + 1) {
+                    error_log("Google Places: denný limit $strop volaní vyčerpaný, do polnoci (UTC) beží záloha bez Google.");
+                }
+                return null;
+            }
         }
         try {
             [$kod, $odpoved] = ($this->http)($metoda, $url, [
