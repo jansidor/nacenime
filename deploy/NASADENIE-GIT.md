@@ -20,10 +20,10 @@ Hosting nasadzuje z Gitu do priečinkov `release_<čas>` a nemá SSH ani Compose
    0 3 * * *   /usr/bin/php8.1 /…/web/current/backend/bin/zaloha-db.php
    30 3 * * *  /usr/bin/php8.1 /…/web/current/backend/bin/gdpr.php retencia
    ```
-7. **SSL certifikát** pre doménu (dnes HTTPS nefunguje).
+7. ~~SSL certifikát~~ Hotové: `https://nacenime.sk` má platný certifikát Let's Encrypt (overené 13. 11. 2026, platný do 9. 2. 2027).
 
 ## Smerovanie `/api/*`
-Do `design_handoff_nacenime/` sa v nasadenom strome pridávajú `api.php` (stub) a `.htaccess` (Apache), ktorý `/api/*` presmeruje na stub. Predpokladá sa, že koreň webu je `design_handoff_nacenime/` (tam je `index.html`). Ak je koreň webu iný:
+Do `design_handoff_nacenime/` sa v nasadenom strome pridávajú `api.php` (stub) a `.htaccess` (Apache), ktorý `/api/*` presmeruje na stub. **Koreň webu je `design_handoff_nacenime/`** (overené 13. 11. 2026: `https://nacenime.sk/` vracia tamojší `index.html`, `/design_handoff_nacenime/` vracia 404, a `backend/` leží mimo koreňa a nie je dostupný). Ak by sa koreň zmenil:
 - koreň je celé repo: pridať do koreňového `.htaccess` `RewriteRule ^api(/|$) design_handoff_nacenime/api.php [L,QSA]`,
 - server je čistý nginx a `.htaccess` ignoruje: požiadať podporu o `location /api/ { try_files $uri /design_handoff_nacenime/api.php?$query_string; }` (alebo ekvivalent).
 
