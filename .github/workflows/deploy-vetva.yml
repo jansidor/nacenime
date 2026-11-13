@@ -1,0 +1,40 @@
+# Po každom pushi do main zostaví hotový balík (aj s backend/vendor) a uloží ho do vetvy `deploy`.
+# Hosting (Hostcreators) nemá SSH ani Composer, preto ťahá hotový stav práve z vetvy `deploy`.
+# Pozri deploy/NASADENIE-GIT.md.
+name: Zostaviť vetvu deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: deploy-vetva
+  cancel-in-progress: false
+jobs:
+  zostav:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          extensions: mbstring, pdo_sqlite, curl, dom, gd
+      - name: Zostaviť strom na nasadenie
+        run: deploy/zostav-deploy-strom.sh "$RUNNER_TEMP/deploy"
+      - name: Overiť strom (bez tajomstiev a testov, s knižnicami)
+        run: |
+          cd "$RUNNER_TEMP/deploy"
+          test -f backend/vendor/autoload.php
+          test -f design_handoff_nacenime/api.php
+          ! find . \( -name .env -o -name '*.sqlite' -o -name tests -o -name .github \) | grep -q .
+      - name: Uložiť do vetvy deploy
+        run: |
+          cd "$RUNNER_TEMP/deploy"
+          git init -q -b deploy
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -f
+          git commit -q -m "Nasadenie ${GITHUB_SHA::7} z main"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" deploy

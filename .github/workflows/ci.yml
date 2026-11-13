@@ -35,6 +35,8 @@ jobs:
         run: php backend/tests/prevadzka.php
       - name: Testy zostavenia cenníka
         run: php backend/tests/cennik.php
+      - name: Simulácia nasadenia (shared, .env, databáza)
+        run: php backend/tests/nasadenie.php
       - name: HTTP integračné testy
         run: php backend/tests/http.php
       - name: Súbežné zápisy
