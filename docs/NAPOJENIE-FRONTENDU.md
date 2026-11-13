@@ -14,7 +14,7 @@ Frontend (`Nacenime.dc.html`) sa nemení. Toto je zmluva pre toho, kto ho napáj
 | Výber návrhu | `GET /api/adresa/detail?id=…&token=…`, potom sa token zahodí |
 | Odpoveď `zaloha: true` (Google nefunguje) | zobraziť polia „Ulica a číslo“ a „Obec“, obec overiť `GET /api/obec?obec=…` po opustení poľa |
 | Potvrdenie adresy | údaje z detailu (`ulica`, `psc`, `obec`, `lat`, `lng`); `v_regione: false` = veta „Zatiaľ oceňujeme len Liptov, Turiec a Oravu.“ a po potvrdení obrazovka Mimo regiónu |
-| Posun špendlíka | uložiť nové `lat`/`lng`, pošlú sa v `adresa` pri odhade |
+| Posun špendlíka | mapa je hotový modul `frontend/mapa/` (Leaflet + OpenStreetMap, zadarmo), `naZmenu` dá nové `lat`/`lng`, pošlú sa v `adresa` pri odhade |
 | Kalkulačka, „Zobraziť odhad“ | `POST /api/odhad`, uloží si `odhad_id` |
 | Výsledok: Odhad v PDF | `POST /api/kontakt/pdf` s `email`, `suhlas`, `odhad_id` |
 | Výsledok: Cena od makléra | `POST /api/kontakt/makler` s `telefon`, `odhad_id` |
