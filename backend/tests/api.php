@@ -85,6 +85,25 @@ $check('Google vráti nezmysel = bez výnimky', [200, []], [($x = $gz->handle('G
 [$gz2] = $nova(['NACENIME_GOOGLE_API_KEY' => 'k'], fn() => [200, '{"location":{"latitude":"a","longitude":null},"addressComponents":"x"}']);
 $check('detail s nezmyslom = záloha', true, $gz2->handle('GET', '/api/adresa/detail', [], ['id' => 'ChIJabcdefghijk'])[1]['zaloha'] ?? false);
 
+// denný strop volaní na Google
+$volaniaG = 0;
+$configG = new Config(['NACENIME_GOOGLE_API_KEY' => 'k', 'NACENIME_GOOGLE_DENNY_LIMIT' => '3', 'NACENIME_RATE_LIMIT' => '0']);
+$stG = new Storage(':memory:');
+$apiG = new Api($odhad, $configG, $stG);
+$apiG2 = new Api($odhad, $configG, $stG, new Adresy($odhad, $configG, function () use (&$volaniaG) { $volaniaG++; return [200, '{"suggestions":[]}']; }, $stG));
+$kodyG = [];
+for ($i = 0; $i < 6; $i++) { $kodyG[] = $apiG2->handle('GET', '/api/adresa', [], ['q' => 'Bystrická'])[1]['zaloha'] ?? false; }
+$check('Google sa zavolá najviac 3× za deň', 3, $volaniaG);
+$check('po vyčerpaní stropu je záloha', [false, false, false, true, true, true], $kodyG);
+$check('počítadlo sa nuluje novým dňom', [1, 1, 2], [$stG->zvysDenne('x', '2026-01-01'), $stG->zvysDenne('x', '2026-01-02'), $stG->zvysDenne('x', '2026-01-02')]);
+$check('stará počítadlá (nad 7 dní) sa mažú', 1, (function () use ($stG) { $stG->zvysDenne('stary', '2026-01-01'); return $stG->zvysDenne('stary', '2026-02-01'); })());
+$vol0 = 0;
+$cfgBez = new Config(['NACENIME_GOOGLE_API_KEY' => 'k', 'NACENIME_GOOGLE_DENNY_LIMIT' => '0']);
+$stBez = new Storage(':memory:');
+$apiBez = new Api($odhad, $cfgBez, $stBez, new Adresy($odhad, $cfgBez, function () use (&$vol0) { $vol0++; return [200, '{"suggestions":[]}']; }, $stBez));
+for ($i = 0; $i < 10; $i++) { $apiBez->handle('GET', '/api/adresa', [], ['q' => 'Bystrická'], ''); }
+$check('limit 0 = bez stropu', 10, $vol0);
+
 // health
 $check('health ok', [200, ['stav' => 'ok']], $api->handle('GET', '/api/health'));
 $check('health POST = 405', 405, $api->handle('POST', '/api/health')[0]);

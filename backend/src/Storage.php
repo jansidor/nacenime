@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS odhady (
   dovod TEXT, typ TEXT NOT NULL, vymera REAL NOT NULL, stav TEXT, balkon TEXT, predstava_ceny INTEGER,
   vysledok TEXT NOT NULL, cena_od INTEGER, cena_do INTEGER, pocet INTEGER, veta TEXT
 );
+CREATE TABLE IF NOT EXISTS denne_pocitadla (kluc TEXT NOT NULL, den TEXT NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, den));
 CREATE TABLE IF NOT EXISTS limity (kluc TEXT NOT NULL, okno INTEGER NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, okno));
 CREATE TABLE IF NOT EXISTS kontakty (
   id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
@@ -90,6 +91,20 @@ SQL);
     {
         $this->pdo->exec('DELETE FROM limity WHERE okno < 0'); // overí aj zápis
         return (int) $this->pdo->query('SELECT 1')->fetchColumn() === 1;
+    }
+
+    /**
+     * Denné počítadlo (napr. volania na platené API). Zvýši hodnotu pre kľúč a deň (UTC) a vráti nový počet.
+     * Údaje staršie ako 7 dní sa mažú.
+     */
+    public function zvysDenne(string $kluc, ?string $den = null): int
+    {
+        $den ??= gmdate('Y-m-d');
+        $this->pdo->prepare('DELETE FROM denne_pocitadla WHERE den < ?')->execute([gmdate('Y-m-d', strtotime($den . ' -7 days'))]);
+        $this->pdo->prepare('INSERT INTO denne_pocitadla (kluc, den, pocet) VALUES (?, ?, 1) ON CONFLICT (kluc, den) DO UPDATE SET pocet = pocet + 1')->execute([$kluc, $den]);
+        $s = $this->pdo->prepare('SELECT pocet FROM denne_pocitadla WHERE kluc = ? AND den = ?');
+        $s->execute([$kluc, $den]);
+        return (int) $s->fetchColumn();
     }
 
     /** @return array<string, mixed>|null */
