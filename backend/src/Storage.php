@@ -14,6 +14,25 @@ final class Storage
             mkdir(dirname($cesta), 0750, true);
         }
         $this->pdo = new \PDO('sqlite:' . $cesta, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 5]);
+        // Pri prvom vytvorení databázy z viacerých workerov naraz môže inicializácia aj napriek časovému limitu skončiť
+        // chybou "database is locked" (prepnutie na WAL ho nerešpektuje). Je bezpečná na opakovanie, tak sa zopakuje.
+        for ($pokus = 1; ; $pokus++) {
+            try {
+                $this->inicializuj();
+                break;
+            } catch (\PDOException $e) {
+                $zamok = in_array((int) ($e->errorInfo[1] ?? 0), [5, 6], true) || stripos($e->getMessage(), 'locked') !== false;
+                if (!$zamok || $pokus >= 20) {
+                    throw $e;
+                }
+                usleep(random_int(10_000, 60_000));
+            }
+        }
+    }
+
+    /** WAL a schéma (idempotentné). */
+    private function inicializuj(): void
+    {
         // WAL: čitatelia neblokujú zapisovateľa (pri súbežných požiadavkách rýchlejšie); čakanie na zámok najviac 5 s.
         $this->pdo->exec('PRAGMA journal_mode=WAL');
         $this->pdo->exec(<<<'SQL'
