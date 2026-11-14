@@ -14,7 +14,6 @@ h1 { font: 800 clamp(32px, 5vw, 44px)/1.05 'Archivo', sans-serif; letter-spacing
 h2 { font: 800 24px/1.05 'Archivo', sans-serif; letter-spacing: -0.02em; color: #272361; margin: 40px 0 12px; }
 p, ul { margin: 0 0 16px; }
 li { margin-bottom: 8px; }
-.navrh { border: 1.5px solid #272361; border-radius: 12px; padding: 16px 20px; background: #fff; margin-bottom: 32px; }
 table { border-collapse: collapse; width: 100%; max-width: 62ch; margin-bottom: 16px; }
 th, td { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; border-bottom: 1.5px solid #dcd9d0; }
 th { font-weight: 600; color: #272361; }
