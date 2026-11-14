@@ -34,7 +34,7 @@ Stav k 14. 11. 2026. Overené priamo na webe (nie len v repe).
 5. Odkaz **Cookies** v pätičke otvorí nastavenia, v ktorých sa dá súhlas odvolať.
 
 ## Známe riziká
-- **`https://nacenime.sk/data/nacenime-cennik.json` je verejne stiahnuteľný** (leží v koreni webu). Cenník je však verejný aj v repe na GitHube. Do produkcie patrí cenník len na server.
+- **Cenník** `data/nacenime-cennik.json` a `reference/` už `.htaccess` na hostingu skrýva (404). Cenník je však verejný v repe na GitHube, takže nejde o tajomstvo. Po nasadení over: `https://nacenime.sk/data/nacenime-cennik.json` má vrátiť 404.
 - Web si pri načítaní sťahuje React a Babel z `unpkg.com` (prototypový runtime): závislosť od cudzieho CDN a pomalšie načítanie.
 - Microsoft Clarity predtým bežal bez súhlasu a teraz len po analytickom súhlase. Dáta z neho teda ubudnú.
 - Google Cloud projekt (kľúč) je dočasne na súkromnom účte, pred ostrým spustením prejsť na firemný.
