@@ -1,16 +1,11 @@
 # nacenime.sk
 
-## Pravidlo č. 1: frontend je zmrazený
-Nemeň vzhľad ani texty. Nedotýkaj sa týchto súborov:
-- `design_handoff_nacenime/Nacenime.dc.html`
-- `design_handoff_nacenime/Nacenime Prehlad.dc.html`
-- `design_handoff_nacenime/support.js`
-- `design_handoff_nacenime/img/`
+## Frontend
+Frontend (`design_handoff_nacenime/`) **už nie je zmrazený** (rozhodnutie majiteľa, 14. 11. 2026). Zmeny v ňom sú povolené.
+- Drž sa dizajnu zo zadania `design_handoff_nacenime/README.md` (farby, písmo Archivo, rozmery, polomery, jediné červené tlačidlo, text nie pod 16 px).
+- Väčšie zmeny vzhľadu alebo textov najprv navrhni a nechaj schváliť.
+- Vetva `main` sa automaticky nasadzuje na živý web. Pracuj vo vetvách a cez pull requesty, pred zlúčením spusti testy.
 
-Pracuj len na backende, dátach a testoch (PHP endpointy, `reference/`, `data/`).
-Ak úloha vyžaduje zásah do frontendu, zastav sa a opýtaj sa. Zdroj pravdy pre dizajn je `design_handoff_nacenime/README.md`.
-
-## Ochrany
-- `.githooks/pre-commit` blokuje commity zasahujúce do zmrazených ciest (zoznam v `.githooks/protected-paths.txt`). Aktivácia po klonovaní: `git config core.hooksPath .githooks`.
-- `.claude/settings.json` zakazuje Claude Code upravovať tieto súbory.
-- `.github/CODEOWNERS` vyžaduje review vlastníka.
+## Pravidlá
+- Tajomstvá (API kľúče, heslá, `.env`) nikdy do repa, PR ani chatu. Patria do `shared/.env` na serveri.
+- Repo je verejné.

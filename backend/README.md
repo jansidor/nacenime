@@ -1,6 +1,6 @@
 # Backend
 
-PHP API pre nacenime.sk. Frontend (`design_handoff_nacenime/`) je zmrazený a backend sa naň len napája.
+PHP API pre nacenime.sk. Frontend je v `design_handoff_nacenime/`.
 Bez Composeru a bez knižníc. Treba PHP 8.1+ s `mbstring`, `pdo_sqlite` a `curl`.
 
 ## Spustenie lokálne

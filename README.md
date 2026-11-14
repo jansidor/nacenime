@@ -3,7 +3,7 @@
 Kalkulačka orientačnej ceny nehnuteľnosti pre **Liptov, Turiec a Oravu**. Majiteľ zadá adresu, odpovie na päť otázok a hneď uvidí cenové rozpätie. Kontakt sa pýta až na výsledku a je dobrovoľný. Prevádzkuje NajBývanie, s.r.o.
 
 ## Stav
-- **Frontend** je hotový dizajnový prototyp (`design_handoff_nacenime/`). Je **zmrazený**: vzhľad ani texty sa nemenia (pozri `CLAUDE.md`).
+- **Frontend** je hotový dizajnový prototyp (`design_handoff_nacenime/`). Zmeny sú povolené, ale v súlade so zadaním dizajnu (pozri `CLAUDE.md`).
 - **Backend** (`backend/`) je hotový a otestovaný: výpočet odhadu, proxy pre Google Places, formuláre, SQLite, PDF a e-maily, GDPR nástroje.
 - **Cookie lišta** (GTM a Clarity až po súhlase) je nasadená, **mapa zadarmo** (`frontend/mapa/`) je hotový modul a Google volania majú denný strop.
 - **Nasadenie backendu na hosting** (bez SSH a Composera): návrh je v `deploy/NASADENIE-GIT.md`.
@@ -17,7 +17,7 @@ Kalkulačka orientačnej ceny nehnuteľnosti pre **Liptov, Turiec a Oravu**. Maj
 | `backend/` | PHP API (`src/`, `public/index.php`), CLI nástroje (`bin/`), testy (`tests/`). Detaily v `backend/README.md` |
 | `docs/` | `openapi.yaml`, `NAPOJENIE-FRONTENDU.md`, `PODKLADY.md` |
 | `deploy/` | Dockerfile, nginx, docker-compose (neoverené) |
-| `.githooks/`, `.github/` | Ochrana frontendu (hook, CODEOWNERS) a CI |
+| `.github/` | CI a zostavenie vetvy `deploy` |
 
 ## Rýchly štart
 Potrebuješ PHP 8.1+ (`mbstring`, `pdo_sqlite`, `curl`, `dom`, `gd`), Composer a pre paritný test Node 20+.
@@ -43,13 +43,6 @@ backend/tests/parity.sh        # PHP vs. JS referencia
 php backend/bin/kontrola-cennika.php
 ```
 Všetky bežia aj v CI (`.github/workflows/ci.yml`).
-
-## Po klonovaní
-Aktivuj hook, ktorý blokuje commity do zmrazeného frontendu:
-```bash
-git config core.hooksPath .githooks
-```
-Vedomú zmenu dizajnu povolíš cez `ALLOW_FRONTEND_CHANGE=1 git commit ...`.
 
 ## Dokumentácia
 - Zadanie dizajnu a logiky: `design_handoff_nacenime/README.md`
