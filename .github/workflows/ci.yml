@@ -31,6 +31,8 @@ jobs:
         run: php backend/tests/api.php
       - name: PHP testy PDF a e-mailov
         run: php backend/tests/pdf.php
+      - name: Oznámenia o leadoch
+        run: php backend/tests/oznamenia.php
       - name: Testy prevádzky (konfigurácia, záloha)
         run: php backend/tests/prevadzka.php
       - name: Testy zostavenia cenníka
