@@ -1,5 +1,15 @@
-# Presmeruje /api/* na api.php (Apache). Nič iné nemení. Ak sa .htaccess ignoruje, pozri deploy/NASADENIE-GIT.md.
+# .htaccess v koreni webu (design_handoff_nacenime/), len v nasadzovanom strome (vetva deploy). Apache.
+# Ak sa .htaccess ignoruje, pozri deploy/NASADENIE-GIT.md.
+
+# Na https://nacenime.sk/ rovno zobraz aplikáciu (bez presmerovania cez index.html), aby sedela kanonická adresa "/".
+# Ak by DirectoryIndex nefungoval, ostáva záloha: index.html presmeruje na Nacenime.dc.html.
+DirectoryIndex Nacenime.dc.html index.html
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # www.nacenime.sk -> nacenime.sk (jedna adresa pre vyhľadávače)
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+    # API
     RewriteRule ^api(/|$) api.php [L,QSA]
 </IfModule>
