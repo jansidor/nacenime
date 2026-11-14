@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nacenime.sk — Odhad ceny bytu alebo domu online | Liptov, Turiec, Orava</title>
+<meta name="description" content="Zistite orientačnú cenu svojho bytu alebo domu za pár sekúnd. Päť otázok, bez registrácie, bez telefónu. Odhad pre Ružomberok, Liptovský Mikuláš, Martin, Dolný Kubín a Námestovo.">
+<link rel="canonical" href="https://nacenime.sk/">
+<meta name="theme-color" content="#f6f4ef">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="sk_SK">
+<meta property="og:site_name" content="Nacenime.sk">
+<meta property="og:url" content="https://nacenime.sk/">
+<meta property="og:title" content="Koľko stojí váš byt alebo dom? | Nacenime.sk">
+<meta property="og:description" content="Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu. Orientačný odhad pre Liptov, Turiec a Oravu.">
+<meta property="og:image" content="https://nacenime.sk/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Koľko stojí váš byt alebo dom? | Nacenime.sk">
+<meta name="twitter:description" content="Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu.">
+<meta name="twitter:image" content="https://nacenime.sk/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "NajBývanie Ružomberok, s. r. o.",
+  "url": "https://nacenime.sk/",
+  "telephone": "+421951161561",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Podhora 1330/48",
+    "postalCode": "034 01",
+    "addressLocality": "Ružomberok",
+    "addressCountry": "SK"
+  },
+  "areaServed": ["Liptov", "Turiec", "Orava"],
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": "Orientačný odhad ceny nehnuteľnosti",
+      "description": "Online kalkulačka orientačnej ceny bytu alebo domu na základe adresy a stavu nehnuteľnosti."
+    }
+  }
+}
+</script>
+<script src="./support.js"></script>
+<script src="./cookies/cookies.js" defer></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap&subset=latin-ext" rel="stylesheet">
+<style>
+html,body{margin:0;background:#f6f4ef}
+*{box-sizing:border-box}
+a{color:#272361;text-decoration:underline;text-underline-offset:4px}
+a:hover{color:#11122f;text-decoration-thickness:3px}
+input::placeholder{color:#50516a;opacity:1}
+a:focus-visible,button:focus-visible,input:focus-visible,[role="img"]:focus-visible{outline:3px solid #272361;outline-offset:2px}
+footer a:focus-visible{outline-color:#f6f4ef}
+@keyframes nc-in{from{opacity:0}to{opacity:1}}
+main>section{animation:nc-in 150ms linear}
+@media (prefers-reduced-motion:reduce){main>section{animation:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;background:#f6f4ef;color:#11122f;font:400 clamp(18px,calc(18px + (100vw - 600px) / 400),19px)/1.5 'Archivo',sans-serif">
+  <header style="width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:24px clamp(20px,5vw,64px) 0">
+    <a href="#" onClick="{{ goHome }}" style="display:inline-block;font:800 24px/1.2 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-decoration:none">nacenime.sk</a>
+  </header>
+
+  <main style="flex:1;width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:clamp(40px,6vw,72px) clamp(20px,5vw,64px) clamp(48px,7vw,96px)">
+
+    <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
+      <section data-screen-label="01 Úvod">
+        <h1 style="margin:0;font:800 clamp(44px,8vw,64px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;max-width:16ch">Ko<span style="margin-right:0.1em">ľ</span>ko stojí váš byt alebo dom?</h1>
+        <p style="margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2.2vw,24px)">Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu.</p>
+        <sc-if value="{{ useGoogle }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ startCalc }}" style="margin:32px 0 0;max-width:760px">
+          <label for="adresa-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Adresa nehnuteľnosti</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <input id="adresa-uvod" type="text" autoComplete="street-address" placeholder="Bystrická cesta 12, Ružomberok" value="{{ address }}" onChange="{{ setAddress }}" style="flex:999 1 260px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+        <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ true }}">
+          <div role="listbox" aria-label="Návrhy adries" style="margin-top:12px;max-width:760px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;overflow:hidden">
+            <sc-for list="{{ suggestions }}" as="sg" hint-placeholder-count="1">
+            <button type="button" role="option" onClick="{{ sg.pick }}" style="display:flex;flex-direction:column;gap:2px;width:100%;min-height:60px;padding:10px 20px;border:0;background:#ffffff;color:#11122f;text-align:left;font:400 19px/1.4 'Archivo',sans-serif;cursor:pointer" style-hover="background:#f6f4ef">
+              <span style="font-weight:600;color:#272361">{{ sg.line }}</span>
+              <span style="font-size:16px">{{ sg.town }}</span>
+            </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        </sc-if>
+        <sc-if value="{{ isFallback }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitFallback }}" style="margin:32px 0 0;max-width:760px">
+          <div style="display:flex;flex-wrap:wrap;gap:16px 12px">
+            <div style="flex:999 1 240px;min-width:0"><label for="ulica-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Ulica a číslo</label><input id="ulica-uvod" type="text" autoComplete="address-line1" placeholder="Bystrická cesta 12" value="{{ street }}" onChange="{{ setStreet }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <div style="flex:1 1 180px;min-width:0"><label for="obec-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Obec</label><input id="obec-uvod" type="text" autoComplete="address-level2" placeholder="Ružomberok" value="{{ town }}" onChange="{{ setTown }}" onBlur="{{ checkTown }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="flex:1 0 auto;align-self:flex-end;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+        <sc-if value="{{ townOut }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p></sc-if>
+        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
+        </sc-if>
+        <p style="margin:24px 0 0;max-width:62ch">Liptov, Turiec, Orava. Orientačný odhad, nie znalecký posudok.</p>
+        <nav aria-label="Mestá" style="margin:4px 0 0;max-width:760px;display:flex;flex-wrap:wrap;gap:0 24px">
+          <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
+            <a href="#" onClick="{{ c.open }}" style="display:inline-flex;align-items:center;min-height:48px">{{ c.name }}</a>
+          </sc-for>
+        </nav>
+        <div style="margin:clamp(48px,6vw,80px) 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:32px 48px">
+          <div>
+            <div style="font-weight:600;color:#272361">Musím zadať kontakt?</div>
+            <div style="margin-top:4px;max-width:36ch">Nie. E-mail len vtedy, ak chcete odhad v PDF.</div>
+          </div>
+          <div>
+            <div style="font-weight:600;color:#272361">Z čoho cenu rátate?</div>
+            <div style="margin-top:4px;max-width:36ch">Z predajov vo vašom okolí.</div>
+          </div>
+          <div>
+            <div style="font-weight:600;color:#272361">Bude mi niekto volať?</div>
+            <div style="margin-top:4px;max-width:36ch">Iba ak o to požiadate.</div>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="01b Potvrdenie adresy">
+        <div style="position:relative;height:clamp(280px,40vw,360px);border-radius:20px;background:#dcd9d0;overflow:hidden">
+          <div style="position:absolute;left:20px;top:16px;display:flex;gap:12px;font-size:16px"><span>[MAPA]</span><span>{{ zoomLabel }}</span></div>
+          <div style="position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;gap:12px">
+            <button type="button" aria-label="Priblížiť" onClick="{{ zoomIn }}" style="width:60px;height:60px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 24px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">+</button>
+            <button type="button" aria-label="Oddialiť" onClick="{{ zoomOut }}" style="width:60px;height:60px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 24px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">−</button>
+          </div>
+          <div role="img" aria-label="Špendlík, dá sa posunúť ťahaním" onPointerDown="{{ pinDown }}" onPointerMove="{{ pinMove }}" onPointerUp="{{ pinUp }}" style="position:absolute;left:{{ pinLeft }};top:{{ pinTop }};cursor:grab;touch-action:none;width:36px;height:36px;margin:-40px 0 0 -18px;border-radius:50% 50% 50% 0;background:#272361;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center">
+            <div style="width:12px;height:12px;border-radius:50%;background:#f6f4ef"></div>
+          </div>
+        </div>
+        <h1 style="margin:0;font:800 clamp(32px,5vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;margin:clamp(28px,4vw,40px) 0 0">{{ confirmAddr }}</h1>
+        <sc-if value="{{ outOfRegion }}" hint-placeholder-val="{{ false }}">
+          <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p>
+        </sc-if>
+        <p style="margin:20px 0 0;font-size:clamp(19px,2.2vw,24px)">Je to správna adresa?</p>
+        <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:12px;max-width:560px">
+          <button type="button" onClick="{{ goIntro }}" style="flex:1 1 160px;height:60px;padding:0 32px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">Upraviť</button>
+          <button type="button" onClick="{{ confirmAddress }}" style="flex:2 1 220px;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Áno, pokračovať</button>
+        </div>
+        <p style="margin:20px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isOut }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="01c Mimo regiónu" style="max-width:640px">
+        <h1 style="margin:0;font:800 clamp(32px,6vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">U vás zatiaľ neoceňujeme</h1>
+        <p style="margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2.2vw,24px)">Dáme vám vedieť, keď začneme.</p>
+        <form onSubmit="{{ sendNotify }}" noValidate="{{ true }}" style="margin:32px 0 0">
+          <label for="email-notify" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <input id="email-notify" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ notifyEmail }}" onChange="{{ setNotifyEmail }}" style="flex:999 1 240px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Dajte mi vedieť</button>
+          </div>
+        </form>
+        <div style="margin-top:14px"><sc-if value="{{ hasNotifyMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ notifyIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ notifyMsg }}</span></p></sc-if></div>
+        <p style="margin:16px 0 0"><a href="#" onClick="{{ goHome }}">Späť na úvod</a></p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isCity }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="04 Mesto">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:32px clamp(32px,5vw,64px);align-items:stretch">
+          <div style="display:flex;flex-direction:column;justify-content:center">
+            <h1 style="margin:0;font:800 clamp(32px,5.4vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Ko<span style="margin-right:0.1em">ľ</span>ko stojí váš byt alebo dom {{ cityIn }}?</h1>
+            <p style="margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2.2vw,24px)">Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu.</p>
+            <sc-if value="{{ useGoogle }}" hint-placeholder-val="{{ true }}">
+            <form onSubmit="{{ startCalc }}" style="margin:32px 0 0;max-width:none">
+          <label for="adresa-mesto" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Adresa nehnuteľnosti</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <input id="adresa-mesto" type="text" autoComplete="street-address" placeholder="Bystrická cesta 12, Ružomberok" value="{{ address }}" onChange="{{ setAddress }}" style="flex:999 1 260px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+            </sc-if>
+            <sc-if value="{{ isFallback }}" hint-placeholder-val="{{ false }}">
+              <form onSubmit="{{ submitFallback }}" style="margin:32px 0 0;max-width:none">
+          <div style="display:flex;flex-wrap:wrap;gap:16px 12px">
+            <div style="flex:999 1 240px;min-width:0"><label for="ulica-mesto" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Ulica a číslo</label><input id="ulica-mesto" type="text" autoComplete="address-line1" placeholder="Bystrická cesta 12" value="{{ street }}" onChange="{{ setStreet }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <div style="flex:1 1 180px;min-width:0"><label for="obec-mesto" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Obec</label><input id="obec-mesto" type="text" autoComplete="address-level2" placeholder="Ružomberok" value="{{ town }}" onChange="{{ setTown }}" onBlur="{{ checkTown }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="flex:1 0 auto;align-self:flex-end;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+        <sc-if value="{{ townOut }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p></sc-if>
+        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
+            </sc-if>
+            <p style="margin:24px 0 0;max-width:62ch">Orientačný odhad, nie znalecký posudok.</p>
+          </div>
+          <div style="min-height:clamp(240px,38vw,480px);border-radius:20px;background:#dcd9d0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#11122f;position:relative;overflow:hidden">{{ cityPhoto }}<sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ cityAlt }}" style="position:absolute;inset:0;background-image:{{ cityBg }};background-size:cover;background-position:center"></div></sc-if></div>
+        </div>
+
+        <div style="margin-top:clamp(64px,8vw,112px)">
+          <h2 style="margin:0;font:800 32px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Ceny {{ cityIn }}</h2>
+          <div style="margin-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:32px 48px">
+            <div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">[CENA ZA M² BYTY]</div>
+              <div style="margin-top:6px">priemerná cena bytu za m²</div>
+            </div>
+            <div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">[CENA ZA M² DOMY]</div>
+              <div style="margin-top:6px">priemerná cena domu za m²</div>
+            </div>
+            <div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">[POČET PREDAJOV]</div>
+              <div style="margin-top:6px">predajov, z ktorých rátame</div>
+            </div>
+          </div>
+          <p style="margin:40px 0 0;max-width:62ch;text-wrap:pretty">[TEXT O ŠTVRTIACH A CENÁCH]</p>
+          <p style="margin:20px 0 0;max-width:62ch"><strong style="font-weight:600;color:#272361">Naposledy predané:</strong> [TYP, VÝMERA, ŠTVRŤ, CENA ZA M²]</p>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isCalc }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="02 Kalkulačka" style="max-width:640px">
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{ segments }}" as="seg" hint-placeholder-count="5">
+            <div style="flex:1;height:8px;border-radius:12px;background:{{ seg.bg }}"></div>
+          </sc-for>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:60px">
+          <span style="font-weight:600">{{ stepLabel }}</span>
+          <button type="button" onClick="{{ back }}" style="height:60px;padding:0 4px;border:0;background:none;color:#272361;font:600 19px 'Archivo',sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer" style-hover="color:#11122f">Späť</button>
+        </div>
+        <h1 style="margin:0;font:800 clamp(32px,5vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;margin:clamp(16px,3vw,32px) 0 32px">{{ question }}</h1>
+
+        <sc-if value="{{ isChoice }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ options }}" as="opt" hint-placeholder-count="5">
+              <button type="button" onClick="{{ opt.pick }}" style="min-height:60px;padding:12px 20px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ opt.bg }};color:{{ opt.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">{{ opt.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isArea }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitArea }}" noValidate="{{ true }}">
+            <label for="vymera" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Výmera</label>
+              <div style="display:flex;flex-wrap:wrap;gap:12px">
+                <div style="position:relative;flex:999 1 220px;min-width:0">
+                  <input id="vymera" type="text" inputMode="numeric" placeholder="65" value="{{ area }}" onChange="{{ setArea }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0;padding-right:72px;font:600 24px 'Archivo',sans-serif">
+                  <span aria-hidden="true" style="position:absolute;right:20px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">m²</span>
+                </div>
+                <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button>
+              </div>
+            <sc-if value="{{ areaError }}" hint-placeholder-val="{{ false }}">
+              <p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zadajte výmeru od 10 do 2000 m².</span></p>
+            </sc-if>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isPrice }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitPrice }}" noValidate="{{ true }}">
+            <label for="cena" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Predstava o cene</label>
+              <div style="display:flex;flex-wrap:wrap;gap:12px">
+                <div style="position:relative;flex:999 1 220px;min-width:0">
+                  <input id="cena" type="text" inputMode="numeric" placeholder="150 000" value="{{ price }}" onChange="{{ setPrice }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0;padding-right:72px;font:600 24px 'Archivo',sans-serif">
+                  <span aria-hidden="true" style="position:absolute;right:20px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">€</span>
+                </div>
+                <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button>
+              </div>
+            <p style="margin:20px 0 0"><a href="#" onClick="{{ skipPrice }}" style="font-weight:600">Preskočiť</a></p>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isObec }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitObec }}" noValidate="{{ true }}">
+            <label for="obec-kalk" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Obec</label>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">
+              <input id="obec-kalk" type="text" autoComplete="address-level2" placeholder="Ružomberok" value="{{ obec }}" onChange="{{ setObec }}" style="flex:999 1 200px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+              <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button>
+            </div>
+            <sc-if value="{{ obecError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zadajte obec.</span></p></sc-if>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+          <button type="button" onClick="{{ showResult }}" style="width:100%;max-width:360px;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zobraziť odhad</button>
+        </sc-if>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="03 Výsledok">
+        <p style="margin:0;font-size:16px;max-width:62ch">{{ summary }}</p>
+        <sc-if value="{{ resLoading }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:16px 0 0;font-weight:600">Počítame odhad.</p></sc-if>
+        <sc-if value="{{ resError }}" hint-placeholder-val="{{ false }}">
+          <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Odhad sa teraz nepodarilo načítať.</span></p>
+          <p style="margin:12px 0 0"><a href="#" onClick="{{ retry }}" style="font-weight:600">Skúsiť znova</a></p>
+        </sc-if>
+        <sc-if value="{{ resOk }}" hint-placeholder-val="{{ false }}">
+          <h1 style="margin:16px 0 0;font:800 clamp(min(48px,17vw),10vw,120px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:#272361;text-wrap:balance">{{ priceText }}</h1>
+          <div role="img" aria-label="{{ scaleLabel }}" style="margin-top:32px;max-width:720px">
+            <div style="position:relative;height:28px;border-radius:12px;background:#dcd9d0;overflow:hidden"><div style="position:absolute;top:0;bottom:0;left:33.333%;width:33.333%;background:#272361"></div></div>
+            <div style="position:relative;height:32px;margin-top:8px;font-weight:600;color:#272361">
+              <span style="position:absolute;left:33.333%;transform:translateX(-50%)">{{ scaleFrom }}</span>
+              <span style="position:absolute;left:66.667%;transform:translateX(-50%)">{{ scaleTo }}</span>
+            </div>
+          </div>
+          <sc-if value="{{ hasScaleNote }}" hint-placeholder-val="{{ true }}"><p style="margin:16px 0 0;max-width:62ch">{{ scaleNote }}</p></sc-if>
+          <p style="margin:12px 0 0;max-width:62ch">{{ veta }}</p>
+        </sc-if>
+        <sc-if value="{{ resNoPrice }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ hasNadpis }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;font:800 clamp(32px,6vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;margin:16px 0 0">{{ nadpis }}</h1></sc-if>
+          <sc-if value="{{ hasVeta }}" hint-placeholder-val="{{ false }}"><p style="margin:16px 0 0;max-width:62ch">{{ veta }}</p></sc-if>
+        </sc-if>
+
+        <sc-if value="{{ resDone }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:clamp(48px,6vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:48px clamp(32px,6vw,96px);border-top:1.5px solid #272361;padding-top:40px">
+          <form onSubmit="{{ requestCall }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px">
+            <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Cena od makléra</h2>
+            <div><label for="telefon" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Telefón</label><input id="telefon" type="tel" autoComplete="tel" placeholder="0900 123 456" value="{{ phone }}" onChange="{{ setPhone }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zavolajte mi</button>
+            <p style="margin:0;max-width:62ch">{{ maklerName }} si nehnuteľnosť pozrie a povie jednu cenu.</p>
+            <sc-if value="{{ hasCallMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ callIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ callMsg }}</span></p></sc-if>
+          </form>
+          <sc-if value="{{ showPdf }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ sendPdf }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px">
+            <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Odhad v PDF</h2>
+            <div><label for="email-pdf" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label><input id="email-pdf" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ email }}" onChange="{{ setEmail }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <label style="display:flex;gap:14px;align-items:flex-start;cursor:pointer;max-width:62ch">
+              <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="flex:none;width:28px;height:28px;margin:0;accent-color:#272361">
+              <span>Súhlasím, aby ma maklér NajBývanie kontaktoval ohľadom predaja. Nepovinné.</span>
+            </label>
+            <button type="submit" style="height:60px;padding:0 32px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">Poslať PDF</button>
+            <sc-if value="{{ hasPdfMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ pdfIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ pdfMsg }}</span></p></sc-if>
+          </form></sc-if>
+        </div>
+        </sc-if>
+
+        <div style="margin-top:32px;display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+          <span style="max-width:62ch">Orientačný, nezáväzný odhad. Nejde o znalecký posudok.</span>
+          <a href="#" onClick="{{ editData }}" style="font-weight:600;display:inline-flex;align-items:center;min-height:48px">Upraviť údaje</a>
+        </div>
+      </section>
+    </sc-if>
+  </main>
+
+  <footer style="background:#11122f;color:#f6f4ef;font-size:16px;line-height:1.5">
+    <div style="max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:32px clamp(20px,5vw,64px);display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px 40px">
+    <sc-if value="{{ isCity }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Ostatné mestá" style="flex:1 0 100%;display:flex;flex-wrap:wrap;gap:8px 28px;padding-bottom:8px">
+        <sc-for list="{{ otherCities }}" as="c" hint-placeholder-count="4">
+          <a href="#" onClick="{{ c.open }}" style="color:#f6f4ef">{{ c.name }}</a>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <span>Prevádzkuje NajBývanie Ružomberok, s. r. o.</span>
+    <nav style="display:flex;flex-wrap:wrap;gap:8px 28px">
+      <a href="#" style="color:#f6f4ef">Ochrana osobných údajov</a>
+      <a href="#" style="color:#f6f4ef">Cookies</a>
+      <a href="#" style="color:#f6f4ef">Kontakt</a>
+    </nav>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Úvod&quot;,&quot;Potvrdenie adresy&quot;,&quot;Mimo regiónu&quot;,&quot;Mesto&quot;,&quot;Kalkulačka&quot;,&quot;Výsledok&quot;],&quot;default&quot;:&quot;Úvod&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showSuggest&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Adresa&quot;},&quot;googleDown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Adresa&quot;},&quot;outOfRegion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Adresa&quot;},&quot;autoAdvance&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;maklerName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;[MENO MAKLÉRA]&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Maklér&quot;},&quot;typyBezRozpatia&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Rozpätie&quot;}}">
+class Component extends DCLogic {
+  QS = [
+    { q: 'Prečo zisťujete cenu?', o: ['Len zisťujem', 'Predám do 3–6 mesiacov', 'Dedičstvo', 'Rozvod', 'Investícia'] },
+    { q: 'Čo oceňujeme?', o: ['Byt', 'Dom', 'Chata', 'Apartmán', 'Pozemok'] },
+    { q: 'Aká je výmera?' },
+    { q: 'V akom je stave?', o: ['Pôvodný', 'Čiastočná rekonštrukcia', 'Kompletná rekonštrukcia', 'Novostavba'] },
+    { q: 'Má balkón, loggiu alebo terasu?', o: ['Áno', 'Nie'] }
+  ];
+  CITIES = [
+    { name: 'Ružomberok', loc: 'v Ružomberku', photo: '', img: 'img/ruzomberok.jpg' },
+    { name: 'Liptovský Mikuláš', loc: 'v Liptovskom Mikuláši', photo: '', img: 'img/liptovsky-mikulas.jpg' },
+    { name: 'Martin', loc: 'v Martine', photo: '[FOTKA MARTINA]' },
+    { name: 'Dolný Kubín', loc: 'v Dolnom Kubíne', photo: '[FOTKA DOLNÉHO KUBÍNA]' },
+    { name: 'Námestovo', loc: 'v Námestove', photo: '[FOTKA NÁMESTOVA]' }
+  ];
+  ADDR = [
+    { line: 'Vzorová ulica 1', town: 'Ružomberok', zip: '034 01', ok: true },
+    { line: 'Vzorová ulica 12', town: 'Liptovský Mikuláš', zip: '031 01', ok: true },
+    { line: 'Vzorová ulica 3', town: 'Martin', zip: '036 01', ok: true },
+    { line: 'Vzorová ulica 5', town: 'Dolný Kubín', zip: '026 01', ok: true },
+    { line: 'Vzorová ulica 7', town: 'Žilina', zip: '010 01', ok: false }
+  ];
+  norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  TOWNS = ['ruzomberok', 'liptovsky mikulas', 'liptovsky hradok', 'martin', 'vrutky', 'turcianske teplice', 'dolny kubin', 'namestovo', 'tvrdosin', 'trstena'];
+  onAddress = e => {
+    const v = e.target.value, long = v.trim().length >= 3;
+    clearTimeout(this.t);
+    this.setState(p => ({ address: v, sugg: long ? p.sugg : [] }));
+    if (long) this.t = setTimeout(() => {
+      const q = this.norm(v.trim()), m = this.ADDR.filter(a => this.norm(a.line + ' ' + a.town).includes(q));
+      this.setState({ sugg: m.length ? m : this.ADDR.slice(0, 4) });
+    }, 300);
+  };
+  state = { obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', sugg: [], picked: null, street: '', town: '', pin: { x: 50, y: 50 }, zoom: 16, from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  componentDidUpdate(prev) {
+    if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, step: 0 }, () => this.props.startScreen === 'Výsledok' && this.runOdhad());
+  }
+  componentDidMount() { if (this.state.screen === 'Výsledok') this.runOdhad(); }
+  loadCennik = () => this._cennik || (this._cennik = fetch('data/nacenime-cennik.json').then(r => r.ok ? r.json() : Promise.reject(r.status)));
+  nrm = x => String(x == null ? '' : x).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Len pre prototyp. Produkčný výpočet beží na serveri (PHP, POST /api/odhad), pozri README.
+  odhad(c, { typ, obec, stav, vymera }) {
+    const none = { od: null, do: null, pocet: null, zdroj: null, uroven: null, pouzity_stav: null, veta: null, nadpis: null };
+    if (String(this.props.typyBezRozpatia || '').split(',').map(x => x.trim()).includes(typ))
+      return { stav: 'maklér', ...none, nadpis: 'Cenu vám povie maklér', veta: 'Pri tomto type nehnuteľnosti rozpätie neukazujeme. Maklér si ju pozrie a povie vám cenu.' };
+    const key = Object.keys(c.lokality).find(o => this.nrm(o) === this.nrm(obec));
+    if (!key) return { stav: 'mimo regiónu', ...none };
+    const okres = 'okres ' + c.lokality[key], lok = { obec: key, okres };
+    const sk = s => [['Predaje', 'obec', s], ['Ponuky', 'obec', s], ['Predaje', 'okres', s], ['Ponuky', 'okres', s]];
+    for (const [zdroj, uroven, s] of [...(stav ? sk(stav) : []), ...sk('všetky')]) {
+      const g = c.cennik.find(x => x.kluc === [zdroj, typ, lok[uroven], s].join('|'));
+      if (!g || g.pocet < c.prahy[zdroj.toLowerCase()]) continue;
+      const [zMin, zMax] = c.zlavy[typ], predaj = zdroj === 'Predaje', r = n => Math.max(0, Math.round(n / 1000) * 1000);
+      const veta = [predaj ? 'Podľa ' + g.pocet + ' podobných predajov v okolí.' : 'Podľa ' + g.pocet + ' aktuálnych ponúk v okolí, po odpočítaní bežnej zľavy pri predaji.',
+        s === 'všetky' && 'Bez rozlíšenia stavu.', uroven === 'okres' && 'Rátané z celého okresu.'].filter(Boolean).join(' ');
+      return { stav: 'ok', od: r(g.q1 * vymera - (predaj ? 0 : zMax)), do: r(g.q3 * vymera - (predaj ? 0 : zMin)), pocet: g.pocet, zdroj, uroven, pouzity_stav: s, veta, nadpis: null };
+    }
+    return { stav: 'málo dát', ...none, nadpis: 'Na odhad tu máme málo predajov', veta: 'Maklér vám povie cenu po obhliadke.' };
+  }
+  runOdhad = () => {
+    const s = this.state, a = s.answers, id = this.rid = (this.rid || 0) + 1;
+    const obec = (s.picked && s.picked.town) || s.town.trim() || String(a[6] || '').trim() || 'Ružomberok';
+    const typ = a[1] || 'Byt', stav = typ === 'Pozemok' ? undefined : (a[3] || 'Kompletná rekonštrukcia'), vymera = Number(String(a[2] || 66).replace(',', '.'));
+    this.setState({ odhad: null, odhadState: 'loading' });
+    this.loadCennik()
+      .then(c => { if (id !== this.rid) return; const d = this.odhad(c, { typ, obec, stav, vymera }); d.stav === 'mimo regiónu' ? this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }) : this.setState({ odhad: d, odhadState: 'ok' }); })
+      .catch(() => { if (id === this.rid) this.setState({ odhadState: 'error' }); });
+  };
+  go(patch) { this.setState(patch); window.scrollTo(0, 0); }
+  renderVals() {
+    const s = this.state, step = s.step, done = step >= 7, isPrice = step === 5, isObec = step === 6, cur = this.QS[step] || {};
+    const a = s.answers, pozemok = a[1] === 'Pozemok', obecAddr = (s.picked && s.picked.town) || s.town.trim(), needObec = !obecAddr, obecVal = obecAddr || String(a[6] || '').trim();
+    const od = s.odhad, resOk = s.odhadState === 'ok' && !!od && od.stav === 'ok', resNoPrice = s.odhadState === 'ok' && !!od && od.stav !== 'ok';
+    const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0'), SCALE = { Byt: 'byty', Apartmán: 'apartmány', Dom: 'domy', Chata: 'chaty' };
+    const scaleNote = a[1] === 'Pozemok' ? 'Vyššiu cenu dosahujú pozemky so sieťami a prístupovou cestou.' : SCALE[a[1]] ? 'Vyššiu cenu dosahujú ' + SCALE[a[1]] + ' po rekonštrukcii a s dobrou prípravou predaja.' : '';
+    const k = n => Math.round(n / 1000);
+    const auto = this.props.autoAdvance ?? true;
+    const city = this.CITIES[s.city];
+    const cities = this.CITIES.map((c, i) => ({ name: c.name, i, open: e => { e.preventDefault(); this.go({ screen: 'Mesto', city: i }); } }));
+    const set = k => e => this.setState({ [k]: e.target.value });
+    const down = this.props.googleDown ?? false;
+    const townBad = !!s.town.trim() && !this.TOWNS.includes(this.norm(s.town.trim()));
+    const place = s.picked || ((this.props.outOfRegion ?? false) ? this.ADDR[4] : this.ADDR[0]);
+    const sugg = (s.sugg.length ? s.sugg : (this.props.showSuggest ?? true) && !s.address.trim() ? [this.ADDR[0]] : []).map(a => ({ line: a.line, town: a.town,
+      pick: () => this.go({ screen: 'Potvrdenie adresy', picked: a, address: a.line + ', ' + a.town, sugg: [], pin: { x: 50, y: 50 } }) }));
+    return {
+      isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name,
+      isConfirm: s.screen === 'Potvrdenie adresy',
+      useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0,
+      street: s.street, town: s.town, setStreet: set('street'), setTown: e => this.setState({ town: e.target.value, townOut: false }), checkTown: () => this.setState({ townOut: townBad }), townOut: s.townOut,
+      submitFallback: e => { e.preventDefault(); if (townBad) return this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
+      confirmAddr: place.line + ', ' + place.zip + ' ' + place.town, outOfRegion: !place.ok,
+      pinLeft: s.pin.x + '%', pinTop: s.pin.y + '%', zoomLabel: 'priblíženie ' + s.zoom,
+      zoomIn: () => this.setState(p => ({ zoom: Math.min(20, p.zoom + 1) })),
+      zoomOut: () => this.setState(p => ({ zoom: Math.max(10, p.zoom - 1) })),
+      pinDown: e => { e.currentTarget.setPointerCapture(e.pointerId); this.drag = true; },
+      pinUp: () => { this.drag = false; },
+      pinMove: e => {
+        if (!this.drag) return;
+        const r = e.currentTarget.parentNode.getBoundingClientRect(), cl = (v, a, b) => Math.max(a, Math.min(b, v));
+        this.setState({ pin: { x: cl((e.clientX - r.left) / r.width * 100, 3, 97), y: cl((e.clientY - r.top) / r.height * 100, 20, 97) } });
+      },
+      goIntro: () => this.go({ screen: 'Úvod' }),
+      confirmAddress: () => place.ok ? this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: place }) : this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }),
+      isOut: s.screen === 'Mimo regiónu', notifyEmail: s.notifyEmail, notifyMsg: s.notifyMsg, hasNotifyMsg: !!s.notifyMsg, notifyIsErr: /^Zadajte/.test(s.notifyMsg),
+      setNotifyEmail: e => this.setState({ notifyEmail: e.target.value, notifyMsg: '' }),
+      sendNotify: e => { e.preventDefault(); this.setState({ notifyMsg: /^\S+@\S+\.\S+$/.test(s.notifyEmail.trim()) ? 'Ďakujeme, dáme vám vedieť.' : 'Zadajte e-mail.' }); },
+      skipAddress: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: null, town: '', address: '' }); },
+      isPrice, price: s.price, setPrice: set('price'),
+      isObec, obec: s.obec, obecError: s.obecError, setObec: e => this.setState({ obec: e.target.value, obecError: false }),
+      submitObec: e => { e.preventDefault(); const v = s.obec.trim(); if (!v) return this.setState({ obecError: true }); this.go({ answers: { ...s.answers, 6: v }, step: 7 }); },
+      submitPrice: e => { e.preventDefault(); this.go({ answers: { ...s.answers, 5: s.price.trim() }, step: needObec ? 6 : 7 }); },
+      skipPrice: e => { e.preventDefault(); this.go({ price: '', step: needObec ? 6 : 7 }); },
+      isIntro: s.screen === 'Úvod', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
+      address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: /^Zadajte/.test(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: /^Zadajte/.test(s.callMsg),
+      setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'),
+      setArea: e => this.setState({ area: e.target.value, areaError: false }),
+      toggleConsent: () => this.setState(p => ({ consent: !p.consent })),
+      goHome: e => { e.preventDefault(); this.go({ screen: 'Úvod' }); },
+      startCalc: e => { e.preventDefault(); this.go({ screen: 'Potvrdenie adresy', picked: s.sugg[0] || s.picked, sugg: [], pin: { x: 50, y: 50 } }); },
+      segments: [0, 1, 2, 3, 4].map(i => ({ bg: i < step || (i === step && !done) ? '#272361' : '#dcd9d0' })),
+      stepLabel: done ? 'Hotovo' : isPrice ? 'Nepovinná otázka' : isObec ? 'Posledná otázka' : 'Otázka ' + (step + 1) + ' z 5',
+      question: done ? 'Máme všetko' : isPrice ? 'Akú máte predstavu o cene?' : isObec ? 'V ktorej obci je nehnuteľnosť?' : cur.q,
+      isChoice: !done && !isPrice && !isObec && !!cur.o, isArea: step === 2, isDone: done,
+      options: done || !cur.o ? [] : cur.o.map(label => {
+        const on = s.answers[step] === label;
+        return { label, bg: on ? '#272361' : '#ffffff', fg: on ? '#ffffff' : '#272361',
+          pick: () => this.go({ answers: { ...s.answers, [step]: label }, step: auto ? step + 1 : step }) };
+      }),
+      back: () => step === 0 ? this.go({ screen: s.from }) : this.go({ step: step === 7 && !needObec ? 5 : step === 4 && pozemok ? 2 : step - 1 }),
+      submitArea: e => {
+        e.preventDefault();
+        const n = Number(String(s.area).replace(',', '.').trim());
+        if (!s.area.trim() || !(n >= 10 && n <= 2000)) return this.setState({ areaError: true });
+        this.go({ answers: { ...s.answers, 2: n }, step: pozemok ? 4 : 3 });
+      },
+      resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
+      priceText: resOk ? fmt(od.od) + ' až ' + fmt(od.do) + '\u00a0€' : '', hasNadpis: resNoPrice && !!od.nadpis, nadpis: od && od.nadpis || '',
+      hasVeta: !!(od && od.veta), veta: od && od.veta || '', hasScaleNote: !!scaleNote, scaleNote, maklerName: this.props.maklerName || '[MENO MAKLÉRA]',
+      scaleFrom: resOk ? k(od.od) : '', scaleTo: resOk ? k(od.do) : '', scaleLabel: resOk ? 'Ilustračná stupnica, odhad od ' + k(od.od) + ' do ' + k(od.do) + ' tisíc eur' : '',
+      retry: e => { e.preventDefault(); this.runOdhad(); },
+      showResult: () => { this.go({ screen: 'Výsledok' }); this.runOdhad(); },
+      editData: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0 }); },
+      summary: (s.address.trim() || obecVal).replace(/\.$/, '') + '. ' + (s.answers[1] || 'Byt') + ' ' + (s.answers[2] || 66) + ' m²',
+      sendPdf: e => { e.preventDefault(); this.setState({ pdfMsg: /^\S+@\S+\.\S+$/.test(s.email.trim()) ? 'Odhad vám pošleme na e-mail.' : 'Zadajte e-mail.' }); },
+      requestCall: e => { e.preventDefault(); this.setState({ callMsg: s.phone.replace(/\D/g, '').length >= 9 ? 'Ďakujeme, ozveme sa vám.' : 'Zadajte telefónne číslo.' }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

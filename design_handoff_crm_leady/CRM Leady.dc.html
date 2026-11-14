@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Space+Grotesk:wght@400;500;700&display=swap&subset=latin-ext" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<style>
+html,body{margin:0;background:#f6f4ef}
+*{box-sizing:border-box}
+a{color:#272361}a:hover{color:#11122f}
+button,input,select,textarea{font-family:'Space Grotesk',sans-serif}
+:focus-visible{outline:2px solid #272361;outline-offset:2px}
+input::placeholder,textarea::placeholder{color:#5c5d75;opacity:1}
+.kb::-webkit-scrollbar{height:10px}.kb::-webkit-scrollbar-thumb{background:#c9c5b8;border-radius:8px}
+button{white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#f6f4ef;color:#11122f;font-family:'Space Grotesk',sans-serif;font-size:15px;line-height:1.45">
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<main data-screen-label="01 Prihlásenie" style="min-height:100vh;display:grid;place-items:center;padding:24px 16px">
+  <div style="width:min(400px,100%)">
+    <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:26px;letter-spacing:-0.02em;color:#272361;margin-bottom:24px">{{ brand }}</div>
+    <h1 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;line-height:1.05;letter-spacing:-0.03em;color:#272361;margin:0 0 6px">Leady z kalkulačky</h1>
+    <p style="margin:0 0 20px;color:#5c5d75">Prihláste sa do vnútorného systému.</p>
+    <form onSubmit="{{ doLogin }}" style="background:#fff;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 0 1px #dcd9d0">
+      <div><label for="le" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">E-mail</label><input id="le" type="email" autocomplete="username" value="{{ loginEmail }}" onChange="{{ setLoginEmail }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+      <div><label for="lp" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Heslo</label><input id="lp" type="password" autocomplete="current-password" value="{{ loginPw }}" onChange="{{ setLoginPw }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+      <sc-if value="{{ loginErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="font-size:14px;font-weight:700;color:#8f1229">{{ loginErr }}</div></sc-if>
+      <button type="submit" style="min-height:48px;border:0;border-radius:8px;background:#272361;color:#fff;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#11122f">Prihlásiť</button>
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px">
+        <a href="#" onClick="{{ forgot }}">Zabudnuté heslo</a>
+        <a href="#" onClick="{{ magic }}">Prihlásiť odkazom na e-mail</a>
+      </div>
+    </form>
+    <div style="margin-top:22px;font-size:13px;color:#5c5d75">Ukážka s vymyslenými údajmi. Prihlásenie je simulované.</div>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" onClick="{{ demoAdmin }}" style="min-height:44px;padding:0 16px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#e9e6dc"><i class="ph ph-shield-check"></i> Ako správca</button>
+      <button type="button" onClick="{{ demoBroker }}" style="min-height:44px;padding:0 16px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#e9e6dc"><i class="ph ph-user"></i> Ako maklér</button>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div>
+  <header style="position:{{ hdrPos }};top:0;z-index:20;background:#f6f4ef;box-shadow:0 1px 0 #dcd9d0">
+    <div style="display:flex;align-items:center;gap:12px;padding:8px clamp(12px,3vw,28px);min-height:60px;flex-wrap:wrap">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-right:auto;white-space:nowrap">
+        <span style="font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;letter-spacing:-0.02em;color:#272361">{{ brand }}</span>
+        <span style="font-size:13px;color:#5c5d75">CRM leady</span>
+      </div>
+      <nav aria-label="Obrazovky" style="display:flex;gap:4px;order:3;flex:1 1 100%;overflow-x:auto;padding-bottom:2px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+          <button onClick="{{ n.go }}" aria-current="{{ n.current }}" style="min-height:44px;padding:0 16px;border:0;border-radius:8px;background:{{ n.bg }};color:{{ n.fg }};font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px"><i class="{{ n.icon }}" aria-hidden="true"></i>{{ n.label }}</button>
+        </sc-for>
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span aria-hidden="true" style="width:34px;height:34px;border-radius:50%;background:#272361;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700">{{ me.initials }}</span>
+        <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><div style="line-height:1.25;white-space:nowrap"><div style="font-size:14px;font-weight:500">{{ me.meno }}</div><div style="font-size:12px;color:#5c5d75">{{ me.rola }}</div></div></sc-if>
+        <button onClick="{{ logout }}" style="min-height:44px;padding:0 10px;border:0;background:transparent;color:#272361;font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer">Odhlásiť</button>
+      </div>
+    </div>
+  </header>
+
+  <sc-if value="{{ scrLeady }}" hint-placeholder-val="{{ true }}">
+  <main data-screen-label="02 Leady" style="padding:18px clamp(12px,3vw,28px) 48px;display:flex;flex-direction:column;gap:14px">
+    <section aria-label="Filter" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input type="search" aria-label="Hľadať" placeholder="Meno, telefón, adresa" value="{{ q }}" onInput="{{ setQ }}" style="flex:1 1 220px;min-width:0;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px">
+        <button onClick="{{ toggleFilters }}" aria-expanded="{{ filtersOpen }}" style="min-height:44px;padding:0 14px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px" style-hover="background:#e9e6dc"><i class="ph ph-funnel" aria-hidden="true"></i>Filtre<sc-if value="{{ filterActive }}" hint-placeholder-val="{{ false }}"><span style="background:#272361;color:#fff;border-radius:10px;padding:0 7px;font-size:12px;line-height:18px">{{ filterCount }}</span></sc-if></button>
+        <div role="group" aria-label="Pohľad" style="display:flex;border:1.5px solid #272361;border-radius:8px;overflow:hidden">
+          <button onClick="{{ setKanban }}" aria-pressed="{{ isKanban }}" style="min-height:44px;padding:0 14px;border:0;background:{{ kbBg }};color:{{ kbFg }};font-size:15px;font-weight:700;cursor:pointer"><i class="ph ph-kanban" aria-hidden="true"></i> Kanban</button>
+          <button onClick="{{ setTable }}" aria-pressed="{{ isTable }}" style="min-height:44px;padding:0 14px;border:0;border-left:1.5px solid #272361;background:{{ tbBg }};color:{{ tbFg }};font-size:15px;font-weight:700;cursor:pointer"><i class="ph ph-table" aria-hidden="true"></i> Tabuľka</button>
+        </div>
+        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ exportCsv }}" style="min-height:44px;padding:0 14px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#e9e6dc"><i class="ph ph-download-simple" aria-hidden="true"></i> Export CSV</button></sc-if>
+      </div>
+      <sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 0 0 1px #dcd9d0;display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div><label for="fm" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Maklér</label><select id="fm" value="{{ fMak }}" onChange="{{ setFMak }}" style="width:100%;min-height:44px;padding:0 8px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><sc-for list="{{ makOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div></sc-if>
+          <div><label for="fs" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Stav</label><select id="fs" value="{{ fStav }}" onChange="{{ setFStav }}" style="width:100%;min-height:44px;padding:0 8px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><sc-for list="{{ stavOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div>
+          <div><label for="fl" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Lokalita</label><select id="fl" value="{{ fLok }}" onChange="{{ setFLok }}" style="width:100%;min-height:44px;padding:0 8px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><sc-for list="{{ lokOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div>
+          <div><label for="ft" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Typ</label><select id="ft" value="{{ fTyp }}" onChange="{{ setFTyp }}" style="width:100%;min-height:44px;padding:0 8px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><sc-for list="{{ typOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div>
+          <div><label for="fz" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Zdroj</label><select id="fz" value="{{ fZdroj }}" onChange="{{ setFZdroj }}" style="width:100%;min-height:44px;padding:0 8px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><sc-for list="{{ zdrojOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div>
+        </div>
+        <div style="display:flex;gap:8px 20px;flex-wrap:wrap;align-items:center">
+          <label style="display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer"><input type="checkbox" checked="{{ fPrio }}" onChange="{{ setFPrio }}" style="width:20px;height:20px;accent-color:#272361">Len prioritné</label>
+          <label style="display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer"><input type="checkbox" checked="{{ fLate }}" onChange="{{ setFLate }}" style="width:20px;height:20px;accent-color:#272361">Len po termíne</label>
+          <sc-if value="{{ filterActive }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearFilter }}" style="min-height:44px;padding:0 10px;border:0;background:transparent;color:#272361;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer;margin-left:auto">Zrušiť filter</button></sc-if>
+        </div>
+      </div>
+      </sc-if>
+      <div role="status" style="font-size:14px;color:#5c5d75">{{ countText }}</div>
+    </section>
+
+    <sc-if value="{{ showKanban }}" hint-placeholder-val="{{ true }}">
+    <section aria-label="Kanban" class="kb" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:12px;align-items:flex-start">
+      <sc-for list="{{ columns }}" as="col" hint-placeholder-count="4">
+        <div onDragOver="{{ col.over }}" onDragLeave="{{ col.leave }}" onDrop="{{ col.drop }}" style="flex:0 0 285px;scroll-snap-align:start;background:#ece9e0;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:8px;min-height:140px;outline:{{ col.outline }};outline-offset:-2px">
+          <div style="display:flex;align-items:baseline;gap:8px;padding:6px 6px 2px"><h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;margin:0;color:#272361">{{ col.name }}</h3><span style="font-size:13px;color:#5c5d75">{{ col.count }}</span></div>
+          <sc-if value="{{ col.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:18px 8px;text-align:center;font-size:14px;color:#5c5d75">Žiadne leady</div></sc-if>
+          <sc-for list="{{ col.cards }}" as="c" hint-placeholder-count="1">
+            <div role="button" tabindex="0" draggable="true" onClick="{{ c.open }}" onKeyDown="{{ c.key }}" onDragStart="{{ c.dragStart }}" onDragEnd="{{ c.dragEnd }}" style="background:#fff;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;cursor:grab;box-shadow:0 0 0 1px #dcd9d0;position:relative" style-hover="box-shadow:0 0 0 2px #272361">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;empty-cells:hide">
+                <sc-if value="{{ c.prio }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#272361;color:#fff"><i class="ph-bold ph-star" aria-hidden="true"></i>Prioritný</span></sc-if>
+                <sc-if value="{{ c.nevolat }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#fff;color:#11122f;box-shadow:inset 0 0 0 1.5px #11122f"><i class="ph-bold ph-phone-slash" aria-hidden="true"></i>Nevolať</span></sc-if>
+                <sc-if value="{{ c.red }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#fbdde2;color:#8f1229;box-shadow:inset 0 0 0 1.5px #d32441"><i class="ph-bold ph-warning" aria-hidden="true"></i>{{ c.redText }}</span></sc-if>
+                <sc-if value="{{ c.orange }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#ffe7c2;color:#6b3a00;box-shadow:inset 0 0 0 1.5px #d9822b"><i class="ph-bold ph-clock-countdown" aria-hidden="true"></i>Krok po termíne</span></sc-if>
+              </div>
+              <div><div style="font-size:16px;font-weight:700;line-height:1.25">{{ c.meno }}</div><div style="font-size:14px;color:#5c5d75;margin-top:2px">{{ c.popis }}</div></div>
+              <div style="font-size:15px;font-weight:500">{{ c.odhad }}</div>
+              <sc-if value="{{ c.hasStep }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#5c5d75;display:flex;gap:6px;align-items:center"><i class="ph ph-calendar-check" aria-hidden="true"></i>{{ c.stepLabel }}</div></sc-if>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#5c5d75">
+                <sc-if value="{{ c.hasMak }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:26px;height:26px;border-radius:50%;background:#272361;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:700">{{ c.makInitials }}</span><span>{{ c.makName }}</span></sc-if>
+                <sc-if value="{{ c.showAssign }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.toggleAssign }}" aria-expanded="{{ c.assignOpen }}" style="min-height:44px;padding:0 14px;border:1.5px solid #272361;border-radius:8px;background:#272361;color:#fff;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#11122f"><i class="ph ph-user-plus" aria-hidden="true"></i> Prideliť</button></sc-if>
+              </div>
+              <sc-if value="{{ c.assignOpen }}" hint-placeholder-val="{{ false }}">
+                <div role="listbox" aria-label="Maklér" onClick="{{ stop }}" style="background:#fff;border-radius:8px;box-shadow:0 0 0 1.5px #272361;display:flex;flex-direction:column;overflow:hidden">
+                  <sc-for list="{{ c.brokerOpts }}" as="b" hint-placeholder-count="2"><button role="option" onClick="{{ b.pick }}" style="display:flex;justify-content:space-between;gap:8px;min-height:44px;align-items:center;padding:0 12px;border:0;border-bottom:1px solid #ece9e0;background:#fff;color:#11122f;font-size:15px;cursor:pointer;text-align:left" style-hover="background:#f6f4ef"><span>{{ b.name }}</span><span style="font-size:12px;color:#5c5d75">{{ b.active }}</span></button></sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </section>
+    </sc-if>
+
+    <sc-if value="{{ showTable }}" hint-placeholder-val="{{ false }}">
+    <section aria-label="Tabuľka" style="overflow-x:auto;background:#fff;border-radius:12px;box-shadow:0 0 0 1px #dcd9d0">
+      <table style="width:100%;min-width:960px;border-collapse:collapse;font-size:15px">
+        <thead><tr>
+          <sc-for list="{{ heads }}" as="h" hint-placeholder-count="8">
+            <th scope="col" aria-sort="{{ h.aria }}" style="text-align:left;padding:4px 12px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#5c5d75;box-shadow:0 1px 0 #dcd9d0"><button onClick="{{ h.sort }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;min-height:44px;text-transform:uppercase;letter-spacing:0.06em">{{ h.label }}<i class="{{ h.icon }}" aria-hidden="true"></i></button></th>
+          </sc-for>
+        </tr></thead>
+        <tbody>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3">
+            <tr tabindex="0" onClick="{{ r.open }}" onKeyDown="{{ r.key }}" style="cursor:pointer;box-shadow:0 1px 0 #ece9e0" style-hover="background:#f6f4ef">
+              <td style="padding:10px 12px;white-space:nowrap;color:#5c5d75">{{ r.prijaty }}</td>
+              <td style="padding:10px 12px"><div style="font-weight:700">{{ r.meno }}</div><div style="font-size:12px;color:#5c5d75">{{ r.cislo }}</div></td>
+              <td style="padding:10px 12px">{{ r.lokalita }}</td>
+              <td style="padding:10px 12px">{{ r.typ }}</td>
+              <td style="padding:10px 12px;white-space:nowrap">{{ r.odhad }}</td>
+              <td style="padding:10px 12px"><span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#e9e6f5;color:#272361">{{ r.stav }}</span></td>
+              <td style="padding:10px 12px;white-space:nowrap">{{ r.makName }}</td>
+              <td style="padding:10px 12px;white-space:nowrap">
+                <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+                  <sc-if value="{{ r.hasStep }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px">{{ r.stepLabel }}</span></sc-if>
+                  <span style="display:flex;gap:4px;flex-wrap:wrap">
+                    <sc-if value="{{ r.prio }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;background:#272361;color:#fff">Prioritný</span></sc-if>
+                    <sc-if value="{{ r.nevolat }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;box-shadow:inset 0 0 0 1.5px #11122f">Nevolať</span></sc-if>
+                    <sc-if value="{{ r.red }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;background:#fbdde2;color:#8f1229;box-shadow:inset 0 0 0 1.5px #d32441">{{ r.redText }}</span></sc-if>
+                    <sc-if value="{{ r.orange }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;background:#ffe7c2;color:#6b3a00;box-shadow:inset 0 0 0 1.5px #d9822b">Krok po termíne</span></sc-if>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}"><div style="padding:28px;text-align:center;color:#5c5d75">Žiadne leady</div></sc-if>
+    </section>
+    </sc-if>
+
+    <sc-if value="{{ showList }}" hint-placeholder-val="{{ false }}">
+    <section aria-label="Zoznam" style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
+        <div role="button" tabindex="0" onClick="{{ r.open }}" onKeyDown="{{ r.key }}" style="background:#fff;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 0 0 1px #dcd9d0">
+          <div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#5c5d75"><span>{{ r.cislo }}</span><span>{{ r.prijaty }}</span></div>
+          <div style="font-size:16px;font-weight:700">{{ r.meno }}</div>
+          <div style="font-size:14px;color:#5c5d75">{{ r.popis }} · {{ r.odhad }}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#e9e6f5;color:#272361">{{ r.stav }}</span>
+            <sc-if value="{{ r.prio }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#272361;color:#fff">Prioritný</span></sc-if>
+            <sc-if value="{{ r.nevolat }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;box-shadow:inset 0 0 0 1.5px #11122f">Nevolať</span></sc-if>
+            <sc-if value="{{ r.red }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#fbdde2;color:#8f1229;box-shadow:inset 0 0 0 1.5px #d32441">{{ r.redText }}</span></sc-if>
+            <sc-if value="{{ r.orange }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#ffe7c2;color:#6b3a00;box-shadow:inset 0 0 0 1.5px #d9822b">Krok po termíne</span></sc-if>
+          </div>
+          <div style="font-size:13px;color:#5c5d75">{{ r.makName }}<sc-if value="{{ r.hasStep }}" hint-placeholder-val="{{ false }}"> · {{ r.stepLabel }}</sc-if></div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}"><div style="padding:28px;text-align:center;color:#5c5d75">Žiadne leady</div></sc-if>
+    </section>
+    </sc-if>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ scrUlohy }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="04 Moje úlohy" style="padding:18px clamp(12px,3vw,28px) 48px;max-width:760px;display:flex;flex-direction:column;gap:20px">
+    <h1 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:30px;letter-spacing:-0.03em;color:#272361;margin:0">Moje úlohy</h1>
+    <sc-if value="{{ noTasks }}" hint-placeholder-val="{{ false }}"><p style="color:#5c5d75;margin:0">Nemáte žiadne ďalšie kroky.</p></sc-if>
+    <sc-for list="{{ taskGroups }}" as="g" hint-placeholder-count="2">
+      <section>
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;margin:0 0 8px;color:#272361">{{ g.title }} <span style="font-family:'Space Grotesk',sans-serif;font-weight:400;font-size:14px;color:#5c5d75">{{ g.count }}</span></h2>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ g.items }}" as="t" hint-placeholder-count="1">
+            <div role="button" tabindex="0" onClick="{{ t.open }}" onKeyDown="{{ t.key }}" style="background:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 0 0 1px #dcd9d0;display:flex;gap:12px;align-items:center;cursor:pointer;min-height:64px" style-hover="box-shadow:0 0 0 2px #272361">
+              <div style="min-width:78px;font-size:14px;font-weight:700;color:#272361">{{ t.when }}</div>
+              <div style="flex:1;min-width:0"><div style="font-weight:700">{{ t.meno }} <span style="font-weight:400;color:#5c5d75">· {{ t.lokalita }}</span></div><div style="font-size:14px;color:#5c5d75;overflow-wrap:anywhere">{{ t.stepText }}</div></div>
+              <sc-if value="{{ t.nevolat }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;box-shadow:inset 0 0 0 1.5px #11122f">Nevolať</span></sc-if>
+              <i class="ph ph-caret-right" aria-hidden="true" style="color:#5c5d75"></i>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ scrPrehlad }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="05 Prehľad" style="padding:18px clamp(12px,3vw,28px) 48px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <h1 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:30px;letter-spacing:-0.03em;color:#272361;margin:0;margin-right:auto">Prehľad</h1>
+      <sc-if value="{{ tabLeady }}" hint-placeholder-val="{{ true }}"><div role="group" aria-label="Obdobie" style="display:flex;border:1.5px solid #272361;border-radius:8px;overflow:hidden">
+        <sc-for list="{{ periods }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.set }}" aria-pressed="{{ p.on }}" style="min-height:44px;padding:0 14px;border:0;border-right:1px solid #272361;background:{{ p.bg }};color:{{ p.fg }};font-size:15px;font-weight:700;cursor:pointer">{{ p.label }}</button></sc-for>
+      </div></sc-if>
+    </div>
+    <div role="tablist" aria-label="Sekcie prehľadu" style="display:flex;border:1.5px solid #272361;border-radius:8px;overflow:hidden;align-self:flex-start">
+      <sc-for list="{{ ptabs }}" as="p" hint-placeholder-count="2"><button role="tab" aria-selected="{{ p.on }}" onClick="{{ p.set }}" style="min-height:44px;padding:0 18px;border:0;border-right:1px solid #272361;background:{{ p.bg }};color:{{ p.fg }};font-size:15px;font-weight:700;cursor:pointer">{{ p.label }}</button></sc-for>
+    </div>
+    <sc-if value="{{ tabTraffic }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:16px;max-width:1100px">
+      <p style="margin:-8px 0 0;font-size:13px;color:#5c5d75">Počítame návštevy, nie osoby. Meranie beží bez cookies.</p>
+      <div style="display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap">
+        <div role="group" aria-label="Obdobie návštevnosti" style="display:flex;border:1.5px solid #272361;border-radius:8px;overflow:hidden"><sc-for list="{{ tperiods }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.set }}" aria-pressed="{{ p.on }}" style="min-height:44px;padding:0 14px;border:0;border-right:1px solid #272361;background:{{ p.bg }};color:{{ p.fg }};font-size:15px;font-weight:700;cursor:pointer">{{ p.label }}</button></sc-for></div>
+        <sc-if value="{{ tr.custom }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label for="tf" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Od</label><input id="tf" type="date" min="{{ tr.min }}" max="{{ tr.max }}" value="{{ tr.from }}" onChange="{{ setTFrom }}" style="min-height:44px;padding:0 10px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><span aria-hidden="true">–</span><label for="tt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Do</label><input id="tt" type="date" min="{{ tr.min }}" max="{{ tr.max }}" value="{{ tr.to }}" onChange="{{ setTTo }}" style="min-height:44px;padding:0 10px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div></sc-if>
+        <span role="status" style="font-size:13px;color:#5c5d75">{{ tr.rangeText }} · {{ tr.compareText }}</span>
+      </div>
+
+      <section aria-label="Hlavné čísla" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
+        <sc-for list="{{ tr.tiles }}" as="t" hint-placeholder-count="4">
+          <div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:13px;color:#5c5d75">{{ t.label }}</div>
+            <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;letter-spacing:-0.03em;color:#272361;line-height:1.1">{{ t.value }}</div>
+            <div style="font-size:13px;min-height:18px;display:flex;align-items:center;gap:4px">
+              <sc-if value="{{ t.up }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-weight:700;color:#272361"><i class="ph-bold ph-arrow-up" aria-hidden="true"></i>{{ t.dText }}</span></sc-if>
+              <sc-if value="{{ t.down }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-weight:700;color:#8f1229"><i class="ph-bold ph-arrow-down" aria-hidden="true"></i>{{ t.dText }}</span></sc-if>
+              <sc-if value="{{ t.flat }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-weight:700;color:#5c5d75"><i class="ph-bold ph-minus" aria-hidden="true"></i>{{ t.dText }}</span></sc-if>
+              <span style="color:#5c5d75">oproti predošlému</span>
+            </div>
+            <div style="font-size:13px;color:#5c5d75;box-shadow:0 -1px 0 #ece9e0;padding-top:6px;margin-top:4px">{{ t.step }}</div>
+          </div>
+        </sc-for>
+      </section>
+
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0"><h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Lievik</h2><div style="display:flex;flex-direction:column;gap:14px;margin-top:10px"><sc-for list="{{ tr.funnel }}" as="f" hint-placeholder-count="4"><div><div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;margin-bottom:4px"><span style="font-weight:700;white-space:nowrap;flex:none">{{ f.label }}</span><span style="font-weight:700;white-space:nowrap">{{ f.value }}</span></div><div style="height:26px;background:#ece9e0;border-radius:4px"><div style="height:26px;background:#272361;border-radius:4px;width:{{ f.w }}"></div></div><div style="font-size:13px;color:#5c5d75;margin-top:3px">{{ f.drop }}</div></div></sc-for></div></section>
+
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0"><h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Návštevy po dňoch</h2><div style="display:flex;gap:6px 18px;flex-wrap:wrap;font-size:13px;color:#5c5d75;margin:2px 0 10px"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:18px;height:3px;background:#272361;border-radius:2px"></span>{{ tr.legV }}</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:18px;height:2px;background:#8a8899;border-radius:2px"></span>{{ tr.legC }}</span></div><svg viewBox="0 0 600 200" preserveAspectRatio="none" role="img" aria-label="{{ tr.chartLabel }}" style="width:100%;height:200px;display:block"><line x1="0" y1="10" x2="600" y2="10" stroke="#ece9e0" stroke-width="1" vector-effect="non-scaling-stroke"></line><line x1="0" y1="70" x2="600" y2="70" stroke="#ece9e0" stroke-width="1" vector-effect="non-scaling-stroke"></line><line x1="0" y1="130" x2="600" y2="130" stroke="#ece9e0" stroke-width="1" vector-effect="non-scaling-stroke"></line><line x1="0" y1="190" x2="600" y2="190" stroke="#dcd9d0" stroke-width="1" vector-effect="non-scaling-stroke"></line><polyline points="{{ tr.ptsC }}" fill="none" stroke="#8a8899" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline><polyline points="{{ tr.ptsV }}" fill="none" stroke="#272361" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline></svg><div style="display:flex;justify-content:space-between;font-size:12px;color:#5c5d75;margin-top:6px"><span>{{ tr.chartFrom }}</span><span>{{ tr.chartTo }}</span></div></section>
+
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0"><h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Zdroje</h2><div style="margin-top:6px"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px;min-width:440px"><thead><tr><th scope="col" style="text-align:left;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 0">Zdroj</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Návštevy</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Výsledky</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Kontakty</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Konverzia</th></tr></thead><tbody><sc-for list="{{ srcRows }}" as="r" hint-placeholder-count="4"><tr style="box-shadow:0 -1px 0 #ece9e0"><td style="padding:10px 0;font-weight:700">{{ r.name }}</td><td style="text-align:right;padding-left:12px">{{ r.v }}</td><td style="text-align:right;padding-left:12px">{{ r.r }}</td><td style="text-align:right;padding-left:12px">{{ r.c }}</td><td style="text-align:right;padding-left:12px;font-weight:700">{{ r.conv }}</td></tr></sc-for></tbody></table></div></div></section>
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0"><h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Stránky</h2><div style="margin-top:6px"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px;min-width:440px"><thead><tr><th scope="col" style="text-align:left;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 0">Stránka</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Návštevy</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Výsledky</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Kontakty</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0 6px 12px">Konverzia</th></tr></thead><tbody><sc-for list="{{ pagRows }}" as="r" hint-placeholder-count="4"><tr style="box-shadow:0 -1px 0 #ece9e0"><td style="padding:10px 0;font-weight:700">{{ r.name }}</td><td style="text-align:right;padding-left:12px">{{ r.v }}</td><td style="text-align:right;padding-left:12px">{{ r.r }}</td><td style="text-align:right;padding-left:12px">{{ r.c }}</td><td style="text-align:right;padding-left:12px;font-weight:700">{{ r.conv }}</td></tr></sc-for></tbody></table></div></div></section>
+
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0"><h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Kde ľudia odchádzajú z kalkulačky</h2><p style="margin:0 0 12px;font-size:13px;color:#5c5d75">Počet a podiel tých, ktorí sa na kroku zastavili.</p><div style="display:flex;flex-direction:column;gap:12px"><sc-for list="{{ tr.exits }}" as="o" hint-placeholder-count="6"><div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:15px;margin-bottom:4px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:8px;font-weight:700">{{ o.label }}<sc-if value="{{ o.worst }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:#fbdde2;color:#8f1229;box-shadow:inset 0 0 0 1.5px #d32441">Najviac odchodov</span></sc-if></span><span style="font-weight:700">{{ o.count }} <span style="font-weight:400;color:#5c5d75">({{ o.pct }})</span></span></div><div style="height:16px;background:#ece9e0;border-radius:3px"><div style="height:16px;border-radius:3px;width:{{ o.w }};background:{{ o.color }}"></div></div></div></sc-for></div><div style="margin-top:16px;padding-top:12px;box-shadow:0 -1px 0 #dcd9d0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:15px"><span><b style="font-weight:700">Výsledok</b> <span style="color:#5c5d75">· zobrazený, ale bez odoslaného kontaktu</span></span><span style="font-weight:700">{{ tr.resultExit.count }} <span style="font-weight:400;color:#5c5d75">({{ tr.resultExit.pct }})</span></span></div></section>
+
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0"><h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Zariadenie</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:8px"><sc-for list="{{ tr.devices }}" as="d" hint-placeholder-count="2"><div><div style="font-size:13px;color:#5c5d75;display:flex;align-items:center;gap:6px"><i class="{{ d.icon }}" aria-hidden="true"></i>{{ d.label }}</div><div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;letter-spacing:-0.03em;color:#272361;line-height:1.1">{{ d.pct }}</div><div style="font-size:13px;color:#5c5d75">{{ d.value }} návštev</div></div></sc-for></div></section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ tabLeady }}" hint-placeholder-val="{{ true }}">
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+      <sc-for list="{{ ptiles }}" as="t" hint-placeholder-count="5">
+        <div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0"><div style="font-size:13px;color:#5c5d75">{{ t.label }}</div><div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;letter-spacing:-0.03em;color:#272361;line-height:1.1">{{ t.value }}</div><div style="font-size:13px;color:#5c5d75;min-height:18px">{{ t.sub }}</div></div>
+      </sc-for>
+    </section>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start">
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0;overflow-x:auto">
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 4px;color:#272361">Konverzia podľa makléra</h2>
+        <p style="margin:0 0 10px;font-size:13px;color:#5c5d75">Pridelené → zmluva → predané</p>
+        <table style="width:100%;border-collapse:collapse;font-size:15px;min-width:360px">
+          <thead><tr><th scope="col" style="text-align:left;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0">Maklér</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0">Pridelené</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0">Zmluva</th><th scope="col" style="text-align:right;font-size:12px;color:#5c5d75;font-weight:500;padding:6px 0">Predané</th></tr></thead>
+          <tbody><sc-for list="{{ conv }}" as="r" hint-placeholder-count="3"><tr style="box-shadow:0 -1px 0 #ece9e0"><td style="padding:10px 0;font-weight:700">{{ r.name }}</td><td style="text-align:right">{{ r.a }}</td><td style="text-align:right">{{ r.z }} <span style="color:#5c5d75;font-size:13px">{{ r.zp }}</span></td><td style="text-align:right">{{ r.p }} <span style="color:#5c5d75;font-size:13px">{{ r.pp }}</span></td></tr></sc-for></tbody>
+        </table>
+      </section>
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0">
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 12px;color:#272361">Dôvody straty</h2>
+        <sc-if value="{{ noLost }}" hint-placeholder-val="{{ false }}"><div style="color:#5c5d75;font-size:14px">V tomto období nie sú stratené leady.</div></sc-if>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ lostBars }}" as="b" hint-placeholder-count="3"><div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:3px"><span>{{ b.label }}</span><span style="font-weight:700">{{ b.count }}</span></div><div style="height:12px;background:#ece9e0;border-radius:3px"><div style="height:12px;background:#272361;border-radius:3px;width:{{ b.w }}"></div></div></div></sc-for>
+        </div>
+      </section>
+      <section style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0">
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 12px;color:#272361">Leady podľa lokality</h2>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ lokBars }}" as="b" hint-placeholder-count="3"><div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:3px"><span>{{ b.label }}</span><span style="font-weight:700">{{ b.count }}</span></div><div style="height:12px;background:#ece9e0;border-radius:3px"><div style="height:12px;background:#272361;border-radius:3px;width:{{ b.w }}"></div></div></div></sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ scrClenovia }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="06 Členovia" style="padding:18px clamp(12px,3vw,28px) 48px;max-width:820px;display:flex;flex-direction:column;gap:20px">
+    <h1 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:30px;letter-spacing:-0.03em;color:#272361;margin:0">Členovia</h1>
+    <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ members }}" as="m" hint-placeholder-count="3">
+        <li style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 0 0 1px #dcd9d0;flex-wrap:wrap">
+          <span aria-hidden="true" style="width:38px;height:38px;border-radius:50%;background:#272361;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700">{{ m.initials }}</span>
+          <div style="flex:1 1 180px;min-width:0"><div style="font-weight:700">{{ m.meno }}</div><div style="font-size:13px;color:#5c5d75;overflow-wrap:anywhere">{{ m.email }}</div></div>
+          <span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#e9e6f5;color:#272361">{{ m.rola }}</span>
+          <span style="font-size:14px;color:#5c5d75;min-width:100px">{{ m.countText }}</span>
+          <sc-if value="{{ m.canRemove }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.askRemove }}" style="min-height:44px;padding:0 14px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#e9e6dc">Odstrániť</button></sc-if>
+        </li>
+      </sc-for>
+    </ul>
+    <form onSubmit="{{ invite }}" style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #dcd9d0;display:flex;flex-direction:column;gap:12px">
+      <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0;color:#272361">Pridať makléra</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <div><label for="nm" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Meno</label><input id="nm" value="{{ newName }}" onChange="{{ setNewName }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+        <div><label for="ne" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">E-mail</label><input id="ne" type="email" value="{{ newEmail }}" onChange="{{ setNewEmail }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+      </div>
+      <sc-if value="{{ inviteErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="font-size:14px;font-weight:700;color:#8f1229">{{ inviteErr }}</div></sc-if>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button type="submit" style="min-height:44px;padding:0 18px;border:0;border-radius:8px;background:#272361;color:#fff;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#11122f"><i class="ph ph-paper-plane-tilt" aria-hidden="true"></i> Poslať pozvánku</button><span style="font-size:13px;color:#5c5d75">Maklér dostane odkaz na nastavenie hesla.</span></div>
+    </form>
+    <section>
+      <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;margin:0 0 8px;color:#272361">Audit prístupov</h2>
+      <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:360px;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 0 0 1px #dcd9d0;padding:4px 14px">
+        <sc-for list="{{ audit }}" as="a" hint-placeholder-count="3"><li style="display:grid;grid-template-columns:128px 1fr;gap:4px 12px;padding:8px 0;font-size:14px;box-shadow:0 1px 0 #ece9e0"><span style="color:#5c5d75">{{ a.t }}</span><span><b style="font-weight:700">{{ a.who }}</b> · {{ a.text }}</span></li></sc-for>
+      </ol>
+    </section>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ hasDetail }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="03 Detail leadu" style="position:fixed;inset:0;z-index:40;display:flex;justify-content:flex-end;background:rgba(17,18,47,0.45)" onClick="{{ closeDetail }}">
+    <aside role="dialog" aria-modal="true" aria-label="Detail leadu" onClick="{{ stop }}" style="width:min(600px,100%);height:100%;overflow-y:auto;background:#f6f4ef;box-shadow:-8px 0 32px rgba(17,18,47,0.18);display:flex;flex-direction:column">
+      <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start;position:sticky;top:0;background:#f6f4ef;z-index:2;box-shadow:0 1px 0 #dcd9d0">
+        <div style="min-width:0;flex:1">
+          <div style="font-size:12px;color:#5c5d75">{{ d.cislo }} · prijatý {{ d.prijaty }}</div>
+          <h2 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:26px;line-height:1.1;letter-spacing:-0.02em;color:#272361;margin:4px 0 0">{{ d.meno }}</h2>
+        </div>
+        <button aria-label="Zavrieť" onClick="{{ closeDetail }}" style="width:44px;height:44px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;cursor:pointer;font-size:18px" style-hover="background:#e9e6dc"><i class="ph ph-x"></i></button>
+      </div>
+      <div style="padding:16px 18px 32px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-if value="{{ d.prio }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#272361;color:#fff"><i class="ph-bold ph-star" aria-hidden="true"></i>Prioritný: klient chce konkrétnu cenu</span></sc-if>
+          <sc-if value="{{ d.nevolat }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#fff;box-shadow:inset 0 0 0 1.5px #11122f"><i class="ph-bold ph-phone-slash" aria-hidden="true"></i>Nevolať: klient nedal súhlas s telefonátom</span></sc-if>
+          <sc-if value="{{ d.red }}" hint-placeholder-val="{{ false }}"><span role="alert" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#fbdde2;color:#8f1229;box-shadow:inset 0 0 0 1.5px #d32441"><i class="ph-bold ph-warning" aria-hidden="true"></i>{{ d.redText }}</span></sc-if>
+          <sc-if value="{{ d.orange }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;background:#ffe7c2;color:#6b3a00;box-shadow:inset 0 0 0 1.5px #d9822b"><i class="ph-bold ph-clock-countdown" aria-hidden="true"></i>Ďalší krok je po termíne</span></sc-if>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+          <div><label for="ds" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Stav</label><select id="ds" value="{{ d.stav }}" onChange="{{ d.setStav }}" style="width:100%;min-height:48px;padding:0 8px;border:1.5px solid #272361;border-radius:8px;background:#fff;color:#11122f;font-size:16px;font-weight:700"><sc-for list="{{ d.stavOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div><label for="dp" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Maklér</label><select id="dp" value="{{ d.pridelene }}" onChange="{{ d.setMak }}" style="width:100%;min-height:48px;padding:0 8px;border:1.5px solid #272361;border-radius:8px;background:#fff;color:#11122f;font-size:16px"><sc-for list="{{ d.makOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div></sc-if>
+          <sc-if value="{{ isBroker }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:13px;color:#5c5d75;margin-bottom:4px">Maklér</div><div style="min-height:48px;display:flex;align-items:center">{{ d.makName }}</div></div></sc-if>
+        </div>
+
+        <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Klient</h3>
+          <dl style="margin:0;display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px 12px">
+            <dt style="color:#5c5d75">Telefón</dt>
+            <dd style="margin:0">
+              <sc-if value="{{ d.canCall }}" hint-placeholder-val="{{ true }}"><a href="{{ d.tel }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:700"><i class="ph ph-phone" aria-hidden="true"></i>{{ d.telefon }}</a></sc-if>
+              <sc-if value="{{ d.nevolat }}" hint-placeholder-val="{{ false }}"><span>{{ d.telefon }} <span style="color:#8f1229;font-weight:700">(nevolať)</span></span></sc-if>
+            </dd>
+            <dt style="color:#5c5d75">E-mail</dt><dd style="margin:0;overflow-wrap:anywhere"><a href="{{ d.mailto }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px">{{ d.email }}</a></dd>
+            <dt style="color:#5c5d75">Súhlas s telefonátom</dt><dd style="margin:0">{{ d.suhlas }}</dd>
+            <dt style="color:#5c5d75">Prijatý</dt><dd style="margin:0">{{ d.prijaty }}</dd>
+            <dt style="color:#5c5d75">Zdroj</dt><dd style="margin:0">{{ d.zdroj }}</dd>
+          </dl>
+        </section>
+
+        <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Nehnuteľnosť z kalkulačky</h3>
+          <dl style="margin:0;display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px 12px">
+            <dt style="color:#5c5d75">Adresa</dt><dd style="margin:0">{{ d.adresa }}</dd>
+            <dt style="color:#5c5d75">Lokalita</dt><dd style="margin:0">{{ d.lokalita }}</dd>
+            <dt style="color:#5c5d75">Typ</dt><dd style="margin:0">{{ d.typ }}</dd>
+            <dt style="color:#5c5d75">Výmera</dt><dd style="margin:0">{{ d.vymera }}</dd>
+            <dt style="color:#5c5d75">Izby</dt><dd style="margin:0">{{ d.izby }}</dd>
+            <dt style="color:#5c5d75">Stav</dt><dd style="margin:0">{{ d.stavNeh }}</dd>
+            <dt style="color:#5c5d75">Ďalšie</dt><dd style="margin:0">{{ d.dalsie }}</dd>
+          </dl>
+        </section>
+
+        <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 6px;color:#272361">Odhad</h3>
+          <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:26px;letter-spacing:-0.02em;color:#272361">{{ d.odhad }}</div>
+          <div style="font-size:14px;color:#5c5d75;margin-top:4px">{{ d.odhadInfo }}</div>
+        </section>
+
+        <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Ďalší krok</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+            <div><label for="st" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Čo urobiť</label><input id="st" value="{{ stepText }}" onInput="{{ setStepText }}" placeholder="Napríklad zavolať s cenou" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+            <div><label for="sa" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Dátum a čas</label><input id="sa" type="datetime-local" value="{{ stepAt }}" onChange="{{ setStepAt }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px"><button onClick="{{ saveStep }}" style="min-height:44px;padding:0 18px;border:0;border-radius:8px;background:#272361;color:#fff;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#11122f">Uložiť krok</button><span style="font-size:13px;color:#5c5d75">Maklér dostane e-mail s pripomienkou.</span></div>
+        </section>
+
+        <sc-if value="{{ d.isSold }}" hint-placeholder-val="{{ false }}">
+        <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Výsledok: predané</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+            <div><label for="sp" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Predajná cena (€)</label><input id="sp" inputmode="numeric" value="{{ d.predajCena }}" onChange="{{ d.setCena }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+            <div><label for="sd" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Dátum predaja</label><input id="sd" type="date" value="{{ d.predajDatum }}" onChange="{{ d.setDatum }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
+          </div>
+        </section>
+        </sc-if>
+        <sc-if value="{{ d.isLost }}" hint-placeholder-val="{{ false }}">
+        <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 6px;color:#272361">Výsledok: stratené</h3>
+          <div>Dôvod: {{ d.lostText }}</div>
+        </section>
+        </sc-if>
+
+        <section>
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Poznámky</h3>
+          <label for="dn" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Nová poznámka</label>
+          <textarea id="dn" placeholder="Nová poznámka" value="{{ noteText }}" onInput="{{ setNote }}" style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px;resize:vertical"></textarea>
+          <button onClick="{{ addNote }}" style="margin-top:8px;min-height:44px;padding:0 18px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#e9e6dc">Pridať poznámku</button>
+          <ul style="list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ d.notes }}" as="n" hint-placeholder-count="1"><li style="background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 0 0 1px #dcd9d0"><div style="font-size:13px;color:#5c5d75;margin-bottom:2px">{{ n.who }} · {{ n.t }}</div><div style="white-space:pre-wrap;overflow-wrap:anywhere">{{ n.text }}</div></li></sc-for>
+          </ul>
+          <sc-if value="{{ d.noNotes }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;font-size:14px;color:#5c5d75">Zatiaľ bez poznámok.</div></sc-if>
+        </section>
+
+        <section>
+          <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 6px;color:#272361">História zmien</h3>
+          <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">
+            <sc-for list="{{ d.history }}" as="h" hint-placeholder-count="2"><li style="display:grid;grid-template-columns:128px 1fr;gap:4px 12px;padding:8px 0;font-size:14px;box-shadow:0 1px 0 #dcd9d0"><span style="color:#5c5d75">{{ h.t }}</span><span><b style="font-weight:700">{{ h.who }}</b> · {{ h.text }}</span></li></sc-for>
+          </ol>
+        </section>
+
+        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div><button onClick="{{ d.askErase }}" style="min-height:44px;padding:0 16px;border:1.5px solid #d32441;border-radius:8px;background:transparent;color:#8f1229;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#fbdde2"><i class="ph ph-trash" aria-hidden="true"></i> Vymazať údaje klienta</button></div></sc-if>
+      </div>
+    </aside>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ hasConfirm }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(17,18,47,0.5)" onClick="{{ confirmNo }}">
+    <div role="alertdialog" aria-modal="true" aria-label="{{ confirm.title }}" onClick="{{ stop }}" style="width:min(460px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:#fff;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 48px rgba(17,18,47,0.3)">
+      <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;letter-spacing:-0.02em;color:#272361">{{ confirm.title }}</div>
+      <div style="color:#11122f">{{ confirm.body }}</div>
+      <sc-if value="{{ confirm.isLost }}" hint-placeholder-val="{{ false }}">
+        <div role="radiogroup" aria-label="Dôvod straty" style="display:flex;flex-direction:column;gap:2px">
+          <sc-for list="{{ confirm.reasons }}" as="r" hint-placeholder-count="3"><label style="display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer"><input type="radio" name="reason" checked="{{ r.on }}" onChange="{{ r.pick }}" style="width:20px;height:20px;accent-color:#272361">{{ r.label }}</label></sc-for>
+        </div>
+        <sc-if value="{{ confirm.needText }}" hint-placeholder-val="{{ false }}"><input aria-label="Krátky text" placeholder="Krátky text" value="{{ confirm.text }}" onInput="{{ setLostText }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></sc-if>
+      </sc-if>
+      <sc-if value="{{ confirm.needTarget }}" hint-placeholder-val="{{ false }}">
+        <div><label for="rt" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Prehodiť leady na</label><select id="rt" value="{{ confirm.to }}" onChange="{{ setRemoveTo }}" style="width:100%;min-height:44px;padding:0 8px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"><sc-for list="{{ confirm.targets }}" as="o" hint-placeholder-count="2"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></div>
+      </sc-if>
+      <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap">
+        <button onClick="{{ confirmNo }}" style="min-height:44px;padding:0 18px;border:1.5px solid #272361;border-radius:8px;background:transparent;color:#272361;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#e9e6dc">Zrušiť</button>
+        <button onClick="{{ confirmYes }}" disabled="{{ confirm.disabled }}" style="min-height:44px;padding:0 18px;border:0;border-radius:8px;background:#272361;color:#fff;font-size:15px;font-weight:700;cursor:pointer;opacity:{{ confirm.opacity }}" style-hover="background:#11122f">{{ confirm.label }}</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<div aria-live="polite" style="position:fixed;left:16px;bottom:16px;z-index:80;display:flex;flex-direction:column;gap:8px;max-width:calc(100vw - 32px)">
+  <sc-for list="{{ toasts }}" as="t" hint-placeholder-count="0">
+    <div style="background:#11122f;color:#fff;border-radius:12px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;max-width:420px;box-shadow:0 8px 24px rgba(17,18,47,0.3)"><i class="ph ph-check-circle" style="font-size:18px;margin-top:1px" aria-hidden="true"></i><span>{{ t.msg }}</span></div>
+  </sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;prihlasenie&quot;,&quot;options&quot;:[&quot;prihlasenie&quot;,&quot;sprava&quot;,&quot;makler&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Ukážka&quot;},&quot;defaultView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;kanban&quot;,&quot;options&quot;:[&quot;kanban&quot;,&quot;tabulka&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Ukážka&quot;},&quot;brand&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;nacenime.sk&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Značka&quot;}}">
+class Component extends DCLogic {
+  state = {
+    user: null, screen: 'leady', view: 'kanban', q: '', fMak: '', fStav: '', fLok: '', fTyp: '', fPrio: false, fLate: false, filtersOpen: false,
+    sort: { key: 'prijaty', dir: -1 }, leads: [], team: [], audit: [], selId: null, confirm: null, toasts: [], now: Date.now(), w: 1200,
+    overCol: null, assignOpen: null, period: 'all', noteText: '', stepText: '', stepAt: '', newName: '', newEmail: '', inviteErr: '',
+    loginEmail: 'eva.kovacova@example.sk', loginPw: 'ukazkoveheslo1', loginErr: '', prehladTab: 'leady', tPeriod: '30', tFrom: '', tTo: '', fZdroj: ''
+  };
+  ST = ['Nový', 'Pridelený', 'Kontaktovaný', 'Stretnutie', 'Zmluva', 'Predané', 'Stratené'];
+  REASONS = ['len zvedavý, nepredáva', 'predáva sám', 'iná realitná kancelária', 'nesúhlas s cenou', 'nedovolaný', 'mimo regiónu', 'iné'];
+  TYP = { byt: 'Byt', dom: 'Dom', pozemok: 'Pozemok' };
+
+  componentDidMount() {
+    const p = this.props, { leads, team } = this.seed();
+    const st = { leads, team, w: window.innerWidth, audit: [{ t: Date.now() - 36e5 * 5, who: 'Eva Kováčová', text: 'export CSV (15 leadov)' }] };
+    if (p.defaultView === 'tabulka') st.view = 'table';
+    if (p.startScreen === 'sprava') st.user = team[0];
+    if (p.startScreen === 'makler') { st.user = team[1]; st.loginEmail = team[1].email; st.screen = 'leady'; }
+    this.setState(st);
+    this._rs = () => this.setState({ w: window.innerWidth });
+    this._kd = (e) => {
+      if (e.key !== 'Escape') return;
+      const s = this.state;
+      if (s.confirm) this.setState({ confirm: null }); else if (s.selId) this.setState({ selId: null });
+    };
+    window.addEventListener('resize', this._rs); document.addEventListener('keydown', this._kd);
+    this._iv = setInterval(() => this.setState({ now: Date.now() }), 60000);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._rs); document.removeEventListener('keydown', this._kd); clearInterval(this._iv); }
+
+  seed() {
+    const now = Date.now(), H = 36e5;
+    const team = [
+      { id: 'u1', meno: 'Eva Kováčová', email: 'eva.kovacova@example.sk', rola: 'Správca' },
+      { id: 'u2', meno: 'Peter Hudec', email: 'peter.hudec@example.sk', rola: 'Maklér' },
+      { id: 'u3', meno: 'Mária Šimková', email: 'maria.simkova@example.sk', rola: 'Maklér' },
+      { id: 'u4', meno: 'Tomáš Lukáč', email: 'tomas.lukac@example.sk', rola: 'Maklér' },
+      { id: 'u5', meno: 'Katarína Remeňová', email: 'katarina.remenova@example.sk', rola: 'Maklér' }
+    ];
+    const nm = (id) => team.find((x) => x.id === id).meno;
+    // [meno, tel, email, suhlas, ago, adresa, lok, typ, vymera, izby, stavNeh, dalsie, od, do, stav, pr, prio, krokText, krokH, extra]
+    const R = [
+      ['Lucia Bartošová', '0911 222 310', 'lucia.b@example.sk', true, 5, 'Nábrežná 12, 031 01', 'Liptovský Mikuláš', 'dom', 140, '5', 'Čiastočná rekonštrukcia', 'Garáž, pozemok 600 m²', 180, 200, 'Nový', null, false],
+      ['Viera Hlavatá', '0949 301 662', 'viera.h@example.sk', false, 1, 'Mlynská 8, 034 01', 'Ružomberok', 'byt', 54, '2', 'Pôvodný', 'Balkón', 98, 108, 'Nový', null, false],
+      ['Roman Beňo', '0908 515 903', 'roman.beno@example.sk', true, 0.4, 'Hurbanova 41, 036 01', 'Martin', 'dom', 165, '6', 'Novostavba', 'Terasa, krb', 235, 260, 'Nový', null, true],
+      ['Marián Kollár', '0903 555 718', 'm.kollar@example.sk', true, 30, 'Hviezdoslavovo nám. 3, 026 01', 'Dolný Kubín', 'byt', 68, '3', 'Čiastočná rekonštrukcia', 'Loggia', 112, 124, 'Pridelený', 'u2', false],
+      ['Zuzana Hrušková', '0917 808 220', 'z.hruskova@example.sk', true, 6, 'Lesná 22, 029 01', 'Námestovo', 'dom', 120, '4', 'Pôvodný', 'Pivnica', 120, 138, 'Pridelený', 'u3', true],
+      ['Tomáš Gáfrik', '0948 130 090', 'tgafrik@example.sk', true, 50, 'Pri jazere, 031 04', 'Liptovský Mikuláš', 'pozemok', 900, '–', '–', 'Siete na hranici pozemku', 62, 75, 'Kontaktovaný', 'u2', false, 'Zavolať s návrhom ceny', -5],
+      ['Silvia Poláková', '0918 245 676', 'silvia.p@example.sk', false, 70, 'Záturčie 5, 036 01', 'Martin', 'byt', 62, '3', 'Kompletná rekonštrukcia', 'Parkovacie miesto', 128, 140, 'Kontaktovaný', 'u4', false, 'Poslať podklady e-mailom', 20],
+      ['Dušan Kováč', '0907 733 142', 'dusan.kovac@example.sk', true, 120, 'Ľubochnianska 9, 034 01', 'Ružomberok', 'dom', 150, '5', 'Čiastočná rekonštrukcia', 'Záhrada', 205, 228, 'Stretnutie', 'u3', false, 'Obhliadka nehnuteľnosti', 2],
+      ['Helena Sýkorová', '0944 118 905', 'h.sykorova@example.sk', true, 160, 'Medvedzie 14, 026 01', 'Dolný Kubín', 'byt', 74, '3', 'Pôvodný', 'Balkón', 105, 117, 'Stretnutie', 'u5', false, 'Podpis sprostredkovateľskej zmluvy', -26],
+      ['Rastislav Mikuš', '0905 889 311', 'r.mikus@example.sk', true, 260, 'Palúčanská 3, 031 01', 'Liptovský Mikuláš', 'dom', 130, '5', 'Novostavba', 'Garáž', 190, 210, 'Zmluva', 'u2', false, 'Fotenie a inzerát', 48, { max: 4 }],
+      ['Alena Vojtková', '0915 600 237', 'alena.v@example.sk', true, 600, 'Sládkovičova 6, 034 01', 'Ružomberok', 'byt', 58, '2', 'Kompletná rekonštrukcia', '', 105, 118, 'Predané', 'u3', false, null, 0, { max: 5, cena: 118000, dat: -240 }],
+      ['Michal Lenárt', '0903 420 561', 'm.lenart@example.sk', true, 800, 'Kuzmányho 18, 036 01', 'Martin', 'dom', 175, '6', 'Čiastočná rekonštrukcia', 'Pozemok 800 m²', 190, 215, 'Predané', 'u4', false, null, 0, { max: 5, cena: 204500, dat: -400 }],
+      ['Beáta Gregorová', '0910 770 124', 'beata.g@example.sk', true, 500, 'Hviezdoslavova 2, 029 01', 'Námestovo', 'pozemok', 1200, '–', '–', '', 45, 58, 'Stratené', 'u2', false, null, 0, { max: 3, reason: 'nesúhlas s cenou' }],
+      ['Patrik Chovan', '0902 004 818', 'p.chovan@example.sk', true, 400, 'Zázrivá 11, 034 01', 'Ružomberok', 'byt', 44, '1', 'Pôvodný', '', 72, 80, 'Stratené', 'u3', false, null, 0, { max: 3, reason: 'iná realitná kancelária' }],
+      ['Ivana Šafárová', '0904 662 018', 'ivana.s@example.sk', true, 300, 'Priekopa 7, 036 01', 'Martin', 'byt', 50, '2', 'Pôvodný', '', 88, 96, 'Stratené', 'u4', false, null, 0, { max: 2, reason: 'len zvedavý, nepredáva' }]
+    ];
+    const path = ['Nový', 'Pridelený', 'Kontaktovaný', 'Stretnutie', 'Zmluva', 'Predané'];
+    const list = R.slice().sort((a, b) => b[4] - a[4]).map((r, i) => {
+      const [meno, telefon, email, suhlas, ago, adresa, lokalita, typ, vymera, izby, stavNeh, dalsie, od, doo, stav, pr, prio, krokText, krokH, ex] = r;
+      const x = ex || {}, prijaty = now - ago * H;
+      const idx = path.indexOf(stav), upto = idx >= 0 ? idx : (x.max || 1);
+      const history = [{ t: prijaty, who: 'Web', text: 'lead prijatý z kalkulačky' }, { t: prijaty + 0.05 * H, who: 'Web', text: 'odhad odoslaný klientovi e-mailom' }];
+      if (pr) history.push({ t: prijaty + 0.5 * H, who: nm('u1'), text: 'pridelený: ' + nm(pr) });
+      const steps = path.slice(0, upto + 1);
+      for (let k = 1; k < steps.length; k++) history.push({ t: prijaty + 0.6 * H + (now - prijaty - 0.6 * H) * k / steps.length * 0.95, who: pr ? nm(pr) : nm('u1'), text: 'stav ' + steps[k - 1] + ' → ' + steps[k] });
+      if (stav === 'Stratené') history.push({ t: now - 24 * H, who: nm(pr), text: 'stav ' + path[upto] + ' → Stratené, dôvod: ' + x.reason });
+      history.sort((a, b) => a.t - b.t);
+      const fc = upto >= 2 && pr ? prijaty + (3 + i % 4) * H : null;
+      return {
+        id: 'l' + (i + 1), cislo: 'LD-2026-' + String(i + 1).padStart(4, '0'), meno, telefon, email, suhlas, prijaty, adresa, lokalita, typ, vymera, izby, stavNeh, dalsie,
+        od, do: doo, odoslany: prijaty + 0.05 * H, stav, pridelene: pr, prio, krokText: krokText || '', krokAt: krokText ? now + krokH * H : null,
+        cena: x.cena || '', datum: x.dat != null ? new Date(now + x.dat * 24 * H).toISOString().slice(0, 10) : '', reason: x.reason || '', reasonText: '',
+        max: stav === 'Stratené' ? (x.max || 1) : Math.max(idx, 0), firstContact: fc, pridelenyAt: pr ? prijaty + 0.5 * H : null, notes: [], history
+      };
+    });
+    const zd = ['Facebook', 'Google vyhľadávanie', 'Facebook', 'Instagram', 'Google vyhľadávanie', 'Facebook', 'Priamy vstup', 'Reklama', 'Google vyhľadávanie', 'Facebook', 'Instagram', 'Google vyhľadávanie', 'Facebook', 'Iné', 'Priamy vstup'];
+    list.forEach((l, i) => { l.zdroj = zd[i % zd.length]; l.stranka = i % 4 === 0 ? 'Úvod' : l.lokalita; });
+    list[3].notes.push({ t: now - 8 * H, who: nm('u2'), text: 'Volal som, klient zdvihne po 17. hodine.' });
+    list.find((l) => l.meno === 'Tomáš Gáfrik').notes.push({ t: now - 20 * H, who: nm('u2'), text: 'Pozemok má prístupovú cestu cez cudzí pozemok, treba overiť vecné bremeno.' });
+    return { leads: list, team };
+  }
+
+  fmt(t) { const d = new Date(t), p = (n) => String(n).padStart(2, '0'); return d.getDate() + '. ' + (d.getMonth() + 1) + '. ' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+  tm(t) { const d = new Date(t), p = (n) => String(n).padStart(2, '0'); return p(d.getHours()) + ':' + p(d.getMinutes()); }
+  loc(t) { const d = new Date(t), p = (n) => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+  norm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+  ini(n) { return n.split(' ').filter(Boolean).map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
+  cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  pl(n) { return n === 1 ? n + ' lead' : (n >= 2 && n <= 4 ? n + ' leady' : n + ' leadov'); }
+  odhad(l) { return l.od + ' – ' + l.do + ' tis. €'; }
+  nameOf(id) { const m = this.state.team.find((x) => x.id === id); return m ? m.meno : 'Nepridelené'; }
+  isAdmin() { return !!this.state.user && this.state.user.rola === 'Správca'; }
+  closed(l) { return l.stav === 'Predané' || l.stav === 'Stratené'; }
+  toast(msg) { const id = Math.random(); this.setState((s) => ({ toasts: s.toasts.concat({ id, msg }) })); setTimeout(() => this.setState((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) })), 6500); }
+  log(text) { this.setState((s) => ({ audit: [{ t: Date.now(), who: s.user.meno, text }].concat(s.audit) })); }
+  visible() { const s = this.state; return s.leads.filter((l) => this.isAdmin() || l.pridelene === s.user.id); }
+  active(uid) { return this.state.leads.filter((l) => l.pridelene === uid && !this.closed(l)).length; }
+
+  alarm(l) {
+    const h = (this.state.now - l.prijaty) / 36e5;
+    let red = null;
+    if (l.stav === 'Nový' && h > 2) red = 'Nepridelený ' + Math.floor(h) + ' h';
+    else if (l.stav === 'Pridelený') { const hp = (this.state.now - (l.pridelenyAt || l.prijaty)) / 36e5; if (hp > 24) red = 'Nekontaktovaný ' + Math.floor(hp) + ' h'; }
+    return { red, orange: !!(l.krokAt && l.krokAt < this.state.now && !this.closed(l)) };
+  }
+  stepInfo(t) {
+    const n = new Date(this.state.now), d = new Date(t), sod = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const diff = Math.round((sod(d) - sod(n)) / 864e5), time = this.tm(t);
+    const day = diff === 0 ? 'dnes' : diff === 1 ? 'zajtra' : d.getDate() + '. ' + (d.getMonth() + 1) + '.';
+    const late = t < this.state.now;
+    return { label: late ? 'po termíne, ' + d.getDate() + '. ' + (d.getMonth() + 1) + '. ' + time : day + ' ' + time, when: day === 'dnes' || day === 'zajtra' ? this.cap(day) + ' ' + time : day + ' ' + time, group: late ? 0 : diff === 0 ? 1 : diff === 1 ? 2 : 3 };
+  }
+
+  filtered() {
+    const s = this.state, q = this.norm(s.q), qd = s.q.replace(/\D/g, '');
+    return this.visible().filter((l) => {
+      if (q && !(this.norm(l.meno + ' ' + l.adresa + ' ' + l.lokalita + ' ' + l.email).includes(q) || (qd.length > 2 && l.telefon.replace(/\D/g, '').includes(qd)))) return false;
+      if (s.fMak === '_none' ? !!l.pridelene : (s.fMak && l.pridelene !== s.fMak)) return false;
+      if (s.fStav && l.stav !== s.fStav) return false;
+      if (s.fLok && l.lokalita !== s.fLok) return false;
+      if (s.fTyp && l.typ !== s.fTyp) return false;
+      if (s.fZdroj && l.zdroj !== s.fZdroj) return false;
+      if (s.fPrio && !l.prio) return false;
+      if (s.fLate && !this.alarm(l).orange) return false;
+      return true;
+    });
+  }
+
+  patch(id, fn) { this.setState((s) => ({ leads: s.leads.map((l) => (l.id === id ? fn(l) : l)) })); }
+  addH(l, text) { l.history = l.history.concat({ t: Date.now(), who: this.state.user.meno, text }); }
+
+  tryStav(id, ns) {
+    const l = this.state.leads.find((x) => x.id === id);
+    if (!l || l.stav === ns) return;
+    if (ns === 'Stratené') return this.setState({ confirm: { kind: 'lost', id, reason: '', text: '' } });
+    if (!l.pridelene && ns !== 'Nový') return this.toast('Najprv lead pridelte makléra.');
+    if (l.pridelene && ns === 'Nový') return this.toast('Lead s maklérom nemôže byť v stave Nový. Zrušte pridelenie.');
+    this.applyStav(id, ns);
+  }
+  applyStav(id, ns, lost) {
+    const idx = this.ST.indexOf(ns);
+    this.patch(id, (l) => {
+      const n = { ...l, history: l.history.slice() };
+      this.addH(n, 'stav ' + l.stav + ' → ' + ns + (lost ? ', dôvod: ' + lost : ''));
+      n.stav = ns;
+      if (idx < 6) n.max = Math.max(n.max || 0, idx);
+      if (idx >= 2 && idx < 6 && !n.firstContact) n.firstContact = Date.now();
+      if (ns === 'Predané' && !n.datum) n.datum = new Date().toISOString().slice(0, 10);
+      if (ns !== 'Stratené') { n.reason = ''; n.reasonText = ''; }
+      return n;
+    });
+  }
+  assign(id, uid) {
+    this.patch(id, (l) => {
+      if ((l.pridelene || '') === (uid || '')) return l;
+      const n = { ...l, history: l.history.slice(), pridelene: uid || null, pridelenyAt: uid ? Date.now() : null };
+      this.addH(n, uid ? 'pridelený: ' + this.nameOf(uid) : 'pridelenie zrušené');
+      if (uid && n.stav === 'Nový') { this.addH(n, 'stav Nový → Pridelený'); n.stav = 'Pridelený'; n.max = Math.max(n.max || 0, 1); }
+      if (!uid && n.stav === 'Pridelený') { this.addH(n, 'stav Pridelený → Nový'); n.stav = 'Nový'; }
+      return n;
+    });
+    if (uid) { const m = this.state.team.find((x) => x.id === uid); this.toast('Pridelený: ' + m.meno + '. E-mail s upozornením odišiel na ' + m.email + '.'); }
+  }
+  openLead(id) {
+    const l = this.state.leads.find((x) => x.id === id);
+    this.setState({ selId: id, noteText: '', assignOpen: null, stepText: l.krokText, stepAt: l.krokAt ? this.loc(l.krokAt) : '' });
+    this.log('otvoril lead ' + l.cislo);
+  }
+
+  exportCsv() {
+    const rows = this.filtered().slice().sort((a, b) => b.prijaty - a.prijaty);
+    const head = ['Číslo', 'Prijatý', 'Meno', 'Telefón', 'E-mail', 'Súhlas s telefonátom', 'Lokalita', 'Typ', 'Odhad od (tis. €)', 'Odhad do (tis. €)', 'Stav', 'Maklér', 'Ďalší krok', 'Prioritný'];
+    const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const csv = '\uFEFF' + [head].concat(rows.map((l) => [l.cislo, this.fmt(l.prijaty), l.meno, l.telefon, l.email, l.suhlas ? 'áno' : 'nie', l.lokalita, this.TYP[l.typ], l.od, l.do, l.stav, l.pridelene ? this.nameOf(l.pridelene) : '', l.krokAt ? l.krokText + ' (' + this.fmt(l.krokAt) + ')' : '', l.prio ? 'áno' : 'nie'])).map((r) => r.map(q).join(';')).join('\r\n');
+    try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'leady-' + new Date().toISOString().slice(0, 10) + '.csv'; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
+    this.log('export CSV (' + this.pl(rows.length) + ')');
+    this.toast('Export hotový: ' + this.pl(rows.length) + '.');
+  }
+
+  cardVm(l) {
+    const s = this.state, A = this.alarm(l), adm = this.isAdmin(), open = () => this.openLead(l.id), st = l.krokAt ? this.stepInfo(l.krokAt) : null;
+    const brokers = s.team.filter((m) => m.rola === 'Maklér');
+    return {
+      id: l.id, cislo: l.cislo, meno: l.meno, popis: this.TYP[l.typ] + ' · ' + l.lokalita, lokalita: l.lokalita, typ: this.TYP[l.typ], odhad: this.odhad(l), prijaty: this.fmt(l.prijaty), stav: l.stav,
+      prio: l.prio, nevolat: !l.suhlas, red: !!A.red, redText: A.red || '', orange: A.orange,
+      hasStep: !!st, stepLabel: st ? st.label : '', hasMak: !!l.pridelene, makName: l.pridelene ? this.nameOf(l.pridelene) : 'Nepridelené', makInitials: l.pridelene ? this.ini(this.nameOf(l.pridelene)) : '',
+      showAssign: adm && l.stav === 'Nový', assignOpen: s.assignOpen === l.id,
+      toggleAssign: (e) => { e.stopPropagation(); this.setState((x) => ({ assignOpen: x.assignOpen === l.id ? null : l.id })); },
+      brokerOpts: brokers.map((m) => ({ name: m.meno, active: this.active(m.id) + ' aktívnych', pick: (e) => { e.stopPropagation(); this.setState({ assignOpen: null }); this.assign(l.id, m.id); } })),
+      open, key: (e) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(); } },
+      dragStart: (e) => { try { e.dataTransfer.setData('text/plain', l.id); e.dataTransfer.effectAllowed = 'move'; } catch (x) {} this._drag = l.id; },
+      dragEnd: () => { this._drag = null; this.setState({ overCol: null }); }
+    };
+  }
+
+  detailVm() {
+    const s = this.state, l = s.leads.find((x) => x.id === s.selId);
+    if (!l) return {};
+    const A = this.alarm(l), id = l.id, brokers = s.team.filter((m) => m.rola === 'Maklér'), canNone = l.stav === 'Nový' || l.stav === 'Pridelený';
+    return {
+      cislo: l.cislo, meno: l.meno, zdroj: l.zdroj + ', ' + (l.stranka === 'Úvod' ? 'úvodná stránka' : 'stránka ' + l.stranka), prijaty: this.fmt(l.prijaty), prio: l.prio, nevolat: !l.suhlas, canCall: l.suhlas, red: !!A.red, redText: A.red || '', orange: A.orange,
+      stav: l.stav, pridelene: l.pridelene || '', makName: l.pridelene ? this.nameOf(l.pridelene) : 'Nepridelené',
+      stavOpts: this.ST.map((v) => ({ v, l: v })),
+      makOpts: (canNone ? [{ v: '', l: 'Nepridelené' }] : []).concat(brokers.map((m) => ({ v: m.id, l: m.meno + ' (' + this.active(m.id) + ' aktívnych)' }))),
+      setStav: (e) => this.tryStav(id, e.target.value), setMak: (e) => this.assign(id, e.target.value),
+      telefon: l.telefon, tel: 'tel:' + l.telefon.replace(/\s/g, ''), email: l.email, mailto: 'mailto:' + l.email, suhlas: l.suhlas ? 'áno' : 'nie',
+      adresa: l.adresa, lokalita: l.lokalita, typ: this.TYP[l.typ], vymera: l.vymera + ' m²', izby: l.izby, stavNeh: l.stavNeh, dalsie: l.dalsie || '–',
+      odhad: this.odhad(l), odhadInfo: 'Odoslané klientovi e-mailom ' + this.fmt(l.odoslany) + '.',
+      isSold: l.stav === 'Predané', predajCena: l.cena, predajDatum: l.datum,
+      setCena: (e) => { const v = e.target.value.replace(/[^\d]/g, ''); this.patch(id, (x) => ({ ...x, cena: v ? Number(v) : '' })); },
+      setDatum: (e) => { const v = e.target.value; this.patch(id, (x) => ({ ...x, datum: v })); },
+      isLost: l.stav === 'Stratené', lostText: this.cap(l.reason + (l.reasonText ? ': ' + l.reasonText : '')),
+      notes: l.notes.slice().sort((a, b) => b.t - a.t).map((n) => ({ ...n, t: this.fmt(n.t) })), noNotes: l.notes.length === 0,
+      history: l.history.slice().sort((a, b) => b.t - a.t).map((h) => ({ ...h, t: this.fmt(h.t) })),
+      askErase: () => this.setState({ confirm: { kind: 'erase', id } })
+    };
+  }
+
+  ZDROJE = ['Google vyhľadávanie', 'Facebook', 'Instagram', 'Reklama', 'Priamy vstup', 'Iné'];
+  alloc(total, w) {
+    const sum = w.reduce((a, b) => a + b, 0) || 1, raw = w.map((v) => v / sum * total), fl = raw.map(Math.floor);
+    const rem = total - fl.reduce((a, b) => a + b, 0);
+    raw.map((v, i) => [v - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, rem).forEach((x) => { fl[x[1]]++; });
+    return fl;
+  }
+  buildTraffic() {
+    let x = 20261111; const r = () => (x = (x * 1664525 + 1013904223) % 4294967296) / 4294967296;
+    const now = new Date(), wd = [0.8, 1.05, 1.1, 1.1, 1.05, 0.95, 0.85], wV = [];
+    for (let i = 0; i < 60; i++) { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (59 - i)); wV.push(wd[d.getDay()] * (1 + i / 150) * (0.75 + r() * 0.5)); }
+    const two = (ta, tb, w) => this.alloc(ta, w.slice(0, 30)).concat(this.alloc(tb, w.slice(30)));
+    const visits = two(1260, 1400, wV);
+    const started = two(285, 320, visits.map((v) => v * (0.75 + r() * 0.5)));
+    const results = two(98, 110, started.map((v) => v * (0.7 + r() * 0.6)));
+    const contacts = two(21, 24, results.map((v) => Math.pow(v, 1.5) * (0.3 + r() * 1.4) + 0.01));
+    return { visits, started, results, contacts };
+  }
+  trafficVals() {
+    const s = this.state, adm = this.isAdmin();
+    this._td = this._td || this.buildTraffic();
+    const T = this._td, nf = (n) => n.toLocaleString('sk-SK'), p2 = (n) => String(n).padStart(2, '0');
+    const pc = (v) => { const q = v * 100; return (q > 0 && q < 10 ? q.toFixed(1).replace('.', ',') : Math.round(q)) + ' %'; };
+    const t0 = new Date(), mid = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate());
+    const dAt = (i) => new Date(mid.getFullYear(), mid.getMonth(), mid.getDate() - (59 - i));
+    const ds = (d) => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+    const fd = (d) => d.getDate() + '. ' + (d.getMonth() + 1) + '.';
+    const idxOf = (str) => { if (!str) return 59; const q = str.split('-').map(Number); return Math.max(0, Math.min(59, 59 - Math.round((mid - new Date(q[0], q[1] - 1, q[2])) / 864e5))); };
+    const per = s.tPeriod;
+    let a, b;
+    if (per === '1') { a = 59; b = 59; } else if (per === '7') { a = 53; b = 59; } else if (per === '30') { a = 30; b = 59; }
+    else { a = idxOf(s.tFrom || ds(dAt(46))); b = idxOf(s.tTo || ds(dAt(59))); if (a > b) { const z = a; a = b; b = z; } }
+    const n = b - a + 1, pa = a - n, pb = a - 1, hasPrev = pa >= 0;
+    const sum = (arr, i, j) => { let t = 0; for (let k = i; k <= j; k++) t += arr[k]; return t; };
+    const agg = (i, j) => ({ v: sum(T.visits, i, j), s: sum(T.started, i, j), r: sum(T.results, i, j), c: sum(T.contacts, i, j) });
+    const cur = agg(a, b), prev = hasPrev ? agg(pa, pb) : null;
+    const yr = dAt(b).getFullYear();
+    const rangeText = per === '1' ? 'Dnes, ' + fd(dAt(59)) : fd(dAt(a)) + ' – ' + fd(dAt(b)) + ' ' + yr;
+    const compareText = hasPrev ? 'porovnanie s ' + (n === 1 ? fd(dAt(pa)) : fd(dAt(pa)) + ' – ' + fd(dAt(pb))) : 'bez porovnania (chýbajú dáta)';
+    const defs = [['Návštevy', 'v', '', ''], ['Začaté kalkulačky', 's', 'z návštev', 'v'], ['Zobrazené výsledky', 'r', 'zo začatých', 's'], ['Odoslané kontakty', 'c', 'z výsledkov', 'r']];
+    const tiles = defs.map((d) => {
+      const val = cur[d[1]], cmp = !!(prev && prev[d[1]] > 0), rd = cmp ? Math.round((val - prev[d[1]]) / prev[d[1]] * 100) : 0;
+      return { label: d[0], value: nf(val), up: cmp && rd > 0, down: cmp && rd < 0, flat: !cmp || rd === 0, dText: cmp ? Math.abs(rd) + ' %' : '–', step: d[3] ? (cur[d[3]] ? pc(val / cur[d[3]]) + ' ' + d[2] : '–') : 'Východiskový krok' };
+    });
+    const fs = [['Návštevy', cur.v], ['Začaté kalkulačky', cur.s], ['Zobrazené výsledky', cur.r], ['Odoslané kontakty', cur.c]];
+    const funnel = fs.map((f, i) => ({ label: f[0], value: nf(f[1]), w: Math.max(cur.v ? f[1] / cur.v * 100 : 0, 1.2) + '%', drop: i === 0 ? 'Všetky návštevy' : 'Odpadlo ' + nf(fs[i - 1][1] - f[1]) + ' (' + (fs[i - 1][1] ? pc((fs[i - 1][1] - f[1]) / fs[i - 1][1]) : '–') + ')' }));
+    const cb = Math.max(b, 6), ca = Math.min(a, cb - 6), cnt = cb - ca + 1;
+    const maxV = Math.max(1, ...T.visits.slice(ca, cb + 1)), maxCraw = Math.max(0, ...T.contacts.slice(ca, cb + 1)), axV = maxV * 1.1, axC = Math.max(3, maxCraw * 1.2);
+    const pts = (arr, ax) => arr.slice(ca, cb + 1).map((v, i) => (i / (cnt - 1) * 600).toFixed(1) + ',' + (190 - v / ax * 180).toFixed(1)).join(' ');
+    const SRC = [['Google vyhľadávanie', 308, 30, 7], ['Facebook', 476, 36, 8], ['Instagram', 154, 11, 3], ['Reklama', 140, 8, 2], ['Priamy vstup', 224, 17, 3], ['Iné', 98, 8, 1]];
+    const PAG = [['Úvod', 560, 44, 9], ['Ružomberok', 280, 22, 5], ['Liptovský Mikuláš', 210, 16, 4], ['Martin', 140, 11, 3], ['Dolný Kubín', 126, 10, 2], ['Námestovo', 84, 7, 1]];
+    const tab = (def) => { const V = this.alloc(cur.v, def.map((d) => d[1])), R = this.alloc(cur.r, def.map((d) => d[2])), C = this.alloc(cur.c, def.map((d) => d[3])); return def.map((d, i) => ({ name: d[0], v: nf(V[i]), r: nf(R[i]), c: nf(C[i]), conv: V[i] ? pc(C[i] / V[i]) : '–' })); };
+    const left = this.alloc(cur.s - cur.r, [28, 20, 30, 78, 32, 22]), names = ['Adresa', 'Otázka 1', 'Otázka 2', 'Otázka 3', 'Otázka 4', 'Otázka 5'];
+    let reach = cur.s; const ex = names.map((nm, i) => { const o = { label: nm, n: left[i], pct: reach ? left[i] / reach : 0 }; reach -= left[i]; return o; });
+    const mxN = Math.max(...ex.map((e) => e.n)), worst = mxN > 0 ? ex.findIndex((e) => e.n === mxN) : -1;
+    const exits = ex.map((e, i) => ({ label: e.label, count: nf(e.n), pct: pc(e.pct), worst: i === worst, w: (mxN ? e.n / mxN * 100 : 0) + '%', color: i === worst ? '#d32441' : '#272361' }));
+    const rn = cur.r - cur.c, mob = Math.round(cur.v * 0.68);
+    return {
+      tabLeady: s.prehladTab === 'leady', tabTraffic: s.prehladTab === 'navstevnost',
+      ptabs: [['leady', 'Leady'], ['navstevnost', 'Návštevnosť']].map((t) => ({ label: t[1], on: s.prehladTab === t[0], bg: s.prehladTab === t[0] ? '#272361' : 'transparent', fg: s.prehladTab === t[0] ? '#ffffff' : '#272361', set: () => this.setState({ prehladTab: t[0] }) })),
+      tperiods: [['1', 'Dnes'], ['7', '7 dní'], ['30', '30 dní'], ['vlastne', 'Vlastné']].map((t) => ({ label: t[1], on: per === t[0], bg: per === t[0] ? '#272361' : 'transparent', fg: per === t[0] ? '#ffffff' : '#272361', set: () => this.setState((st) => (t[0] === 'vlastne' && !st.tFrom ? { tPeriod: t[0], tFrom: ds(dAt(46)), tTo: ds(dAt(59)) } : { tPeriod: t[0] })) })),
+      setTFrom: (e) => this.setState({ tFrom: e.target.value }), setTTo: (e) => this.setState({ tTo: e.target.value }),
+      tr: {
+        custom: per === 'vlastne', min: ds(dAt(0)), max: ds(dAt(59)), from: ds(dAt(a)), to: ds(dAt(b)), rangeText, compareText, tiles, funnel,
+        legV: 'Návštevy (max ' + nf(maxV) + ')', legC: 'Odoslané kontakty (vlastná os, max ' + nf(Math.max(1, maxCraw)) + ')', ptsV: pts(T.visits, axV), ptsC: pts(T.contacts, axC), chartFrom: fd(dAt(ca)), chartTo: fd(dAt(cb)),
+        chartLabel: 'Návštevy po dňoch od ' + fd(dAt(ca)) + ' do ' + fd(dAt(cb)) + ', spolu ' + nf(sum(T.visits, ca, cb)) + ' návštev',
+        exits, resultExit: { count: nf(rn), pct: pc(cur.r ? rn / cur.r : 0) },
+        devices: [{ label: 'Mobil', icon: 'ph ph-device-mobile', pct: pc(cur.v ? mob / cur.v : 0), value: nf(mob) }, { label: 'Počítač', icon: 'ph ph-desktop', pct: pc(cur.v ? (cur.v - mob) / cur.v : 0), value: nf(cur.v - mob) }]
+      },
+      srcRows: tab(SRC), pagRows: tab(PAG),
+      zdrojOpts: [{ v: '', l: 'Všetky zdroje' }].concat(this.ZDROJE.map((z) => ({ v: z, l: z }))), fZdroj: s.fZdroj, setFZdroj: (e) => this.setState({ fZdroj: e.target.value })
+    };
+  }
+
+  renderVals() {
+    const s = this.state, p = this.props, adm = this.isAdmin(), user = s.user;
+    const vis = user ? this.visible() : [], fl = user ? this.filtered() : [], narrow = s.w < 760;
+    const on = (b) => (b ? '#272361' : 'transparent'), fg = (b) => (b ? '#ffffff' : '#272361');
+    // nav
+    const navDef = [['leady', 'Leady', 'ph ph-kanban']].concat(adm ? [['prehlad', 'Prehľad', 'ph ph-chart-bar'], ['clenovia', 'Členovia', 'ph ph-users-three']] : [['ulohy', 'Moje úlohy', 'ph ph-check-square']]);
+    const nav = navDef.map(([k, label, icon]) => ({ label, icon, current: s.screen === k ? 'page' : 'false', bg: on(s.screen === k), fg: fg(s.screen === k), go: () => this.setState({ screen: k }) }));
+    // columns
+    const stages = adm ? this.ST : this.ST.slice(1);
+    const columns = stages.map((name) => {
+      const cards = fl.filter((l) => l.stav === name).sort((a, b) => a.prijaty - b.prijaty).map((l) => this.cardVm(l));
+      return {
+        name, count: cards.length, cards, empty: cards.length === 0, outline: s.overCol === name ? '2px solid #272361' : '2px solid transparent',
+        over: (e) => { e.preventDefault(); if (this.state.overCol !== name) this.setState({ overCol: name }); },
+        leave: () => { if (this.state.overCol === name) this.setState({ overCol: null }); },
+        drop: (e) => { e.preventDefault(); const id = this._drag; this._drag = null; this.setState({ overCol: null }); if (id) this.tryStav(id, name); }
+      };
+    });
+    // table
+    const cols = [['prijaty', 'Prijatý'], ['meno', 'Klient'], ['lokalita', 'Lokalita'], ['typ', 'Typ'], ['od', 'Odhad'], ['stav', 'Stav'], ['pridelene', 'Maklér'], ['krok', 'Ďalší krok']];
+    const key = (l, k) => k === 'stav' ? this.ST.indexOf(l.stav) : k === 'pridelene' ? (l.pridelene ? this.nameOf(l.pridelene) : '') : k === 'krok' ? (l.krokAt || Infinity) : l[k];
+    const { key: sk, dir: sd } = s.sort;
+    const sorted = fl.slice().sort((a, b) => { const x = key(a, sk), y = key(b, sk); return (typeof x === 'string' ? x.localeCompare(y, 'sk') : (x === y ? 0 : x - y)) * sd || a.prijaty - b.prijaty; });
+    const heads = cols.map(([k, label]) => ({ label, aria: sk === k ? (sd === 1 ? 'ascending' : 'descending') : 'none', icon: sk === k ? (sd === 1 ? 'ph-bold ph-caret-up' : 'ph-bold ph-caret-down') : 'ph ph-caret-up-down', sort: () => this.setState((st) => ({ sort: { key: k, dir: st.sort.key === k ? -st.sort.dir : (k === 'prijaty' ? -1 : 1) } })) }));
+    const rows = sorted.map((l) => this.cardVm(l));
+    const fc = [s.fMak, s.fStav, s.fLok, s.fTyp, s.fZdroj, s.fPrio, s.fLate].filter(Boolean).length;
+    const filterActive = !!(s.q || fc);
+    const brokers = s.team.filter((m) => m.rola === 'Maklér');
+    const lok = Array.from(new Set(vis.map((l) => l.lokalita))).sort((a, b) => a.localeCompare(b, 'sk'));
+    // tasks
+    const tl = vis.filter((l) => !this.closed(l)).map((l) => ({ l, si: l.krokAt ? this.stepInfo(l.krokAt) : null }));
+    const gdef = [[0, 'Po termíne'], [1, 'Dnes'], [2, 'Zajtra'], [3, 'Neskôr'], [4, 'Bez ďalšieho kroku']];
+    const taskGroups = gdef.map(([g, title]) => {
+      const items = tl.filter((x) => (x.si ? x.si.group : 4) === g).sort((a, b) => (a.l.krokAt || 0) - (b.l.krokAt || 0)).map(({ l, si }) => ({ when: si ? si.when : '–', meno: l.meno, lokalita: l.lokalita, stepText: l.krokText || 'Určite ďalší krok', nevolat: !l.suhlas, open: () => this.openLead(l.id), key: (e) => { if (e.key === 'Enter') this.openLead(l.id); } }));
+      return { title, count: items.length, items };
+    }).filter((g) => g.count > 0);
+    // overview
+    const lim = s.period === 'all' ? 0 : Date.now() - Number(s.period) * 864e5, pl = vis.filter((l) => l.prijaty >= lim);
+    const sent = pl.filter((l) => l.firstContact), avg = sent.length ? Math.round(sent.reduce((t, l) => t + (l.firstContact - l.prijaty) / 36e5, 0) / sent.length * 10) / 10 : 0;
+    const cnt = (f) => pl.filter(f).length, pr = (a, b) => (a ? Math.round(b / a * 100) + ' %' : '–');
+    const ptiles = [
+      { label: 'Nové', value: cnt((l) => l.stav === 'Nový'), sub: 'Čakajú na pridelenie' },
+      { label: 'V riešení', value: cnt((l) => ['Pridelený', 'Kontaktovaný', 'Stretnutie', 'Zmluva'].includes(l.stav)), sub: 'Pridelený až zmluva' },
+      { label: 'Predané', value: cnt((l) => l.stav === 'Predané'), sub: 'Z ' + pl.length + ' leadov' },
+      { label: 'Stratené', value: cnt((l) => l.stav === 'Stratené'), sub: 'S dôvodom straty' },
+      { label: 'Prvý kontakt', value: avg + ' h', sub: 'Priemer od prijatia' }
+    ];
+    const conv = brokers.map((m) => { const mine = pl.filter((l) => l.pridelene === m.id), a = mine.length, z = mine.filter((l) => l.max >= 4).length, sold = mine.filter((l) => l.stav === 'Predané').length; return { name: m.meno, a, z, zp: pr(a, z), p: sold, pp: pr(a, sold) }; });
+    const bars = (pairs) => { const mx = Math.max(1, ...pairs.map((x) => x[1])); return pairs.map(([label, count]) => ({ label, count, w: Math.round(count / mx * 100) + '%' })); };
+    const lostBars = bars(this.REASONS.map((r) => [this.cap(r), pl.filter((l) => l.stav === 'Stratené' && l.reason === r).length]).filter((x) => x[1] > 0).sort((a, b) => b[1] - a[1]));
+    const lokBars = bars(Array.from(new Set(pl.map((l) => l.lokalita))).map((k) => [k, pl.filter((l) => l.lokalita === k).length]).sort((a, b) => b[1] - a[1]));
+    const periods = [['all', 'Všetko'], ['30', '30 dní'], ['7', '7 dní']].map(([v, label]) => ({ label, on: s.period === v, bg: on(s.period === v), fg: fg(s.period === v), set: () => this.setState({ period: v }) }));
+    // members
+    const members = s.team.map((m) => ({ ...m, initials: this.ini(m.meno), canRemove: m.rola !== 'Správca', countText: m.rola === 'Správca' ? 'všetky leady' : this.active(m.id) + ' aktívnych', askRemove: () => this.setState({ confirm: { kind: 'remove', id: m.id, to: '' } }) }));
+    // confirm
+    const c = s.confirm || {};
+    let confirm = {};
+    if (c.kind === 'lost') confirm = { title: 'Lead označiť ako stratený', body: 'Vyberte dôvod. Bez neho sa stav nezmení.', isLost: true, reasons: this.REASONS.map((r) => ({ label: this.cap(r), on: c.reason === r, pick: () => this.setState((x) => ({ confirm: { ...x.confirm, reason: r } })) })), needText: c.reason === 'iné', text: c.text, label: 'Označiť ako stratený', disabled: !c.reason || (c.reason === 'iné' && !c.text.trim()) };
+    if (c.kind === 'erase') confirm = { title: 'Vymazať údaje klienta', body: 'Meno, telefón, e-mail a adresa klienta sa nenávratne odstránia. Záznam o vymazaní zostane v histórii.', label: 'Vymazať', disabled: false };
+    if (c.kind === 'remove') {
+      const m = s.team.find((x) => x.id === c.id), n = m ? this.active(m.id) : 0;
+      confirm = { title: 'Odstrániť makléra', body: m ? (n ? m.meno + ' má ' + this.pl(n) + ' v riešení. Najprv ich prehoďte inému maklérovi.' : m.meno + ' stratí prístup do systému.') : '', needTarget: n > 0, to: c.to, targets: [{ v: '', l: 'Vyberte makléra' }].concat(brokers.filter((x) => x.id !== c.id).map((x) => ({ v: x.id, l: x.meno }))), label: 'Odstrániť', disabled: n > 0 && !c.to };
+    }
+    confirm.opacity = confirm.disabled ? 0.45 : 1;
+    return {
+      ...this.trafficVals(), hdrPos: s.w >= 640 ? 'sticky' : 'static', brand: p.brand ?? 'nacenime.sk', isLogin: !user, isApp: !!user, isAdmin: adm, isBroker: !!user && !adm, wide: s.w >= 640, me: user ? { ...user, initials: this.ini(user.meno) } : {},
+      nav, scrLeady: s.screen === 'leady', scrUlohy: s.screen === 'ulohy' && !adm, scrPrehlad: s.screen === 'prehlad' && adm, scrClenovia: s.screen === 'clenovia' && adm,
+      isKanban: s.view === 'kanban', isTable: s.view === 'table', kbBg: on(s.view === 'kanban'), kbFg: fg(s.view === 'kanban'), tbBg: on(s.view === 'table'), tbFg: fg(s.view === 'table'),
+      setKanban: () => this.setState({ view: 'kanban' }), setTable: () => this.setState({ view: 'table' }),
+      showKanban: s.view === 'kanban', showTable: s.view === 'table' && !narrow, showList: s.view === 'table' && narrow,
+      loginEmail: s.loginEmail, loginPw: s.loginPw, loginErr: s.loginErr,
+      setLoginEmail: (e) => this.setState({ loginEmail: e.target.value }), setLoginPw: (e) => this.setState({ loginPw: e.target.value }),
+      doLogin: (e) => { e.preventDefault(); const m = this.state.team.find((x) => x.email === this.state.loginEmail.trim().toLowerCase()); if (m && this.state.loginPw.length >= 12) this.setState({ user: m, loginErr: '', screen: 'leady' }); else this.setState({ loginErr: 'Prihlásenie sa nepodarilo. Skontrolujte e-mail a heslo.' }); },
+      forgot: (e) => { e.preventDefault(); this.toast('Ak účet existuje, odkaz na nastavenie hesla sme poslali na zadaný e-mail.'); },
+      magic: (e) => { e.preventDefault(); this.toast('Ak účet existuje, prihlasovací odkaz sme poslali na zadaný e-mail.'); },
+      demoAdmin: () => this.setState({ user: this.state.team[0], loginErr: '', screen: 'leady' }), demoBroker: () => this.setState({ user: this.state.team[1], loginErr: '', screen: 'leady' }),
+      logout: () => this.setState({ user: null, selId: null, confirm: null, screen: 'leady', q: '', fMak: '', fStav: '', fLok: '', fTyp: '', fZdroj: '', fPrio: false, fLate: false, filtersOpen: false, prehladTab: 'leady' }),
+      columns, heads, rows, noRows: rows.length === 0,
+      q: s.q, fMak: s.fMak, fStav: s.fStav, fLok: s.fLok, fTyp: s.fTyp, fPrio: s.fPrio, fLate: s.fLate, filtersOpen: s.filtersOpen, filterActive, filterCount: fc,
+      setQ: (e) => this.setState({ q: e.target.value }), setFMak: (e) => this.setState({ fMak: e.target.value }), setFStav: (e) => this.setState({ fStav: e.target.value }), setFLok: (e) => this.setState({ fLok: e.target.value }), setFTyp: (e) => this.setState({ fTyp: e.target.value }),
+      setFPrio: (e) => this.setState({ fPrio: e.target.checked }), setFLate: (e) => this.setState({ fLate: e.target.checked }), toggleFilters: () => this.setState((x) => ({ filtersOpen: !x.filtersOpen })),
+      makOpts: [{ v: '', l: 'Všetci' }, { v: '_none', l: 'Nepridelené' }].concat(brokers.map((m) => ({ v: m.id, l: m.meno }))),
+      stavOpts: [{ v: '', l: 'Všetky stavy' }].concat(this.ST.map((v) => ({ v, l: v }))),
+      lokOpts: [{ v: '', l: 'Všetky lokality' }].concat(lok.map((v) => ({ v, l: v }))),
+      typOpts: [{ v: '', l: 'Všetky typy' }].concat(Object.keys(this.TYP).map((v) => ({ v, l: this.TYP[v] }))),
+      clearFilter: () => this.setState({ q: '', fMak: '', fStav: '', fLok: '', fTyp: '', fZdroj: '', fPrio: false, fLate: false }),
+      countText: this.pl(fl.length) + (filterActive ? ' z ' + vis.length : ''), exportCsv: () => this.exportCsv(),
+      taskGroups, noTasks: taskGroups.length === 0,
+      periods, ptiles, conv, lostBars, noLost: lostBars.length === 0, lokBars,
+      members, audit: s.audit.slice(0, 40).map((a) => ({ ...a, t: this.fmt(a.t) })),
+      newName: s.newName, newEmail: s.newEmail, inviteErr: s.inviteErr, setNewName: (e) => this.setState({ newName: e.target.value }), setNewEmail: (e) => this.setState({ newEmail: e.target.value }),
+      invite: (e) => {
+        e.preventDefault();
+        const n = this.state.newName.trim(), m = this.state.newEmail.trim().toLowerCase();
+        if (!n || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) return this.setState({ inviteErr: 'Zadajte meno a platný e-mail.' });
+        if (this.state.team.some((x) => x.email === m)) return this.setState({ inviteErr: 'Tento e-mail už v tíme je.' });
+        this.setState((st) => ({ team: st.team.concat({ id: 'u' + (st.team.length + 1) + Date.now() % 1000, meno: n, email: m, rola: 'Maklér' }), newName: '', newEmail: '', inviteErr: '' }));
+        this.log('pozvaný maklér ' + n); this.toast('Pozvánka odišla na ' + m + '.');
+      },
+      hasDetail: !!s.selId && !!user, d: this.detailVm(), closeDetail: () => this.setState({ selId: null }), stop: (e) => e.stopPropagation(),
+      stepText: s.stepText, stepAt: s.stepAt, setStepText: (e) => this.setState({ stepText: e.target.value }), setStepAt: (e) => this.setState({ stepAt: e.target.value }),
+      saveStep: () => {
+        const id = this.state.selId, t = this.state.stepText.trim(), at = this.state.stepAt ? new Date(this.state.stepAt).getTime() : null;
+        if (!t || !at) return this.toast('Zadajte, čo urobiť, aj dátum a čas.');
+        this.patch(id, (l) => { const n = { ...l, history: l.history.slice(), krokText: t, krokAt: at }; this.addH(n, 'ďalší krok: ' + t + ', ' + this.fmt(at)); return n; });
+        const l = this.state.leads.find((x) => x.id === id), to = l.pridelene ? this.state.team.find((x) => x.id === l.pridelene).email : this.state.user.email;
+        this.toast('Krok uložený. Pripomienka odíde na ' + to + '.');
+      },
+      noteText: s.noteText, setNote: (e) => this.setState({ noteText: e.target.value }),
+      addNote: () => { const t = this.state.noteText.trim(); if (!t) return; this.patch(this.state.selId, (l) => { const n = { ...l, history: l.history.slice(), notes: l.notes.concat({ t: Date.now(), who: this.state.user.meno, text: t }) }; this.addH(n, 'poznámka pridaná'); return n; }); this.setState({ noteText: '' }); },
+      hasConfirm: !!s.confirm, confirm, confirmNo: () => this.setState({ confirm: null }),
+      setLostText: (e) => this.setState((x) => ({ confirm: { ...x.confirm, text: e.target.value } })), setRemoveTo: (e) => this.setState((x) => ({ confirm: { ...x.confirm, to: e.target.value } })),
+      confirmYes: () => {
+        const c = this.state.confirm; if (!c) return;
+        if (c.kind === 'lost') {
+          if (!c.reason || (c.reason === 'iné' && !c.text.trim())) return;
+          this.patch(c.id, (l) => ({ ...l, reason: c.reason, reasonText: c.reason === 'iné' ? c.text.trim() : '' }));
+          this.applyStav(c.id, 'Stratené', c.reason + (c.reason === 'iné' ? ' (' + c.text.trim() + ')' : ''));
+          // applyStav resets reason when ns !== Stratené only; keep as set
+        } else if (c.kind === 'erase') {
+          const l = this.state.leads.find((x) => x.id === c.id);
+          this.patch(c.id, (x) => { const n = { ...x, meno: 'Vymazaný klient', telefon: '–', email: '–', adresa: '–', suhlas: false, notes: [], history: x.history.slice() }; this.addH(n, 'údaje klienta vymazané'); return n; });
+          this.log('vymazal údaje klienta v ' + l.cislo); this.toast('Údaje klienta boli vymazané.');
+        } else if (c.kind === 'remove') {
+          const m = this.state.team.find((x) => x.id === c.id), n = this.active(c.id), to = c.to;
+          this.setState((st) => ({
+            team: st.team.filter((x) => x.id !== c.id),
+            leads: st.leads.map((l) => {
+              if (l.pridelene !== c.id) return l;
+              const k = { ...l, history: l.history.slice() };
+              if (this.closed(l)) return k;
+              k.pridelene = to; this.addH(k, 'prehodené z ' + m.meno + ' na ' + this.nameOf(to));
+              return k;
+            })
+          }));
+          this.log('odstránený maklér ' + m.meno + (n ? ', leady prehodené na ' + this.nameOf(to) : '')); this.toast(m.meno + ' bol odstránený z tímu.');
+        }
+        this.setState({ confirm: null });
+      },
+      toasts: s.toasts
+    };
+  }
+}
+</script>
+</body>
+</html>
