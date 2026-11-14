@@ -1,4 +1,4 @@
-// Test mapy v skutočnom prehliadači (Playwright). Spustenie: node frontend/mapa/test.cjs
+// Test mapy v skutočnom prehliadači (Playwright). Spustenie: node design_handoff_nacenime/mapa/test.cjs
 // Dlaždice OpenStreetMap sa nahrádzajú falošnými, aby test nezávisel od siete.
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');

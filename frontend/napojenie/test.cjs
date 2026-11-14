@@ -30,9 +30,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const browser = await chromium.launch();
   async function nova(extra) {
     const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
-    const page = await ctx.newPage(), st = { chyby: [], req: [] };
+    const page = await ctx.newPage(), st = { chyby: [], req: [], mapa: [], mapaPredPotvrdenim: 0 };
     page.on('pageerror', (e) => st.chyby.push(String(e)));
     page.on('request', (r) => { if (r.url().startsWith(base + '/api/')) st.req.push({ url: r.url().slice(base.length), metoda: r.method(), telo: r.postData() }); });
+    page.on('request', (r) => { if (/\/mapa\//.test(r.url())) st.mapa.push(r.url()); });
     await page.route(/^https:\/\/unpkg\.com\//, (r) => { const f = path.join(UNPKG, new URL(r.request().url()).pathname); return fs.existsSync(f) ? r.fulfill({ status: 200, contentType: 'text/javascript', body: fs.readFileSync(f) }) : r.fulfill({ status: 404, body: '' }); });
     await page.route(/^https?:\/\/(?!127\.0\.0\.1|unpkg\.com)/, (r) => r.fulfill({ status: 200, contentType: r.request().resourceType() === 'stylesheet' ? 'text/css' : 'text/javascript', body: '' }));
     if (extra) await extra(page);
@@ -109,17 +110,25 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     ok('našepkávač: ukáže návrh od servera', (await page.locator('[role=option]').first().innerText()).includes('Bystrická cesta 12'));
     const a = st.req.find((r) => r.url.startsWith('/api/adresa?'));
     ok('našepkávač: token 8 až 64 znakov', a && /token=[A-Za-z0-9_-]{8,64}$/.test(a.url), a);
+    st.mapaPredPotvrdenim = st.mapa.length;
     await page.locator('[role=option]').first().click();
     await page.waitForSelector('text=Je to správna adresa?');
     ok('potvrdenie: adresa s PSČ z detailu', (await page.locator('h1').first().innerText()).includes('034 01 Ružomberok'));
     const d = st.req.find((r) => r.url.startsWith('/api/adresa/detail'));
     ok('detail: rovnaký token ako pri hľadaní', d && a && d.url.match(/token=(\S+)/)[1] === a.url.match(/token=(\S+)/)[1]);
+    ok('mapa: Leaflet sa stiahol až na obrazovke Potvrdenie adresy', st.mapa.length > 0 && st.mapaPredPotvrdenim === 0, [st.mapa.length, st.mapaPredPotvrdenim]);
+    await page.waitForSelector('#mapa-potvrdenie.leaflet-container', { timeout: 8000 });
+    ok('mapa: je na obrazovke Potvrdenie adresy, 240 px', (await page.locator('#mapa-potvrdenie').evaluate((e) => Math.round(e.getBoundingClientRect().height))) === 240 || (await page.locator('#mapa-potvrdenie').evaluate((e) => Math.round(e.getBoundingClientRect().height))) === 240);
+    await page.locator('#mapa-potvrdenie .leaflet-marker-icon').focus();
+    for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowRight');
+    await sleep(900);
     await klik(page, 'Áno, pokračovať');
     await kalkulacka(page, { typ: 'Dom', stav: 'Novostavba' });
     await page.waitForSelector('h1:has-text("až")', { timeout: 8000 });
     const o = JSON.parse(st.req.find((r) => r.url === '/api/odhad').telo);
-    ok('odhad: adresa so súradnicami z detailu', o.adresa && o.adresa.lat === 49.0816 && o.adresa.lng === 19.3048 && o.adresa.psc === '034 01' && !o.adresa.zo_zalohy && o.obec === 'Ružomberok', o);
-    ok('odhad: uložený so súradnicami', dbRows('select lat,lng from odhady order by id desc limit 1')[0].lat === 49.0816);
+    ok('odhad: súradnice po posune špendlíka mapy (lat z detailu, lng posunuté)', o.adresa && Math.abs(o.adresa.lat - 49.0816) < 0.001 && o.adresa.lng > 19.3048 && o.adresa.lng < 19.31 && o.adresa.psc === '034 01' && !o.adresa.zo_zalohy && o.obec === 'Ružomberok', o);
+    ok('odhad: uložený so súradnicami', Math.abs(dbRows('select lat,lng from odhady order by id desc limit 1')[0].lng - 19.305124) < 0.0005);
+    ok('mapa po odchode z obrazovky zmizne', (await page.locator('#mapa-potvrdenie').count()) === 0);
     await page.context().close();
   }
 
@@ -152,6 +161,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await page.goto(base + '/Nacenime.dc.html?screen=' + encodeURIComponent('Výsledok'));
     await page.waitForSelector('h1:has-text("až")', { timeout: 8000 });
     ok('ukážkový režim: výsledok bez volania /api', !st.req.some((r) => r.url.startsWith('/api/odhad')));
+    await page.goto(base + '/Nacenime.dc.html?screen=' + encodeURIComponent('Potvrdenie adresy'));
+    await page.waitForSelector('#mapa-potvrdenie.leaflet-container', { timeout: 8000 }).then(() => ok('ukážkový režim: mapa na Potvrdení adresy', true), () => ok('ukážkový režim: mapa na Potvrdení adresy', false));
     await page.context().close();
   }
 

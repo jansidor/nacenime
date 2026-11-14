@@ -24,7 +24,7 @@ Stav k 14. 11. 2026. Overené priamo na webe (nie len v repe).
 | 7 | **Podklady:** cenové dáta pre Tvrdošín, Turčianske Teplice, Námestovo; fotky; texty miest; potvrdiť `Dovalovo` | majiteľ obsahu |
 | 8 | Rozhodnúť, ako sa leady z kalkulačky dostanú do **CRM** (chýba meno) | majiteľ |
 | 9 | Zapnúť na `main` **Require review from Code Owners** | majiteľ repa (admin) |
-| 10 | **Napojenie frontendu na API** a zapojenie mapy z `frontend/mapa/` (zmena zmrazeného prototypu) | po súhlase |
+| 10 | ~~Napojenie frontendu na API a mapa~~ hotové vo vetve `feature/napojenie-frontendu` (PR), čaká na schválenie a zlúčenie | majiteľ |
 
 ## Ručná kontrola cookie lišty (2 minúty)
 1. Otvor `https://nacenime.sk` v **novom anonymnom okne**. Zobrazí sa lišta „Cookies“.
