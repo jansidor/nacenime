@@ -1,4 +1,4 @@
-// Test mapy v skutočnom prehliadači (Playwright). Spustenie: node frontend/mapa/test.cjs
+// Test mapy v skutočnom prehliadači (Playwright). Spustenie: node design_handoff_nacenime/mapa/test.cjs
 // Dlaždice OpenStreetMap sa nahrádzajú falošnými, aby test nezávisel od siete.
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
@@ -140,7 +140,7 @@ const over = (nazov, ok, detail = '') => { if (ok) console.log('ok   ' + nazov);
     await page.waitForFunction(() => window.__mapa);
     const r = await page.evaluate(() => ({ pretok: document.documentElement.scrollWidth > innerWidth, sirka: Math.round(document.querySelector('#mapa').getBoundingClientRect().width) }));
     over('na mobile mapa nepretečie šírku', !r.pretok, JSON.stringify(r));
-    await page.screenshot({ path: process.env.SNIMKA_MOBIL ?? '/dev/null' });
+    if (process.env.SNIMKA_MOBIL) await page.screenshot({ path: process.env.SNIMKA_MOBIL });
     await ctx.close();
   }
 

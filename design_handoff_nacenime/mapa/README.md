@@ -1,12 +1,12 @@
 # Mapa (Leaflet + OpenStreetMap)
 
-Mapa pre obrazovku **Potvrdenie adresy**, bez Google Maps, bez API kľúča a bez poplatkov. Je to samostatný modul: nezasahuje do zmrazeného frontendu (`design_handoff_nacenime/`). Zapojí sa až po súhlase.
+Mapa pre obrazovku **Potvrdenie adresy**, bez Google Maps, bez API kľúča a bez poplatkov. Je to samostatný modul, ktorý `Nacenime.dc.html` načíta až na obrazovke Potvrdenie adresy.
 
 ## Použitie
 ```html
 <div id="mapa"></div>
 <script type="module">
-  import { vytvorMapu } from '/frontend/mapa/mapa.js';
+  import { vytvorMapu } from '/mapa/mapa.js';
   const m = await vytvorMapu(document.getElementById('mapa'), {
     lat: 49.0816, lng: 19.3048,                       // z /api/adresa/detail
     naZmenu: ({ lat, lng }) => { /* uložiť nové súradnice */ },
@@ -32,7 +32,7 @@ Mapa pre obrazovku **Potvrdenie adresy**, bez Google Maps, bez API kľúča a be
 
 ## Testy
 ```bash
-node frontend/mapa/test.cjs        # potrebuje Playwright
+node design_handoff_nacenime/mapa/test.cjs        # potrebuje Playwright
 ```
 Overuje rozmery, popisy, ťahanie, klávesnicu, priblíženie, zlyhanie načítania, mobil a zmenšený pohyb. Dlaždice OpenStreetMap sa v teste nahrádzajú falošnými.
 **Nie je overené so skutočnými dlaždicami OSM** (v mojom prostredí je sieť obmedzená). Pozri aj ukážku `demo.html`.
