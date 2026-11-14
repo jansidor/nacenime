@@ -22,6 +22,9 @@ Hosting nasadzuje z Gitu do priečinkov `release_<čas>` a nemá SSH ani Compose
    ```
 7. ~~SSL certifikát~~ Hotové: `https://nacenime.sk` má platný certifikát Let's Encrypt (overené 13. 11. 2026, platný do 9. 2. 2027).
 
+## Oznámenia o leadoch
+Cron `odosli-pdf.php` posiela aj e-mail o každom novom leade (žiadosť o telefonát, PDF so súhlasom s kontaktovaním). Do `shared/.env` doplň `NACENIME_LEAD_EMAIL=adresa@…` (viac adries oddeľ čiarkou), voliteľne `NACENIME_LEAD_WEBHOOK=https://…` pre n8n alebo CRM. Bez týchto hodnôt sa leady iba ukladajú. Leady spred zavedenia oznámení sa spätne neoznamujú.
+
 ## Smerovanie `/api/*`
 Do `design_handoff_nacenime/` sa v nasadenom strome pridávajú `api.php` (stub) a `.htaccess` (Apache), ktorý `/api/*` presmeruje na stub. **Koreň webu je `design_handoff_nacenime/`** (overené 13. 11. 2026: `https://nacenime.sk/` vracia tamojší `index.html`, `/design_handoff_nacenime/` vracia 404, a `backend/` leží mimo koreňa a nie je dostupný). Ak by sa koreň zmenil:
 - koreň je celé repo: pridať do koreňového `.htaccess` `RewriteRule ^api(/|$) design_handoff_nacenime/api.php [L,QSA]`,

@@ -66,6 +66,16 @@ final class Diagnostika
         }
         filter_var($c->get('MAIL_FROM', 'noreply@nacenime.sk'), FILTER_VALIDATE_EMAIL) ? $ok('odosielacia adresa je platná') : $chyba('NACENIME_MAIL_FROM nie je platný e-mail');
 
+        $leady = $c->zoznam('LEAD_EMAIL');
+        if ($leady === [] && $c->get('LEAD_WEBHOOK') === '') {
+            $varuj('NACENIME_LEAD_EMAIL ani NACENIME_LEAD_WEBHOOK nie sú nastavené: o nových leadoch sa nedozviete');
+        } else {
+            $zle = array_filter($leady, fn($e) => !filter_var($e, FILTER_VALIDATE_EMAIL));
+            $zle ? $chyba('NACENIME_LEAD_EMAIL obsahuje neplatný e-mail') : $ok('oznámenia o leadoch sú nastavené');
+            $w = $c->get('LEAD_WEBHOOK');
+            ($w === '' || str_starts_with($w, 'https://')) ? null : $chyba('NACENIME_LEAD_WEBHOOK musí začínať https://');
+        }
+
         $m = $c->get('MAKLER_NAME', '[MENO MAKLÉRA]');
         ($m === '' || str_contains($m, '[')) ? $varuj('meno makléra je zástupný text') : $ok('meno makléra je nastavené');
         foreach (['RATE_LIMIT' => '60', 'RETENCIA_MESIACE' => '24'] as $k => $p) {

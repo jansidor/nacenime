@@ -12,6 +12,24 @@ final class Posta
 
     public function posli(string $komu, string $predmet, string $telo, string $pdf, string $nazovPrilohy): void
     {
+        $this->odosli($komu, $predmet, $telo, function (PHPMailer $m) use ($pdf, $nazovPrilohy): void {
+            $m->addStringAttachment($pdf, $nazovPrilohy, PHPMailer::ENCODING_BASE64, 'application/pdf');
+        });
+    }
+
+    /** Textový e-mail bez prílohy (oznámenie o leade). Odpoveď ide na $odpovedNa, ak je zadaný. */
+    public function posliText(string $komu, string $predmet, string $telo, ?string $odpovedNa = null): void
+    {
+        $this->odosli($komu, $predmet, $telo, function (PHPMailer $m) use ($odpovedNa): void {
+            if ($odpovedNa !== null && $odpovedNa !== '') {
+                $m->addReplyTo($odpovedNa);
+            }
+        });
+    }
+
+    /** @param callable(PHPMailer): void $doplnok */
+    private function odosli(string $komu, string $predmet, string $telo, callable $doplnok): void
+    {
         $host = $this->config->get('SMTP_HOST');
         if ($host === '') {
             throw new \RuntimeException('SMTP nie je nakonfigurované (NACENIME_SMTP_HOST).');
@@ -35,7 +53,7 @@ final class Posta
             $m->addAddress($komu);
             $m->Subject = $predmet;
             $m->Body = $telo;
-            $m->addStringAttachment($pdf, $nazovPrilohy, PHPMailer::ENCODING_BASE64, 'application/pdf');
+            $doplnok($m);
             $m->send();
         } catch (Exception $e) {
             throw new \RuntimeException('Odoslanie e-mailu zlyhalo: ' . $e->getMessage(), 0, $e); // bez hesla

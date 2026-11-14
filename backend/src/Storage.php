@@ -48,22 +48,29 @@ CREATE TABLE IF NOT EXISTS kontakty (
   id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
   druh TEXT NOT NULL CHECK (druh IN ('pdf','makler','mimo_regionu')),
   email TEXT, telefon TEXT, suhlas INTEGER NOT NULL DEFAULT 0, odhad_id INTEGER REFERENCES odhady(id),
-  odoslane INTEGER NOT NULL DEFAULT 0, pokusy INTEGER NOT NULL DEFAULT 0
+  odoslane INTEGER NOT NULL DEFAULT 0, pokusy INTEGER NOT NULL DEFAULT 0,
+  oznamene INTEGER NOT NULL DEFAULT 0, oznam_pokusy INTEGER NOT NULL DEFAULT 0
 );
 SQL);
         $this->doplnStlpec('odhady', 'veta', 'TEXT');
         $this->doplnStlpec('kontakty', 'pokusy', 'INTEGER NOT NULL DEFAULT 0');
+        if ($this->doplnStlpec('kontakty', 'oznamene', 'INTEGER NOT NULL DEFAULT 0')) {
+            // Leady spred zavedenia oznámení sa neoznamujú spätne.
+            $this->pdo->exec('UPDATE kontakty SET oznamene = 1');
+        }
+        $this->doplnStlpec('kontakty', 'oznam_pokusy', 'INTEGER NOT NULL DEFAULT 0');
     }
 
-    /** Jednoduchá migrácia pre databázy vytvorené staršou verziou schémy. */
-    private function doplnStlpec(string $tabulka, string $stlpec, string $typ): void
+    /** Jednoduchá migrácia pre databázy vytvorené staršou verziou schémy. Vráti true, ak stĺpec pridala. */
+    private function doplnStlpec(string $tabulka, string $stlpec, string $typ): bool
     {
         foreach ($this->pdo->query("PRAGMA table_info($tabulka)") as $r) {
             if ($r['name'] === $stlpec) {
-                return;
+                return false;
             }
         }
         $this->pdo->exec("ALTER TABLE $tabulka ADD COLUMN $stlpec $typ");
+        return true;
     }
 
     /** @param array<string, mixed> $d */
@@ -132,6 +139,26 @@ SQL);
     public function pokusZlyhal(int $kontaktId): void
     {
         $this->pdo->prepare('UPDATE kontakty SET pokusy = pokusy + 1 WHERE id = ?')->execute([$kontaktId]);
+    }
+
+    /** Leady (telefonát, PDF so súhlasom), o ktorých ešte nepadlo oznámenie maklérovi. @return list<array<string, mixed>> */
+    public function cakajuceOznamenia(int $maxPokusov, int $limit = 20): array
+    {
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.vysledok, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny, o.bez_adresy
+            FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
+            WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.oznamene = 0 AND k.oznam_pokusy < ? ORDER BY k.id LIMIT ?");
+        $s->execute([$maxPokusov, $limit]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function oznacOznamene(int $kontaktId): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET oznamene = 1 WHERE id = ?')->execute([$kontaktId]);
+    }
+
+    public function oznamenieZlyhalo(int $kontaktId): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET oznam_pokusy = oznam_pokusy + 1 WHERE id = ?')->execute([$kontaktId]);
     }
 
     public function odhadExistuje(int $id): bool
