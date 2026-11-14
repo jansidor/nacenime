@@ -1,5 +1,0 @@
-# Zmrazený frontend (dizajn). Jedna cesta alebo prefix na riadok.
-design_handoff_nacenime/Nacenime.dc.html
-design_handoff_nacenime/Nacenime Prehlad.dc.html
-design_handoff_nacenime/support.js
-design_handoff_nacenime/img/
