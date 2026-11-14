@@ -1,0 +1,25 @@
+/* Spoločný štýl právnych stránok podľa design_handoff_nacenime/README.md */
+:root { color-scheme: light; }
+html, body { margin: 0; background: #f6f4ef; }
+body { color: #11122f; font: 400 clamp(18px, calc(18px + (100vw - 600px) / 400), 19px)/1.5 'Archivo', system-ui, sans-serif; }
+a { color: #272361; text-decoration: underline; text-underline-offset: 4px; }
+a:hover { color: #11122f; text-decoration-thickness: 3px; }
+a:focus-visible, button:focus-visible { outline: 3px solid #272361; outline-offset: 2px; }
+header, main, footer > div { width: 100%; max-width: calc(1060px + 2 * clamp(20px, 5vw, 64px)); margin: 0 auto; padding-left: clamp(20px, 5vw, 64px); padding-right: clamp(20px, 5vw, 64px); box-sizing: border-box; }
+header { padding-top: 24px; }
+.logo { font: 800 24px/1.2 'Archivo', sans-serif; letter-spacing: -0.02em; color: #272361; text-decoration: none; }
+main { padding-top: 48px; padding-bottom: 64px; }
+main > * { max-width: 62ch; }
+h1 { font: 800 clamp(32px, 5vw, 44px)/1.05 'Archivo', sans-serif; letter-spacing: -0.02em; color: #272361; margin: 0 0 24px; }
+h2 { font: 800 24px/1.05 'Archivo', sans-serif; letter-spacing: -0.02em; color: #272361; margin: 40px 0 12px; }
+p, ul { margin: 0 0 16px; }
+li { margin-bottom: 8px; }
+.navrh { border: 1.5px solid #272361; border-radius: 12px; padding: 16px 20px; background: #fff; margin-bottom: 32px; }
+table { border-collapse: collapse; width: 100%; max-width: 62ch; margin-bottom: 16px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; border-bottom: 1.5px solid #dcd9d0; }
+th { font-weight: 600; color: #272361; }
+button.odkaz { background: none; border: 0; padding: 0; font: inherit; color: #272361; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+footer { background: #11122f; color: #f6f4ef; margin-top: 32px; }
+footer > div { display: flex; flex-wrap: wrap; gap: 8px 28px; padding-top: 32px; padding-bottom: 32px; }
+footer a { color: #f6f4ef; }
+footer a:focus-visible { outline-color: #f6f4ef; }

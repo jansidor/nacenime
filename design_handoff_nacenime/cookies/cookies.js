@@ -19,6 +19,9 @@
   var COOKIE = 'nm_cookies';
   var PLATNOST_SEKUND = 60 * 60 * 24 * 183; // 6 mesiacov
   var VERZIA = 1;                           // zvýšiť pri zmene účelov, aby sa súhlas vypýtal znova
+  // Stránky so zásadami (vedľa Nacenime.dc.html, relatívne k aktuálnej stránke)
+  var ODKAZ_COOKIES = './cookies.html';
+  var ODKAZ_OSOBNE_UDAJE = './ochrana-osobnych-udajov.html';
 
   if (window.top !== window.self) return;   // náhľady v iframe: bez lišty a bez sledovania
 
@@ -180,6 +183,11 @@
     var r = vytvorRamec();
     r.appendChild(el('h2', { id: 'nm-ck-nadpis', text: 'Nastavenia cookies' }));
     r.appendChild(el('p', { id: 'nm-ck-popis', text: 'Vyberte, ktoré cookies môžeme používať. Rozhodnutie môžete kedykoľvek zmeniť cez odkaz Cookies v pätičke.' }));
+    r.appendChild(el('p', {}, [
+      el('a', { href: ODKAZ_COOKIES, text: 'Zásady cookies' }),
+      document.createTextNode(' · '),
+      el('a', { href: ODKAZ_OSOBNE_UDAJE, text: 'Ochrana osobných údajov' })
+    ]));
 
     var nevyhnutne = el('div', { 'class': 'nm-ck-riadok nm-ck-pevne' }, [
       el('input', { type: 'checkbox', id: 'nm-ck-nev', checked: 'checked', disabled: 'disabled' }),
