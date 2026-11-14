@@ -33,6 +33,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const page = await ctx.newPage(), st = { chyby: [], req: [], mapa: [], mapaPredPotvrdenim: 0 };
     page.on('pageerror', (e) => st.chyby.push(String(e)));
     page.on('request', (r) => { if (r.url().startsWith(base + '/api/')) st.req.push({ url: r.url().slice(base.length), metoda: r.method(), telo: r.postData() }); });
+    page.on('request', (r) => { if (/unpkg\.com/.test(r.url())) st.unpkg = (st.unpkg || 0) + 1; });
     page.on('request', (r) => { if (/\/mapa\//.test(r.url())) st.mapa.push(r.url()); });
     await page.route(/^https:\/\/unpkg\.com\//, (r) => { const f = path.join(UNPKG, new URL(r.request().url()).pathname); return fs.existsSync(f) ? r.fulfill({ status: 200, contentType: 'text/javascript', body: fs.readFileSync(f) }) : r.fulfill({ status: 404, body: '' }); });
     await page.route(/^https?:\/\/(?!127\.0\.0\.1|unpkg\.com)/, (r) => r.fulfill({ status: 200, contentType: r.request().resourceType() === 'stylesheet' ? 'text/css' : 'text/javascript', body: '' }));
@@ -83,6 +84,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const hp = st.req.filter((r) => /kontakt/.test(r.url)).every((r) => JSON.parse(r.telo).web === '');
     ok('honeypot sa posiela prázdny', hp);
     ok('honeypot je skrytý pred čítačkou', await page.locator('input[name=web]').first().getAttribute('aria-hidden') === 'true' && await page.locator('input[name=web]').first().getAttribute('tabindex') === '-1');
+    ok('knižnice sa načítali lokálne, nie z unpkg.com', !st.unpkg, st.unpkg);
     ok('bez chýb v konzole', st.chyby.length === 0, st.chyby);
     await page.context().close();
   }
