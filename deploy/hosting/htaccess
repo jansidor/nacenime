@@ -1,0 +1,5 @@
+# Presmeruje /api/* na api.php (Apache). Nič iné nemení. Ak sa .htaccess ignoruje, pozri deploy/NASADENIE-GIT.md.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^api(/|$) api.php [L,QSA]
+</IfModule>

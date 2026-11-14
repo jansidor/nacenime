@@ -2,13 +2,14 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../src/Config.php';
+require __DIR__ . '/../src/Cesty.php';
 require __DIR__ . '/../src/Odhad.php';
 require __DIR__ . '/../src/Validator.php';
 require __DIR__ . '/../src/Adresy.php';
 require __DIR__ . '/../src/Storage.php';
 require __DIR__ . '/../src/Api.php';
 
-use Nacenime\{Api, Config, Odhad, Storage};
+use Nacenime\{Api, Cesty, Config, Odhad, Storage};
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -19,13 +20,18 @@ header('X-Frame-Options: DENY');
 
 try {
     $root = dirname(__DIR__);
-    $config = Config::nacitaj($root . '/.env');
+    $config = Config::nacitaj(Cesty::envSubor($root));
+    if (($chybaNasadenia = Cesty::chybaNasadenia($root, $config)) !== null) {
+        error_log($chybaNasadenia);
+        http_response_code(503);
+        echo json_encode(['chyba' => 'Služba nie je nakonfigurovaná.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
     $cennik = $config->get('CENNIK_PATH', $root . '/../design_handoff_nacenime/data/nacenime-cennik.json');
     if ($cennik[0] !== '/') {
         $cennik = $root . '/' . $cennik;
     }
-    $dbCesta = $config->get('DB_PATH', 'var/nacenime.sqlite');
-    $dbCesta = $dbCesta[0] === '/' ? $dbCesta : $root . '/' . $dbCesta;
+    $dbCesta = Cesty::dbCesta($config, $root);
     $api = new Api(Odhad::zo_suboru($cennik), $config, new Storage($dbCesta));
 
     $metoda = $_SERVER['REQUEST_METHOD'] ?? 'GET';
