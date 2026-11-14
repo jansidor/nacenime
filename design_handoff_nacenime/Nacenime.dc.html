@@ -163,7 +163,7 @@ main>section{animation:nc-in 150ms linear}
       <section data-screen-label="01c Mimo regiónu" style="max-width:640px">
         <h1 style="margin:0;font:800 clamp(32px,6vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">U vás zatiaľ neoceňujeme</h1>
         <p style="margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2.2vw,24px)">Dáme vám vedieť, keď začneme.</p>
-        <form onSubmit="{{ sendNotify }}" noValidate="{{ true }}" style="margin:32px 0 0">
+        <form onSubmit="{{ sendNotify }}" noValidate="{{ true }}" style="margin:32px 0 0"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
           <label for="email-notify" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label>
           <div style="display:flex;flex-wrap:wrap;gap:12px">
             <input id="email-notify" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ notifyEmail }}" onChange="{{ setNotifyEmail }}" style="flex:999 1 240px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
@@ -323,14 +323,14 @@ main>section{animation:nc-in 150ms linear}
 
         <sc-if value="{{ resDone }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:clamp(48px,6vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:48px clamp(32px,6vw,96px);border-top:1.5px solid #272361;padding-top:40px">
-          <form onSubmit="{{ requestCall }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px">
+          <form onSubmit="{{ requestCall }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
             <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Cena od makléra</h2>
             <div><label for="telefon" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Telefón</label><input id="telefon" type="tel" autoComplete="tel" placeholder="0900 123 456" value="{{ phone }}" onChange="{{ setPhone }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
             <button type="submit" style="height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zavolajte mi</button>
             <p style="margin:0;max-width:62ch">{{ maklerName }} si nehnuteľnosť pozrie a povie jednu cenu.</p>
             <sc-if value="{{ hasCallMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ callIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ callMsg }}</span></p></sc-if>
           </form>
-          <sc-if value="{{ showPdf }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ sendPdf }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{ showPdf }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ sendPdf }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
             <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Odhad v PDF</h2>
             <div><label for="email-pdf" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label><input id="email-pdf" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ email }}" onChange="{{ setEmail }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
             <label style="display:flex;gap:14px;align-items:flex-start;cursor:pointer;max-width:62ch">
@@ -393,76 +393,123 @@ class Component extends DCLogic {
     { line: 'Vzorová ulica 5', town: 'Dolný Kubín', zip: '026 01', ok: true },
     { line: 'Vzorová ulica 7', town: 'Žilina', zip: '010 01', ok: false }
   ];
-  norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  TOWNS = ['ruzomberok', 'liptovsky mikulas', 'liptovsky hradok', 'martin', 'vrutky', 'turcianske teplice', 'dolny kubin', 'namestovo', 'tvrdosin', 'trstena'];
+  norm = t => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  // Ukážkový režim (?screen=...): bez volania servera, s vymyslenými údajmi. Na živom webe sa nepoužíva.
+  demo = new URLSearchParams(location.search).has('screen');
+  sid = 0;
+  // Volanie servera. GET bez tela, POST ako JSON. Sieťová chyba vyhodí výnimku, odpoveď servera nie.
+  api = async (path, body) => {
+    const r = await fetch('api/' + path, body === undefined ? { headers: { Accept: 'application/json' } } : { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) });
+    let data = null;
+    try { data = await r.json(); } catch (e) { data = null; }
+    return { ok: r.ok, status: r.status, data };
+  };
+  // Session token pre Google: jedno písanie plus výber jednej adresy.
+  tok = () => this._tok || (this._tok = (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : (Math.random().toString(36) + '00000000').slice(2, 14) + Date.now().toString(36)));
+  chybaPola = (r, pole) => (r.data && r.data.chyby && r.data.chyby[pole]) || '';
   onAddress = e => {
     const v = e.target.value, long = v.trim().length >= 3;
     clearTimeout(this.t);
+    const id = ++this.sid;
     this.setState(p => ({ address: v, sugg: long ? p.sugg : [] }));
-    if (long) this.t = setTimeout(() => {
-      const q = this.norm(v.trim()), m = this.ADDR.filter(a => this.norm(a.line + ' ' + a.town).includes(q));
-      this.setState({ sugg: m.length ? m : this.ADDR.slice(0, 4) });
+    if (!long) return;
+    this.t = setTimeout(async () => {
+      if (this.demo) {
+        const q = this.norm(v.trim()), m = this.ADDR.filter(a => this.norm(a.line + ' ' + a.town).includes(q));
+        return this.setState({ sugg: m.length ? m : this.ADDR.slice(0, 4) });
+      }
+      try {
+        const r = await this.api('adresa?q=' + encodeURIComponent(v.trim()) + '&token=' + this.tok());
+        if (id !== this.sid) return;
+        if (!r.ok || !r.data || r.data.zaloha) return this.setState({ zaloha: true, sugg: [], street: v.trim() });
+        this.setState({ sugg: (r.data.navrhy || []).map(n => ({ id: n.id, line: n.hlavny, town: n.vedlajsi })) });
+      } catch (err) { if (id === this.sid) this.setState({ zaloha: true, sugg: [], street: v.trim() }); }
     }, 300);
   };
-  state = { obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', sugg: [], picked: null, street: '', town: '', pin: { x: 50, y: 50 }, zoom: 16, from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  // Výber návrhu: detail prinesie PSČ, obec, súradnice a či je adresa v regióne. Token sa potom zahodí.
+  pickAddr = async a => {
+    if (this.demo) return this.go({ screen: 'Potvrdenie adresy', picked: a, address: a.line + ', ' + a.town, sugg: [], pin: { x: 50, y: 50 } });
+    const tok = this.tok();
+    this._tok = null;
+    try {
+      const r = await this.api('adresa/detail?id=' + encodeURIComponent(a.id) + '&token=' + tok), d = r.data;
+      if (!r.ok || !d || d.zaloha) throw new Error('zaloha');
+      const place = { line: d.ulica || a.line, town: d.obec || a.town, zip: d.psc || '', ok: !!d.v_regione, lat: d.lat, lng: d.lng, ulica: d.ulica || a.line };
+      this.go({ screen: 'Potvrdenie adresy', picked: place, address: [place.line, place.town].filter(Boolean).join(', '), sugg: [], pin: { x: 50, y: 50 } });
+    } catch (err) { this.setState({ zaloha: true, sugg: [], street: a.line || '' }); }
+  };
+  // Záloha bez Google: obec overí server (zoznam obcí 7 okresov, bez ohľadu na diakritiku).
+  overObec = async town => {
+    if (this.demo || !town) return true;
+    try { const r = await this.api('obec?obec=' + encodeURIComponent(town)); return r.ok && r.data ? !!r.data.v_regione : true; } catch (err) { return true; }
+  };
+  state = { zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', pin: { x: 50, y: 50 }, zoom: 16, from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
   componentDidUpdate(prev) {
     if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, step: 0 }, () => this.props.startScreen === 'Výsledok' && this.runOdhad());
   }
   componentDidMount() { if (this.state.screen === 'Výsledok') this.runOdhad(); }
-  loadCennik = () => this._cennik || (this._cennik = fetch('data/nacenime-cennik.json').then(r => r.ok ? r.json() : Promise.reject(r.status)));
-  nrm = x => String(x == null ? '' : x).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  // Len pre prototyp. Produkčný výpočet beží na serveri (PHP, POST /api/odhad), pozri README.
-  odhad(c, { typ, obec, stav, vymera }) {
-    const none = { od: null, do: null, pocet: null, zdroj: null, uroven: null, pouzity_stav: null, veta: null, nadpis: null };
-    if (String(this.props.typyBezRozpatia || '').split(',').map(x => x.trim()).includes(typ))
-      return { stav: 'maklér', ...none, nadpis: 'Cenu vám povie maklér', veta: 'Pri tomto type nehnuteľnosti rozpätie neukazujeme. Maklér si ju pozrie a povie vám cenu.' };
-    const key = Object.keys(c.lokality).find(o => this.nrm(o) === this.nrm(obec));
-    if (!key) return { stav: 'mimo regiónu', ...none };
-    const okres = 'okres ' + c.lokality[key], lok = { obec: key, okres };
-    const sk = s => [['Predaje', 'obec', s], ['Ponuky', 'obec', s], ['Predaje', 'okres', s], ['Ponuky', 'okres', s]];
-    for (const [zdroj, uroven, s] of [...(stav ? sk(stav) : []), ...sk('všetky')]) {
-      const g = c.cennik.find(x => x.kluc === [zdroj, typ, lok[uroven], s].join('|'));
-      if (!g || g.pocet < c.prahy[zdroj.toLowerCase()]) continue;
-      const [zMin, zMax] = c.zlavy[typ], predaj = zdroj === 'Predaje', r = n => Math.max(0, Math.round(n / 1000) * 1000);
-      const veta = [predaj ? 'Podľa ' + g.pocet + ' podobných predajov v okolí.' : 'Podľa ' + g.pocet + ' aktuálnych ponúk v okolí, po odpočítaní bežnej zľavy pri predaji.',
-        s === 'všetky' && 'Bez rozlíšenia stavu.', uroven === 'okres' && 'Rátané z celého okresu.'].filter(Boolean).join(' ');
-      return { stav: 'ok', od: r(g.q1 * vymera - (predaj ? 0 : zMax)), do: r(g.q3 * vymera - (predaj ? 0 : zMin)), pocet: g.pocet, zdroj, uroven, pouzity_stav: s, veta, nadpis: null };
-    }
-    return { stav: 'málo dát', ...none, nadpis: 'Na odhad tu máme málo predajov', veta: 'Maklér vám povie cenu po obhliadke.' };
-  }
-  runOdhad = () => {
+  // Výpočet beží na serveri (POST /api/odhad). V ukážkovom režime sa vráti pevný vzorový výsledok.
+  runOdhad = async () => {
     const s = this.state, a = s.answers, id = this.rid = (this.rid || 0) + 1;
     const obec = (s.picked && s.picked.town) || s.town.trim() || String(a[6] || '').trim() || 'Ružomberok';
-    const typ = a[1] || 'Byt', stav = typ === 'Pozemok' ? undefined : (a[3] || 'Kompletná rekonštrukcia'), vymera = Number(String(a[2] || 66).replace(',', '.'));
-    this.setState({ odhad: null, odhadState: 'loading' });
-    this.loadCennik()
-      .then(c => { if (id !== this.rid) return; const d = this.odhad(c, { typ, obec, stav, vymera }); d.stav === 'mimo regiónu' ? this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }) : this.setState({ odhad: d, odhadState: 'ok' }); })
-      .catch(() => { if (id === this.rid) this.setState({ odhadState: 'error' }); });
+    const typ = a[1] || 'Byt', pozemok = typ === 'Pozemok', vymera = String(a[2] || 66).replace(',', '.');
+    this.setState({ odhad: null, odhadState: 'loading', odhadId: null });
+    if (this.demo) {
+      const d = { stav: 'ok', od: 142000, do: 158000, pocet: 24, veta: 'Podľa 24 podobných predajov v okolí.', poznamka: 'Vyššiu cenu dosahujú byty po rekonštrukcii a s dobrou prípravou predaja.', makler: this.props.maklerName || '[MENO MAKLÉRA]' };
+      return setTimeout(() => id === this.rid && this.setState({ odhad: d, odhadState: 'ok' }), 400);
+    }
+    const body = { typ, obec, vymera };
+    if (!pozemok) body.stav = a[3] || 'Kompletná rekonštrukcia';
+    if (a[0]) body.dovod = a[0];
+    if (!pozemok && a[4]) body.balkon = a[4];
+    if (String(a[5] || '').trim()) body.predstava_ceny = String(a[5]).trim();
+    const p = s.picked;
+    if (p && typeof p.lat === 'number') body.adresa = { ulica: p.ulica || p.line, psc: p.zip || '', lat: p.lat, lng: p.lng };
+    else if (s.street.trim() || s.town.trim()) body.adresa = { ulica: s.street.trim(), zo_zalohy: true };
+    else body.adresa = { bez_adresy: true };
+    try {
+      const r = await this.api('odhad', body);
+      if (id !== this.rid) return;
+      const d = r.data;
+      if (!r.ok || !d || !d.stav) return this.setState({ odhadState: 'error' });
+      if (d.stav === 'mimo regiónu') return this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' });
+      this.setState({ odhad: d, odhadState: 'ok', odhadId: d.odhad_id || null });
+    } catch (err) { if (id === this.rid) this.setState({ odhadState: 'error' }); }
+  };
+  // Kontaktné formuláre: server vráti hotový text (200) alebo vetu pod pole (422).
+  poslat = async (cesta, telo, pole, kluc, chybaDemo, okDemo) => {
+    if (this.state.busy) return;
+    if (this.demo) return this.setState({ [kluc]: chybaDemo || okDemo });
+    this.setState({ busy: true });
+    try {
+      const r = await this.api('kontakt/' + cesta, { ...telo, web: this.state.web });
+      this.setState({ [kluc]: r.ok && r.data && r.data.sprava ? r.data.sprava : this.chybaPola(r, pole) || 'Nepodarilo sa odoslať. Skúste to znova.' });
+    } catch (err) { this.setState({ [kluc]: 'Nepodarilo sa odoslať. Skúste to znova.' }); }
+    this.setState({ busy: false });
   };
   go(patch) { this.setState(patch); window.scrollTo(0, 0); }
   renderVals() {
     const s = this.state, step = s.step, done = step >= 7, isPrice = step === 5, isObec = step === 6, cur = this.QS[step] || {};
     const a = s.answers, pozemok = a[1] === 'Pozemok', obecAddr = (s.picked && s.picked.town) || s.town.trim(), needObec = !obecAddr, obecVal = obecAddr || String(a[6] || '').trim();
     const od = s.odhad, resOk = s.odhadState === 'ok' && !!od && od.stav === 'ok', resNoPrice = s.odhadState === 'ok' && !!od && od.stav !== 'ok';
-    const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0'), SCALE = { Byt: 'byty', Apartmán: 'apartmány', Dom: 'domy', Chata: 'chaty' };
-    const scaleNote = a[1] === 'Pozemok' ? 'Vyššiu cenu dosahujú pozemky so sieťami a prístupovou cestou.' : SCALE[a[1]] ? 'Vyššiu cenu dosahujú ' + SCALE[a[1]] + ' po rekonštrukcii a s dobrou prípravou predaja.' : '';
+    const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+    const scaleNote = (resOk && od.poznamka) || '';
     const k = n => Math.round(n / 1000);
     const auto = this.props.autoAdvance ?? true;
     const city = this.CITIES[s.city];
     const cities = this.CITIES.map((c, i) => ({ name: c.name, i, open: e => { e.preventDefault(); this.go({ screen: 'Mesto', city: i }); } }));
     const set = k => e => this.setState({ [k]: e.target.value });
-    const down = this.props.googleDown ?? false;
-    const townBad = !!s.town.trim() && !this.TOWNS.includes(this.norm(s.town.trim()));
+    const down = (this.props.googleDown ?? false) || s.zaloha;
     const place = s.picked || ((this.props.outOfRegion ?? false) ? this.ADDR[4] : this.ADDR[0]);
-    const sugg = (s.sugg.length ? s.sugg : (this.props.showSuggest ?? true) && !s.address.trim() ? [this.ADDR[0]] : []).map(a => ({ line: a.line, town: a.town,
-      pick: () => this.go({ screen: 'Potvrdenie adresy', picked: a, address: a.line + ', ' + a.town, sugg: [], pin: { x: 50, y: 50 } }) }));
+    const sugg = (s.sugg.length ? s.sugg : this.demo && (this.props.showSuggest ?? true) && !s.address.trim() ? [this.ADDR[0]] : []).map(a => ({ line: a.line, town: a.town,
+      pick: () => this.pickAddr(a) }));
     return {
       isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name,
       isConfirm: s.screen === 'Potvrdenie adresy',
       useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0,
-      street: s.street, town: s.town, setStreet: set('street'), setTown: e => this.setState({ town: e.target.value, townOut: false }), checkTown: () => this.setState({ townOut: townBad }), townOut: s.townOut,
-      submitFallback: e => { e.preventDefault(); if (townBad) return this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
-      confirmAddr: place.line + ', ' + place.zip + ' ' + place.town, outOfRegion: !place.ok,
+      street: s.street, town: s.town, setStreet: set('street'), setTown: e => this.setState({ town: e.target.value, townOut: false }), checkTown: async () => { const t = s.town.trim(); if (t) this.setState({ townOut: !(await this.overObec(t)) }); }, townOut: s.townOut,
+      submitFallback: async e => { e.preventDefault(); if (!(await this.overObec(s.town.trim()))) return this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
+      confirmAddr: [place.line, [place.zip, place.town].filter(Boolean).join(' ')].filter(Boolean).join(', '), outOfRegion: !place.ok,
       pinLeft: s.pin.x + '%', pinTop: s.pin.y + '%', zoomLabel: 'priblíženie ' + s.zoom,
       zoomIn: () => this.setState(p => ({ zoom: Math.min(20, p.zoom + 1) })),
       zoomOut: () => this.setState(p => ({ zoom: Math.max(10, p.zoom - 1) })),
@@ -477,8 +524,9 @@ class Component extends DCLogic {
       confirmAddress: () => place.ok ? this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: place }) : this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }),
       isOut: s.screen === 'Mimo regiónu', notifyEmail: s.notifyEmail, notifyMsg: s.notifyMsg, hasNotifyMsg: !!s.notifyMsg, notifyIsErr: /^Zadajte/.test(s.notifyMsg),
       setNotifyEmail: e => this.setState({ notifyEmail: e.target.value, notifyMsg: '' }),
-      sendNotify: e => { e.preventDefault(); this.setState({ notifyMsg: /^\S+@\S+\.\S+$/.test(s.notifyEmail.trim()) ? 'Ďakujeme, dáme vám vedieť.' : 'Zadajte e-mail.' }); },
-      skipAddress: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: null, town: '', address: '' }); },
+      sendNotify: e => { e.preventDefault(); this.poslat('mimo-regionu', { email: s.notifyEmail.trim() }, 'email', 'notifyMsg', /^\S+@\S+\.\S+$/.test(s.notifyEmail.trim()) ? '' : 'Zadajte e-mail.', 'Ďakujeme, dáme vám vedieť.'); },
+      web: s.web, setWeb: e => this.setState({ web: e.target.value }),
+      skipAddress: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: null, town: '', street: '', address: '' }); },
       isPrice, price: s.price, setPrice: set('price'),
       isObec, obec: s.obec, obecError: s.obecError, setObec: e => this.setState({ obec: e.target.value, obecError: false }),
       submitObec: e => { e.preventDefault(); const v = s.obec.trim(); if (!v) return this.setState({ obecError: true }); this.go({ answers: { ...s.answers, 6: v }, step: 7 }); },
@@ -490,7 +538,12 @@ class Component extends DCLogic {
       setArea: e => this.setState({ area: e.target.value, areaError: false }),
       toggleConsent: () => this.setState(p => ({ consent: !p.consent })),
       goHome: e => { e.preventDefault(); this.go({ screen: 'Úvod' }); },
-      startCalc: e => { e.preventDefault(); this.go({ screen: 'Potvrdenie adresy', picked: s.sugg[0] || s.picked, sugg: [], pin: { x: 50, y: 50 } }); },
+      startCalc: e => {
+        e.preventDefault();
+        if (this.demo) return this.go({ screen: 'Potvrdenie adresy', picked: s.sugg[0] || s.picked, sugg: [], pin: { x: 50, y: 50 } });
+        if (s.sugg[0]) return this.pickAddr(s.sugg[0]);
+        this.setState({ zaloha: true, street: s.address.trim() }); // nič sa nenašlo: ručné polia Ulica a Obec
+      },
       segments: [0, 1, 2, 3, 4].map(i => ({ bg: i < step || (i === step && !done) ? '#272361' : '#dcd9d0' })),
       stepLabel: done ? 'Hotovo' : isPrice ? 'Nepovinná otázka' : isObec ? 'Posledná otázka' : 'Otázka ' + (step + 1) + ' z 5',
       question: done ? 'Máme všetko' : isPrice ? 'Akú máte predstavu o cene?' : isObec ? 'V ktorej obci je nehnuteľnosť?' : cur.q,
@@ -509,14 +562,14 @@ class Component extends DCLogic {
       },
       resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
       priceText: resOk ? fmt(od.od) + ' až ' + fmt(od.do) + '\u00a0€' : '', hasNadpis: resNoPrice && !!od.nadpis, nadpis: od && od.nadpis || '',
-      hasVeta: !!(od && od.veta), veta: od && od.veta || '', hasScaleNote: !!scaleNote, scaleNote, maklerName: this.props.maklerName || '[MENO MAKLÉRA]',
+      hasVeta: !!(od && od.veta), veta: od && od.veta || '', hasScaleNote: !!scaleNote, scaleNote, maklerName: (od && od.makler) || this.props.maklerName || '[MENO MAKLÉRA]',
       scaleFrom: resOk ? k(od.od) : '', scaleTo: resOk ? k(od.do) : '', scaleLabel: resOk ? 'Ilustračná stupnica, odhad od ' + k(od.od) + ' do ' + k(od.do) + ' tisíc eur' : '',
       retry: e => { e.preventDefault(); this.runOdhad(); },
       showResult: () => { this.go({ screen: 'Výsledok' }); this.runOdhad(); },
       editData: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0 }); },
       summary: (s.address.trim() || obecVal).replace(/\.$/, '') + '. ' + (s.answers[1] || 'Byt') + ' ' + (s.answers[2] || 66) + ' m²',
-      sendPdf: e => { e.preventDefault(); this.setState({ pdfMsg: /^\S+@\S+\.\S+$/.test(s.email.trim()) ? 'Odhad vám pošleme na e-mail.' : 'Zadajte e-mail.' }); },
-      requestCall: e => { e.preventDefault(); this.setState({ callMsg: s.phone.replace(/\D/g, '').length >= 9 ? 'Ďakujeme, ozveme sa vám.' : 'Zadajte telefónne číslo.' }); }
+      sendPdf: e => { e.preventDefault(); this.poslat('pdf', { email: s.email.trim(), odhad_id: s.odhadId, ...(s.consent ? { suhlas: true } : {}) }, 'email', 'pdfMsg', /^\S+@\S+\.\S+$/.test(s.email.trim()) ? '' : 'Zadajte e-mail.', 'Odhad vám pošleme na e-mail.'); },
+      requestCall: e => { e.preventDefault(); this.poslat('makler', { telefon: s.phone.trim(), odhad_id: s.odhadId }, 'telefon', 'callMsg', s.phone.replace(/\D/g, '').length >= 9 ? '' : 'Zadajte telefónne číslo.', 'Ďakujeme, ozveme sa vám.'); }
     };
   }
 }
