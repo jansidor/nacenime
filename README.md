@@ -5,7 +5,7 @@ Kalkulačka orientačnej ceny nehnuteľnosti pre **Liptov, Turiec a Oravu**. Maj
 ## Stav
 - **Frontend** je hotový dizajnový prototyp (`design_handoff_nacenime/`). Zmeny sú povolené, ale v súlade so zadaním dizajnu (pozri `CLAUDE.md`).
 - **Backend** (`backend/`) je hotový a otestovaný: výpočet odhadu, proxy pre Google Places, formuláre, SQLite, PDF a e-maily, GDPR nástroje.
-- **Cookie lišta** (GTM a Clarity až po súhlase) je nasadená, **mapa zadarmo** (`frontend/mapa/`) je hotový modul a Google volania majú denný strop.
+- **Cookie lišta** (GTM a Clarity až po súhlase) je nasadená, **mapa zadarmo** (`design_handoff_nacenime/mapa/`) je hotový modul a Google volania majú denný strop.
 - **Nasadenie backendu na hosting** (bez SSH a Composera): návrh je v `deploy/NASADENIE-GIT.md`.
 - **Napojenie frontendu na backend** ešte nie je spravené. Zmluva je v `docs/NAPOJENIE-FRONTENDU.md`.
 - **Čaká na podklady:** cenové dáta pre tri okresy, Google kľúč, SMTP, texty a fotky. Pozri `docs/PODKLADY.md`.
