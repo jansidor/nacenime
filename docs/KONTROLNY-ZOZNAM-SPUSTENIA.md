@@ -1,6 +1,6 @@
 # Kontrolný zoznam spustenia nacenime.sk
 
-Stav k 13. 11. 2026. Overené priamo na webe (nie len v repe).
+Stav k 14. 11. 2026. Overené priamo na webe (nie len v repe).
 
 ## Hotové a overené
 - ✅ **HTTPS** funguje, certifikát Let's Encrypt pre `nacenime.sk`, platný do 9. 2. 2027.
@@ -8,22 +8,23 @@ Stav k 13. 11. 2026. Overené priamo na webe (nie len v repe).
 - ✅ **Nasadené z `main`:** `Nacenime.dc.html` a `cookies/cookies.js` na webe sú bajt po bajte rovnaké ako v `main` (PR #2, #3, #4).
 - ✅ **Cookie lišta nasadená; pred súhlasom sa nič nesledovalo:** v nasadenom HTML nie je Clarity ani Google Tag Manager (načítajú sa až modulom po súhlase). Správanie lišty pokrýva test `design_handoff_nacenime/cookies/test.cjs` na tom istom kóde.
 - ✅ `/.env` a `/.git/config` vracajú 403.
-- ✅ Dizajn a texty sa nezmenili (zmrazený frontend, jediná zmena je cookie modul).
+- ✅ Dizajn a texty sa nezmenili (zmrazený frontend; zmeny len cookie modul a hlavička stránky).
+- ✅ **PR #5, #6, #7 zlúčené.** Vetva `deploy` (aj s knižnicami) sa zostavuje automaticky po každom pushi do `main`.
+- ✅ **SEO základy na webe:** `lang="sk"`, titulok, popis, kanonická adresa `https://nacenime.sk/`, Open Graph a Twitter, JSON-LD `RealEstateAgent` (adresa, telefón), favicon, `og-image.png`, `robots.txt`, `sitemap.xml`.
 
 ## Na urobenie (poradie podľa dôležitosti)
 | # | Čo | Kto |
 |---|---|---|
-| 1 | Zlúčiť **PR #5** (oprava občasného `database is locked`) | majiteľ repa |
-| 2 | Rozhodnúť o **PR #6** (nasadenie backendu): spustiť workflow, prepnúť hosting na vetvu `deploy`, vytvoriť `shared/.env`, cron, potvrdiť PHP 8.1 | majiteľ hostingu |
-| 3 | **Tag Manager** (`GTM-WHXQF3H7`): značka GA4 s `G-X0825SJMQ2`, potom Submit/Publish | kto má prístup ku kontajneru |
-| 4 | **Search Console:** DNS TXT záznam `google-site-verification=…` pre `nacenime.sk`, potom Verify | správca DNS |
-| 5 | **Google kľúč** (Places API (New)) do `shared/.env` ako `NACENIME_GOOGLE_API_KEY` | majiteľ hostingu (kľúč nikdy cez chat) |
-| 6 | **SMTP** údaje do `shared/.env` (odosielanie PDF) a meno makléra | majiteľ hostingu |
+| 1 | **Hostcreators:** vytvoriť `/web/shared/.env` (Google kľúč, meno makléra, SMTP), PHP 8.1 a rozšírenia, prepnúť Git nasadenie na vetvu **`deploy`**, cron (návod `deploy/NASADENIE-GIT.md`) | majiteľ hostingu |
+| 2 | **Search Console:** doména `nacenime.sk`, DNS TXT `google-site-verification=…`, Verify, potom odoslať `https://nacenime.sk/sitemap.xml` | správca Google účtu a DNS |
+| 3 | **Tag Manager** (`GTM-WHXQF3H7`): značka GA4 s `G-X0825SJMQ2`, potom Submit/Publish; v GA4 vypnúť interakcie s formulármi, uchovávanie 14 mesiacov | kto má prístup ku kontajneru |
+| 4 | **E-mail:** SMTP účet pre `noreply@nacenime.sk` a DNS záznamy SPF, DKIM, DMARC | správca domény a e-mailu |
+| 5 | **PR #8 (právne stránky):** doplniť IČO, e-mail, zápis v OR, overiť sídlo (inzeráty uvádzajú Podhora 55, JSON-LD Podhora 1330/48), právna kontrola, odstrániť `noindex` a rámček „Návrh“, zlúčiť | majiteľ firmy |
+| 6 | Po zlúčení PR #8 prepojiť odkazy v pätičke `Nacenime.dc.html` (3× `href="#"` → `ochrana-osobnych-udajov.html`, `cookies.html`, `kontakt.html`) | majiteľ repa (zmrazený súbor) |
 | 7 | **Podklady:** cenové dáta pre Tvrdošín, Turčianske Teplice, Námestovo; fotky; texty miest; potvrdiť `Dovalovo` | majiteľ obsahu |
-| 8 | **Právne texty** (zásady ochrany osobných údajov, cookies, kontakt) a právna kontrola textu cookie lišty | majiteľ firmy |
-| 9 | Rozhodnúť, ako sa leady z kalkulačky dostanú do **CRM** (chýba meno) | majiteľ |
-| 10 | Zapnúť na `main` **Require review from Code Owners** | majiteľ repa |
-| 11 | **Napojenie frontendu na API** (zmena zmrazeného frontendu, potrebuje súhlas) a zapojenie mapy z `frontend/mapa/` | po súhlase |
+| 8 | Rozhodnúť, ako sa leady z kalkulačky dostanú do **CRM** (chýba meno) | majiteľ |
+| 9 | Zapnúť na `main` **Require review from Code Owners** | majiteľ repa (admin) |
+| 10 | **Napojenie frontendu na API** a zapojenie mapy z `frontend/mapa/` (zmena zmrazeného prototypu) | po súhlase |
 
 ## Ručná kontrola cookie lišty (2 minúty)
 1. Otvor `https://nacenime.sk` v **novom anonymnom okne**. Zobrazí sa lišta „Cookies“.
