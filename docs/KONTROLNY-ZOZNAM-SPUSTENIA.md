@@ -36,6 +36,6 @@ Stav k 15. 11. 2026. Overené priamo na webe, ak nie je uvedené inak.
 4. Cookie lišta v anonymnom okne: pred kliknutím žiadne požiadavky na `google|clarity`, po „Prijať všetko“ sa načíta `gtm.js` a GA4 v Realtime ukáže návštevu.
 
 ## Známe riziká
-- Prototypový runtime kompiluje šablónu v prehliadači (Babel, 521 kB po kompresii). Prvé zobrazenie na mobile trvá 2 až 3 s. Zrýchlenie by vyžadovalo predkompiláciu (väčšia zmena).
+- Stránka má po kompresii približne 150 kB (React, runtime, písmo). Babel z `vendor/` sa nesťahuje, runtime ho potrebuje len pre `.jsx` súbory, ktoré kalkulačka nepoužíva. React sa sťahuje súbežne so `support.js` (`preload`). Ďalšie zrýchlenie by vyžadovalo nahradiť prototypový runtime.
 - Verejné dlaždice OpenStreetMap sú bez záruky dostupnosti. Pri raste návštevnosti treba platenú službu (jedna konštanta v `mapa/mapa.js`).
 - Cenník je verejný v repe na GitHube (nie tajomstvo, len na webe skrytý).
