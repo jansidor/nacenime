@@ -1,22 +1,23 @@
 # nacenime.sk
 
-Kalkulačka orientačnej ceny nehnuteľnosti pre **Liptov, Turiec a Oravu**. Majiteľ zadá adresu, odpovie na päť otázok a hneď uvidí cenové rozpätie. Kontakt sa pýta až na výsledku a je dobrovoľný. Prevádzkuje NajBývanie, s.r.o.
+Kalkulačka orientačnej ceny nehnuteľnosti pre **Liptov, Turiec a Oravu**. Majiteľ zadá adresu, odpovie na päť otázok a hneď uvidí cenové rozpätie. Kontakt sa pýta až na výsledku a je dobrovoľný. Prevádzkuje NajBývanie Ružomberok, s. r. o.
 
-## Stav
-- **Frontend** je hotový dizajnový prototyp (`design_handoff_nacenime/`). Zmeny sú povolené, ale v súlade so zadaním dizajnu (pozri `CLAUDE.md`).
-- **Backend** (`backend/`) je hotový a otestovaný: výpočet odhadu, proxy pre Google Places, formuláre, SQLite, PDF a e-maily, GDPR nástroje.
-- **Cookie lišta** (GTM a Clarity až po súhlase) je nasadená, **mapa zadarmo** (`design_handoff_nacenime/mapa/`) je hotový modul a Google volania majú denný strop.
-- **Nasadenie backendu na hosting** (bez SSH a Composera): návrh je v `deploy/NASADENIE-GIT.md`.
-- **Napojenie frontendu na backend** ešte nie je spravené. Zmluva je v `docs/NAPOJENIE-FRONTENDU.md`.
-- **Čaká na podklady:** cenové dáta pre tri okresy, Google kľúč, SMTP, texty a fotky. Pozri `docs/PODKLADY.md`.
+## Stav (15. 11. 2026)
+- **Živý web** `https://nacenime.sk`: kalkulačka je napojená na backend (našepkávač adries cez Google, mapa OpenStreetMap, odhad, formuláre PDF a maklér), cookie lišta, právne stránky, Search Console a sitemap.
+- **Backend** (`backend/`): výpočet odhadu, proxy pre Google Places s denným stropom, formuláre, SQLite, PDF a e-maily, oznámenia o leadoch, GDPR nástroje.
+- **CRM** (`crm/`, `crm.nacenime.sk`): fáza 1, leady z kalkulačky, role Správca a Maklér. Nastavenie na hostingu v `deploy/NASADENIE-GIT.md`.
+- **Nasadenie:** `main` sa automaticky nasadí cez vetvu `deploy` (s knižnicami), `.env` a databáza sú v `shared/` mimo releaseov.
+- **Čaká:** cenové dáta pre Tvrdošín, Turčianske Teplice a Námestovo (`docs/CENNIK-PODKLADY.md`), fotky a texty miest, nastavenie SMTP, CRM subdomény, GA4 a e-mailových DNS záznamov. Pozri `docs/KONTROLNY-ZOZNAM-SPUSTENIA.md`.
 
 ## Štruktúra
 | Cesta | Obsah |
 |---|---|
-| `design_handoff_nacenime/` | Dizajnový handoff: `README.md` (zadanie), HTML prototyp, cenník `data/nacenime-cennik.json`, JS referencia výpočtu `reference/` |
+| `design_handoff_nacenime/` | Koreň webu: kalkulačka `Nacenime.dc.html`, zadanie dizajnu `README.md`, cookie lišta `cookies/`, mapa `mapa/`, lokálny runtime `vendor/`, právne stránky, cenník `data/` (na webe skrytý), JS referencia `reference/` |
+| `crm/` | CRM pre maklérov (`crm.nacenime.sk`) |
+| `frontend/napojenie/` | Test celého toku kalkulačky v prehliadači proti PHP backendu |
 | `backend/` | PHP API (`src/`, `public/index.php`), CLI nástroje (`bin/`), testy (`tests/`). Detaily v `backend/README.md` |
-| `docs/` | `openapi.yaml`, `NAPOJENIE-FRONTENDU.md`, `PODKLADY.md` |
-| `deploy/` | Dockerfile, nginx, docker-compose (neoverené) |
+| `docs/` | `openapi.yaml`, `NAPOJENIE-FRONTENDU.md`, `PODKLADY.md`, `CENNIK-PODKLADY.md`, `KONTROLNY-ZOZNAM-SPUSTENIA.md` |
+| `deploy/` | Nasadenie z Gitu na Hostcreators (`NASADENIE-GIT.md`, `hosting/`, `zostav-deploy-strom.sh`); Dockerfile a nginx (neoverené) |
 | `.github/` | CI a zostavenie vetvy `deploy` |
 
 ## Rýchly štart
@@ -38,14 +39,18 @@ curl -s -X POST localhost:8080/api/odhad -H 'Content-Type: application/json' \
 
 ## Testy
 ```bash
-for t in run api pdf oznamenia crm cennik prevadzka http subeznost fuzz; do php backend/tests/$t.php || break; done
+for t in run api pdf oznamenia crm cennik prevadzka http subeznost fuzz nasadenie; do php backend/tests/$t.php || break; done
 backend/tests/parity.sh        # PHP vs. JS referencia
 php backend/bin/kontrola-cennika.php
+node design_handoff_nacenime/cookies/test.cjs   # v prehliadači (Playwright)
+node design_handoff_nacenime/mapa/test.cjs
+node frontend/napojenie/test.cjs
 ```
-Všetky bežia aj v CI (`.github/workflows/ci.yml`).
+Bežia aj v CI (`.github/workflows/ci.yml`).
 
 ## Dokumentácia
 - Zadanie dizajnu a logiky: `design_handoff_nacenime/README.md`
 - API: `docs/openapi.yaml`, `backend/README.md`
 - Napojenie frontendu: `docs/NAPOJENIE-FRONTENDU.md`
-- Čo treba doplniť: `docs/PODKLADY.md`
+- Čo treba doplniť: `docs/PODKLADY.md`, cenové dáta: `docs/CENNIK-PODKLADY.md`
+- Stav spustenia: `docs/KONTROLNY-ZOZNAM-SPUSTENIA.md`
