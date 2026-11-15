@@ -34,3 +34,10 @@ Do `design_handoff_nacenime/` sa v nasadenom strome pridávajú `api.php` (stub)
 - Správanie Hostcreators GIT nasadenia: výber vetvy, či `shared` prežíva, či sa dajú spúšťať príkazy po nasadení.
 - Skutočný koreň webu, Apache oproti nginx, a beh na PHP 8.1 (vyvíjalo sa na 8.3, závislosti 8.1 podporujú).
 - Samotné workflow na GitHube (lokálne sa overil skript a test simulovaného rozloženia `backend/tests/nasadenie.php`).
+
+## CRM (crm.nacenime.sk)
+Nasadzovaný strom obsahuje priečinok `crm/` (stránka CRM, `api.php`, vlastný `.htaccess`, lokálny React a ikony). Na hostingu:
+1. **Subdoména `crm.nacenime.sk`** s adresárom `web/current/crm` (Hostcreators → nacenime.sk → Subdomény → Pridať subdoménu), PHP 8.1, presmerovanie na HTTPS, SSL certifikát (Let's Encrypt).
+2. Do `shared/.env` doplniť `NACENIME_CRM_URL=https://crm.nacenime.sk` a `NACENIME_CRM_ADMIN_EMAIL=<e-mail správcu>` (voliteľne `NACENIME_CRM_ADMIN_MENO`).
+3. Prvé prihlásenie: na crm.nacenime.sk zadať e-mail správcu a kliknúť **Zabudnuté heslo**. Kým v CRM nie je nikto, účet sa pre tento e-mail založí a príde odkaz na nastavenie hesla. Maklérov potom pozýva správca v časti **Členovia**.
+4. Pripomienky ďalších krokov posiela existujúci cron `odosli-pdf.php` (netreba novú úlohu).

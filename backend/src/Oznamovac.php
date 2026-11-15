@@ -14,7 +14,7 @@ final class Oznamovac
      * @param list<string> $prijemcovia
      * @param (callable(array<string, mixed>): void)|null $webhook
      */
-    public function __construct(private Storage $storage, private $posliText, private array $prijemcovia, private $webhook = null, private int $maxPokusov = 5) {}
+    public function __construct(private Storage $storage, private $posliText, private array $prijemcovia, private $webhook = null, private int $maxPokusov = 5, private string $crmUrl = '') {}
 
     /** @return array{oznamene: int, zlyhalo: int} */
     public function spusti(): array
@@ -25,7 +25,7 @@ final class Oznamovac
         }
         foreach ($this->storage->cakajuceOznamenia($this->maxPokusov) as $l) {
             try {
-                [$predmet, $telo] = self::sprava($l);
+                [$predmet, $telo] = self::sprava($l, $this->crmUrl);
                 foreach ($this->prijemcovia as $komu) {
                     ($this->posliText)($komu, $predmet, $telo, $l['email'] ?: null);
                 }
@@ -44,7 +44,7 @@ final class Oznamovac
     }
 
     /** @param array<string, mixed> $l @return array{0: string, 1: string} */
-    public static function sprava(array $l): array
+    public static function sprava(array $l, string $crmUrl = ''): array
     {
         $telefonat = $l['druh'] === 'makler';
         $nehnutelnost = trim(($l['typ'] ?? 'Nehnuteľnosť') . ($l['vymera'] !== null ? ', ' . self::cislo((float) $l['vymera']) . ' m²' : ''));
@@ -66,6 +66,7 @@ final class Oznamovac
             $l['predstava_ceny'] !== null ? 'Predstava ceny: ' . self::cislo((float) $l['predstava_ceny']) . ' €' : null,
             '',
             $telefonat ? 'Zavolajte čo najskôr, ideálne do hodiny.' : 'Klient dostal PDF a súhlasil s kontaktovaním.',
+            $crmUrl !== '' ? 'Otvoriť v CRM: ' . rtrim($crmUrl, '/') : null,
             '',
             'Automatická správa z nacenime.sk',
         ];

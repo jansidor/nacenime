@@ -19,6 +19,7 @@ exec('bash ' . escapeshellarg("$koren/deploy/zostav-deploy-strom.sh") . ' ' . es
 $check('strom sa zostaví', 0, $kod);
 $strom = static fn(string $f): bool => file_exists("$release/$f");
 $check('strom obsahuje backend, cenník a stub /api', [true, true, true, true], [$strom('backend/public/index.php'), $strom('design_handoff_nacenime/data/nacenime-cennik.json'), $strom('design_handoff_nacenime/api.php'), $strom('design_handoff_nacenime/.htaccess')]);
+$check('strom obsahuje CRM (stránka, stub /api, .htaccess, runtime, ikony)', [true, true, true, true, true, true], [$strom('crm/CRM.dc.html'), $strom('crm/api.php'), $strom('crm/.htaccess'), $strom('crm/support.js'), $strom('crm/vendor/react-18.3.1.production.min.js'), $strom('crm/ikony/regular/style.css')]);
 $check('strom neobsahuje testy, CI, hooky ani pokyny', [false, false, false, false, false], [$strom('backend/tests'), $strom('.github'), $strom('.githooks'), $strom('CLAUDE.md'), $strom('backend/.env')]);
 
 // Funkcie Cesty
