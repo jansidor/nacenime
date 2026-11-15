@@ -151,7 +151,7 @@ SQL);
     /** @return list<array<string, mixed>> */
     public function leady(?int $len_pre = null, ?int $kontaktId = null): array
     {
-        $sql = 'SELECT k.id AS kid, k.vytvorene, k.druh, k.telefon, k.email, k.suhlas, k.odoslane,
+        $sql = 'SELECT k.id AS kid, k.vytvorene, k.druh, k.telefon, k.email, k.meno AS meno_web, k.suhlas, k.odoslane,
                 o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav AS stav_neh, o.dovod, o.predstava_ceny, o.balkon, o.cena_od, o.cena_do, o.vysledok, o.bez_adresy, c.*
             FROM kontakty k JOIN crm_leady c ON c.kontakt_id = k.id LEFT JOIN odhady o ON o.id = k.odhad_id WHERE ' . self::LEAD_PODMIENKA;
         $p = [];
@@ -218,7 +218,7 @@ SQL);
     /** Nenávratne odstráni osobné údaje klienta, v histórii ostane záznam. */
     public function vymazKlienta(int $kontaktId): void
     {
-        $this->pdo->prepare('UPDATE kontakty SET email = NULL, telefon = NULL, odoslane = CASE WHEN odoslane = 0 THEN 2 ELSE odoslane END WHERE id = ?')->execute([$kontaktId]);
+        $this->pdo->prepare('UPDATE kontakty SET email = NULL, telefon = NULL, meno = NULL, odoslane = CASE WHEN odoslane = 0 THEN 2 ELSE odoslane END WHERE id = ?')->execute([$kontaktId]);
         $this->pdo->prepare('UPDATE odhady SET adresa = NULL, psc = NULL, lat = NULL, lng = NULL, predstava_ceny = NULL WHERE id = (SELECT odhad_id FROM kontakty WHERE id = ?)')->execute([$kontaktId]);
         $this->pdo->prepare('DELETE FROM crm_poznamky WHERE kontakt_id = ?')->execute([$kontaktId]);
         // V histórii ostanú len udalosti, nie osobné údaje: meno klienta a voľný text dôvodu straty sa prepíšu.

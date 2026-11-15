@@ -55,6 +55,7 @@ final class Oznamovac
             'Nový lead z nacenime.sk',
             '',
             'Žiadosť: ' . ($telefonat ? 'Cena od makléra – chce, aby ste zavolali' : 'Odhad v PDF so súhlasom s kontaktovaním'),
+            !empty($l['meno']) ? 'Meno: ' . $l['meno'] : null,
             $l['telefon'] ? 'Telefón: ' . $l['telefon'] : null,
             $l['email'] ? 'E-mail: ' . $l['email'] : null,
             'Kedy: ' . self::cas((string) $l['vytvorene']),
@@ -80,7 +81,7 @@ final class Oznamovac
         return [
             'zdroj' => 'nacenime.sk', 'id' => (int) $l['id'], 'vytvorene' => $l['vytvorene'],
             'ziadost' => $l['druh'] === 'makler' ? 'telefonat' : 'pdf_suhlas',
-            'telefon' => $l['telefon'], 'email' => $l['email'],
+            'meno' => $l['meno'] ?? null, 'telefon' => $l['telefon'], 'email' => $l['email'],
             'typ' => $l['typ'], 'vymera' => $num($l['vymera']), 'stav' => $l['stav'],
             'adresa' => $l['adresa'], 'psc' => $l['psc'], 'obec' => $l['obec'],
             'cena_od' => $num($l['cena_od']), 'cena_do' => $num($l['cena_do']), 'vysledok' => $l['vysledok'],

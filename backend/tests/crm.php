@@ -141,4 +141,13 @@ $kody = array_map(fn() => $h('POST', '/api/crm/prihlasenie', ['email' => 'Hadany
 $check('6. pokus na ten istý účet za minútu: 429', [422, 422, 422, 422, 422, 429], $kody);
 $check('iný účet limit nezdieľa', 422, $h('POST', '/api/crm/prihlasenie', ['email' => 'iny@ucet.sk', 'heslo' => 'zle-heslo-123456'])[0]);
 
+// meno z kalkulačky v CRM a jeho vymazanie
+$om = $api->handle('POST', '/api/odhad', ['typ' => 'Byt', 'obec' => 'Martin', 'stav' => 'Pôvodný', 'vymera' => 60])[1]['odhad_id'];
+$api->handle('POST', '/api/kontakt/makler', ['telefon' => '0905 999 000', 'meno' => 'Peter Malý', 'odhad_id' => $om]);
+$posta = []; $h('POST', '/api/crm/odkaz', ['email' => 'jan@najby.sk']); $adm2 = $h('POST', '/api/crm/heslo', ['token' => $token($posta[0]['telo'] ?? ''), 'heslo' => 'este-ine-heslo-99'])[2][0];
+$lm = array_values(array_filter($h('GET', '/api/crm/data', [], $adm2)[1]['leads'], fn($l) => $l['telefon'] === '0905 999 000'))[0] ?? null;
+$check('CRM: meno z kalkulačky na karte aj v detaile', ['Peter Malý', 'Peter Malý'], [$lm['meno'] ?? null, $lm['menoKlienta'] ?? null]);
+$r = $h('POST', '/api/crm/lead', ['id' => $lm['id'], 'akcia' => 'vymazat'], $adm2);
+$check('CRM: vymazanie údajov zmaže aj meno z kalkulačky', [null, 'Vymazaný klient'], [$st->pdo()->query("SELECT meno FROM kontakty WHERE telefon IS NULL AND id = " . (int) substr($lm['id'], 1))->fetchColumn() ?: null, $r[1]['lead']['meno']]);
+
 exit($fail > 0 ? 1 : 0);

@@ -155,11 +155,12 @@ final class Crm
         $telefonat = $l['druh'] === 'makler';
         $prijaty = (strtotime((string) $l['vytvorene']) ?: time()) * 1000;
         $kontakt = $l['telefon'] ?: ($l['email'] ?: '');
+        $menoKlienta = $l['meno'] ?: ($l['meno_web'] ?? null); // meno z CRM má prednosť pred menom z kalkulačky
         $adresa = $l['bez_adresy'] ? 'bez adresy' : trim(implode(', ', array_filter([$l['adresa'], $l['psc']])));
         $dalsie = array_filter([$l['dovod'] ? 'Dôvod: ' . $l['dovod'] : null, $l['predstava_ceny'] ? 'Predstava ceny: ' . number_format((float) $l['predstava_ceny'], 0, ',', ' ') . ' €' : null, $l['balkon'] ? 'Balkón: ' . $l['balkon'] : null]);
         return [
             'id' => 'l' . $l['kid'], 'cislo' => $l['cislo'],
-            'meno' => $l['meno'] ?: ($kontakt !== '' ? $kontakt : 'Klient ' . $l['cislo']), 'menoKlienta' => $l['vymazany'] ? '' : (string) ($l['meno'] ?? ''),
+            'meno' => $menoKlienta ?: ($kontakt !== '' ? $kontakt : 'Klient ' . $l['cislo']), 'menoKlienta' => $l['vymazany'] ? '' : (string) ($menoKlienta ?? ''),
             'telefon' => $l['telefon'] ?: '–', 'email' => $l['email'] ?: '–', 'suhlas' => $telefonat && (bool) $l['telefon'],
             'ziadost' => $telefonat ? 'telefonát' : 'PDF so súhlasom', 'prijaty' => $prijaty,
             'adresa' => $adresa !== '' ? $adresa : '–', 'lokalita' => $l['obec'] ?: '–', 'typ' => self::TYP[$l['typ'] ?? ''] ?? 'byt',

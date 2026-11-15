@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS kontakty (
   druh TEXT NOT NULL CHECK (druh IN ('pdf','makler','mimo_regionu')),
   email TEXT, telefon TEXT, suhlas INTEGER NOT NULL DEFAULT 0, odhad_id INTEGER REFERENCES odhady(id),
   odoslane INTEGER NOT NULL DEFAULT 0, pokusy INTEGER NOT NULL DEFAULT 0,
-  oznamene INTEGER NOT NULL DEFAULT 0, oznam_pokusy INTEGER NOT NULL DEFAULT 0
+  oznamene INTEGER NOT NULL DEFAULT 0, oznam_pokusy INTEGER NOT NULL DEFAULT 0,
+  meno TEXT
 );
 SQL);
         // Indexy pre časté dotazy (kontrola duplicít, GDPR podľa e-mailu/telefónu, retencia, cron PDF). Idempotentné.
@@ -62,6 +63,7 @@ CREATE INDEX IF NOT EXISTS kontakty_vytvorene ON kontakty (vytvorene);
 CREATE INDEX IF NOT EXISTS odhady_vytvorene ON odhady (vytvorene);
 SQL);
         $this->doplnStlpec('odhady', 'veta', 'TEXT');
+        $this->doplnStlpec('kontakty', 'meno', 'TEXT'); // nepovinné meno pri žiadosti o telefonát
         $this->doplnStlpec('kontakty', 'pokusy', 'INTEGER NOT NULL DEFAULT 0');
         if ($this->doplnStlpec('kontakty', 'oznamene', 'INTEGER NOT NULL DEFAULT 0')) {
             // Leady spred zavedenia oznámení sa neoznamujú spätne.
@@ -84,7 +86,15 @@ SQL);
                 return false;
             }
         }
-        $this->pdo->exec("ALTER TABLE $tabulka ADD COLUMN $stlpec $typ");
+        try {
+            $this->pdo->exec("ALTER TABLE $tabulka ADD COLUMN $stlpec $typ");
+        } catch (\PDOException $e) {
+            // Súbeh: stĺpec medzitým pridala iná požiadavka. Nie je to chyba.
+            if (stripos($e->getMessage(), 'duplicate column') !== false) {
+                return false;
+            }
+            throw $e;
+        }
         return true;
     }
 
@@ -159,7 +169,7 @@ SQL);
     /** Leady (telefonát, PDF so súhlasom), o ktorých ešte nepadlo oznámenie maklérovi. @return list<array<string, mixed>> */
     public function cakajuceOznamenia(int $maxPokusov, int $limit = 20): array
     {
-        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.vysledok, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny, o.bez_adresy
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, k.meno, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.vysledok, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny, o.bez_adresy
             FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
             WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.oznamene = 0 AND k.oznam_pokusy < ? ORDER BY k.id LIMIT ?");
         $s->execute([$maxPokusov, $limit]);
@@ -188,10 +198,10 @@ SQL);
      * a druh v okne `$oknoSekund` sa neukladá znova (dvojklik, opakované odoslanie). Ak sa pri opakovaní
      * pridá súhlas, doplní sa k existujúcemu záznamu. Vráti id záznamu.
      */
-    public function ulozKontakt(string $druh, ?string $email, ?string $telefon, bool $suhlas, ?int $odhadId, int $oknoSekund = 600, ?int $teraz = null): int
+    public function ulozKontakt(string $druh, ?string $email, ?string $telefon, bool $suhlas, ?int $odhadId, int $oknoSekund = 600, ?int $teraz = null, ?string $meno = null): int
     {
         $teraz ??= time();
-        $s = $this->pdo->prepare('SELECT id, email, telefon, suhlas FROM kontakty WHERE druh = :d AND odhad_id IS :o AND vytvorene >= :od');
+        $s = $this->pdo->prepare('SELECT id, email, telefon, suhlas, meno FROM kontakty WHERE druh = :d AND odhad_id IS :o AND vytvorene >= :od');
         $s->execute(['d' => $druh, 'o' => $odhadId, 'od' => gmdate('c', $teraz - $oknoSekund)]);
         $kluc = fn(?string $e, ?string $t): string => $e !== null ? 'e:' . mb_strtolower($e) : 't:' . preg_replace('/\D/', '', (string) $t);
         foreach ($s->fetchAll(\PDO::FETCH_ASSOC) as $r) {
@@ -199,11 +209,14 @@ SQL);
                 if ($suhlas && !(int) $r['suhlas']) {
                     $this->pdo->prepare('UPDATE kontakty SET suhlas = 1 WHERE id = ?')->execute([$r['id']]);
                 }
+                if ($meno !== null && ($r['meno'] ?? null) === null) {
+                    $this->pdo->prepare('UPDATE kontakty SET meno = ? WHERE id = ?')->execute([$meno, $r['id']]);
+                }
                 return (int) $r['id'];
             }
         }
-        $i = $this->pdo->prepare('INSERT INTO kontakty (vytvorene, druh, email, telefon, suhlas, odhad_id) VALUES (?, ?, ?, ?, ?, ?)');
-        $i->execute([gmdate('c', $teraz), $druh, $email, $telefon, (int) $suhlas, $odhadId]);
+        $i = $this->pdo->prepare('INSERT INTO kontakty (vytvorene, druh, email, telefon, suhlas, odhad_id, meno) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $i->execute([gmdate('c', $teraz), $druh, $email, $telefon, (int) $suhlas, $odhadId, $meno]);
         return (int) $this->pdo->lastInsertId();
     }
 
@@ -226,7 +239,7 @@ SQL);
     /** Leady pre makléra: žiadosti o telefonát a PDF so súhlasom s kontaktovaním. @return list<array<string, mixed>> */
     public function leady(?string $od = null): array
     {
-        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, k.meno, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny
             FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
             WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.vytvorene >= ? ORDER BY k.id");
         $s->execute([$od ?? '0000']);

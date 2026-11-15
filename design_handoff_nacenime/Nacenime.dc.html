@@ -329,6 +329,7 @@ main>section{animation:nc-in 150ms linear}
           <div style="margin-top:clamp(48px,6vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:48px clamp(32px,6vw,96px);border-top:1.5px solid #272361;padding-top:40px">
           <form onSubmit="{{ requestCall }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
             <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Cena od makléra</h2>
+            <div><label for="meno" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Meno <span style="font-weight:400">(nepovinné)</span></label><input id="meno" type="text" autoComplete="name" autoCapitalize="words" enterKeyHint="next" placeholder="Jana Nováková" maxLength="{{ 80 }}" value="{{ callName }}" onChange="{{ setCallName }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
             <div><label for="telefon" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Telefón</label><input id="telefon" type="tel" autoComplete="tel" placeholder="0900 123 456" value="{{ phone }}" onChange="{{ setPhone }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
             <button type="submit" style="height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zavolajte mi</button>
             <p style="margin:0;max-width:62ch">{{ maklerName }} si nehnuteľnosť pozrie a povie jednu cenu.</p>
@@ -456,7 +457,7 @@ class Component extends DCLogic {
     if (this.demo || !town) return true;
     try { const r = await this.api('obec?obec=' + encodeURIComponent(town)); return r.ok && r.data ? !!r.data.v_regione : true; } catch (err) { return true; }
   };
-  state = { odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  state = { callName: '', odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
   componentDidUpdate(prev) {
     this.synchronizujMapu();
     if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, step: 0 }, () => this.props.startScreen === 'Výsledok' && this.runOdhad());
@@ -556,7 +557,7 @@ class Component extends DCLogic {
       skipPrice: e => { e.preventDefault(); this.go({ price: '', step: needObec ? 6 : 7 }); },
       isIntro: s.screen === 'Úvod', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
       address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: this.jeChyba(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: this.jeChyba(s.callMsg),
-      setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'),
+      setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'), setCallName: set('callName'), callName: s.callName,
       setArea: e => this.setState({ area: e.target.value, areaError: false }),
       toggleConsent: () => this.setState(p => ({ consent: !p.consent })),
       goHome: e => { e.preventDefault(); this.go({ screen: 'Úvod' }); },
@@ -591,7 +592,7 @@ class Component extends DCLogic {
       editData: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0 }); },
       summary: (s.address.trim() || obecVal).replace(/\.$/, '') + '. ' + (s.answers[1] || 'Byt') + ' ' + (s.answers[2] || 66) + ' m²',
       sendPdf: e => { e.preventDefault(); this.poslat('pdf', { email: s.email.trim(), odhad_id: s.odhadId, ...(s.consent ? { suhlas: true } : {}) }, 'email', 'pdfMsg', /^\S+@\S+\.\S+$/.test(s.email.trim()) ? '' : 'Zadajte e-mail.', 'Odhad vám pošleme na e-mail.'); },
-      requestCall: e => { e.preventDefault(); this.poslat('makler', { telefon: s.phone.trim(), odhad_id: s.odhadId }, 'telefon', 'callMsg', s.phone.replace(/\D/g, '').length >= 9 ? '' : 'Zadajte telefónne číslo.', 'Ďakujeme, ozveme sa vám.'); }
+      requestCall: e => { e.preventDefault(); this.poslat('makler', { telefon: s.phone.trim(), odhad_id: s.odhadId, ...(s.callName.trim() ? { meno: s.callName.trim() } : {}) }, 'telefon', 'callMsg', s.phone.replace(/\D/g, '').length >= 9 ? '' : 'Zadajte telefónne číslo.', 'Ďakujeme, ozveme sa vám.'); }
     };
   }
 }

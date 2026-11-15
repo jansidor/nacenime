@@ -156,6 +156,7 @@ components:
       required: [telefon]
       properties:
         telefon: { type: string, description: Aspoň 9 číslic. }
+        meno: { type: string, maxLength: 80, description: Nepovinné. Prázdne sa neuloží. }
         odhad_id: { type: integer }
         web: { type: string }
     KontaktMimo:
