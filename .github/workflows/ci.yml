@@ -49,3 +49,29 @@ jobs:
         run: php backend/tests/fuzz.php 2>/dev/null
       - name: Parita PHP a JS
         run: backend/tests/parity.sh
+
+  prehliadac:
+    # Testy v skutočnom prehliadači (Playwright, Chromium): cookie lišta, mapa a celý tok kalkulačky proti PHP backendu.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          extensions: mbstring, pdo_sqlite, curl
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Composer závislosti
+        run: composer install --no-interaction --no-progress --working-dir=backend
+      - name: Playwright a Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Cookie lišta
+        run: node design_handoff_nacenime/cookies/test.cjs
+      - name: Mapa
+        run: node design_handoff_nacenime/mapa/test.cjs
+      - name: Napojenie na API (celý tok)
+        run: node frontend/napojenie/test.cjs

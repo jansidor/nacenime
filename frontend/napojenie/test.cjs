@@ -7,10 +7,6 @@ const { chromium } = require('playwright');
 const repo = path.resolve(__dirname, '..', '..');
 const docroot = path.join(repo, 'design_handoff_nacenime');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'nacenime-napojenie-'));
-const UNPKG = process.env.UNPKG_DIR || path.join(os.tmpdir(), 'nacenime-unpkg-fixtures');
-for (const f of ['react@18.3.1/umd/react.production.min.js', 'react-dom@18.3.1/umd/react-dom.production.min.js', '@babel/standalone@7.29.0/babel.min.js'])
-  if (!fs.existsSync(path.join(UNPKG, f))) { console.error('Chýba lokálna kópia ' + f + ' (spusti najprv node design_handoff_nacenime/cookies/test.cjs)'); process.exit(2); }
-
 fs.writeFileSync(path.join(tmp, 'router.php'), `<?php
 $u = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (str_starts_with($u, '/api/')) { $_SERVER['SCRIPT_NAME'] = '/index.php'; require ${JSON.stringify(repo + '/backend/public/index.php')}; return true; }
@@ -35,7 +31,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     page.on('request', (r) => { if (r.url().startsWith(base + '/api/')) st.req.push({ url: r.url().slice(base.length), metoda: r.method(), telo: r.postData() }); });
     page.on('request', (r) => { if (/unpkg\.com/.test(r.url())) st.unpkg = (st.unpkg || 0) + 1; });
     page.on('request', (r) => { if (/\/mapa\//.test(r.url())) st.mapa.push(r.url()); });
-    await page.route(/^https:\/\/unpkg\.com\//, (r) => { const f = path.join(UNPKG, new URL(r.request().url()).pathname); return fs.existsSync(f) ? r.fulfill({ status: 200, contentType: 'text/javascript', body: fs.readFileSync(f) }) : r.fulfill({ status: 404, body: '' }); });
+    await page.route(/^https:\/\/unpkg\.com\//, (r) => r.fulfill({ status: 404, body: '' })); // runtime je lokálny (vendor/), unpkg sa nesmie použiť
     await page.route(/^https?:\/\/(?!127\.0\.0\.1|unpkg\.com)/, (r) => r.fulfill({ status: 200, contentType: r.request().resourceType() === 'stylesheet' ? 'text/css' : 'text/javascript', body: '' }));
     if (extra) await extra(page);
     await page.goto(base + '/Nacenime.dc.html');
