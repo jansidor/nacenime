@@ -32,6 +32,11 @@ CREATE TABLE IF NOT EXISTS crm_leady (
 CREATE TABLE IF NOT EXISTS crm_poznamky (id INTEGER PRIMARY KEY AUTOINCREMENT, kontakt_id INTEGER NOT NULL, t INTEGER NOT NULL, kto TEXT NOT NULL, text TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS crm_historia (id INTEGER PRIMARY KEY AUTOINCREMENT, kontakt_id INTEGER NOT NULL, t INTEGER NOT NULL, kto TEXT NOT NULL, text TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS crm_audit (id INTEGER PRIMARY KEY AUTOINCREMENT, t INTEGER NOT NULL, kto TEXT NOT NULL, text TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS crm_poznamky_kontakt ON crm_poznamky (kontakt_id);
+CREATE INDEX IF NOT EXISTS crm_historia_kontakt ON crm_historia (kontakt_id);
+CREATE INDEX IF NOT EXISTS crm_leady_pridelene ON crm_leady (pridelene);
+CREATE INDEX IF NOT EXISTS crm_relacie_pouzivatel ON crm_relacie (pouzivatel_id);
+CREATE INDEX IF NOT EXISTS crm_odkazy_pouzivatel ON crm_odkazy (pouzivatel_id);
 SQL);
     }
 
