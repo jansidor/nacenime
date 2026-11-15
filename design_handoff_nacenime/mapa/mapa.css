@@ -24,7 +24,7 @@
   width: 44px; height: 44px; padding: 0; display: grid; place-items: center;
   background: #fff; color: #272361; border: 1.5px solid #272361; border-radius: 12px; cursor: pointer;
 }
-.nm-zoom button:hover:not(:disabled) { background: #272361; color: #fff; }
+@media (hover: hover) { .nm-zoom button:hover:not(:disabled) { background: #272361; color: #fff; } }
 .nm-zoom button:focus-visible { outline: 3px solid #272361; outline-offset: 2px; }
 .nm-zoom button:disabled { opacity: 0.45; cursor: default; }
 .nm-zoom svg { width: 20px; height: 20px; display: block; }

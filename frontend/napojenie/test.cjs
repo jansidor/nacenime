@@ -204,6 +204,31 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await page.context().close();
   }
 
+  // 5d. Telefóny (iPhone SE, Pixel 7): bez pretečenia, ťuknutie aspoň 44 px, správna klávesnica, bez prilepeného hoveru
+  for (const meno of ['iPhone SE', 'Pixel 7']) {
+    const ctx = await browser.newContext(require('playwright').devices[meno]); const page = await ctx.newPage();
+    await page.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.fulfill({ status: 200, body: '' }));
+    const zle = [];
+    for (const o of ['Úvod', 'Potvrdenie adresy', 'Mimo regiónu', 'Mesto', 'Kalkulačka', 'Výsledok']) {
+      await page.goto(base + '/Nacenime.dc.html?screen=' + encodeURIComponent(o)); await page.waitForSelector('main'); await page.waitForTimeout(o === 'Výsledok' ? 800 : 200);
+      const r = await page.evaluate(() => ({ pretok: document.documentElement.scrollWidth - innerWidth,
+        male: [...document.querySelectorAll('header a, footer a, button')].filter((e) => e.offsetParent && !e.closest('.nm-ck') && e.getBoundingClientRect().height < 44).map((e) => e.innerText.trim()) }));
+      if (r.pretok > 0 || r.male.length) zle.push(o + ' ' + JSON.stringify(r));
+    }
+    ok(meno + ': žiadne pretečenie, plochy na ťuknutie aspoň 44 px', zle.length === 0, zle);
+    // každé pravidlo :hover musí byť v @media (hover:hover), inak na dotykovom displeji ostane tlačidlo po ťuknutí zafarbené
+    const holeHover = await page.evaluate(() => { const zle = []; for (const sh of document.styleSheets) { let r; try { r = sh.cssRules; } catch (e) { continue; } for (const x of r) if (x.selectorText && /:hover/.test(x.selectorText)) zle.push(x.selectorText); } return zle; });
+    ok(meno + ': :hover len pre zariadenia s myšou', holeHover.length === 0, holeHover);
+    await ctx.close();
+  }
+  {
+    const { page } = await nova();
+    await page.goto(base + '/Nacenime.dc.html?screen=' + encodeURIComponent('Kalkulačka')); await page.waitForSelector('main');
+    await page.getByRole('button', { name: 'Len zisťujem', exact: true }).click(); await page.getByRole('button', { name: 'Byt', exact: true }).click();
+    ok('výmera: klávesnica s desatinnou čiarkou (inputmode decimal)', await page.locator('#vymera').getAttribute('inputmode') === 'decimal');
+    await page.context().close();
+  }
+
   // 6. Ukážkový režim (?screen=) nevolá server
   {
     const { page, st } = await nova();

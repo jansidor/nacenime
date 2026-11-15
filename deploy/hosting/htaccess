@@ -5,6 +5,10 @@
 # Ak by DirectoryIndex nefungoval, ostáva záloha: index.html presmeruje na Nacenime.dc.html.
 DirectoryIndex Nacenime.dc.html index.html
 
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     # www.nacenime.sk -> nacenime.sk (jedna adresa pre vyhľadávače)
