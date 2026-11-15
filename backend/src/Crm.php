@@ -110,8 +110,8 @@ final class Crm
     {
         $this->obmedz($ip, 10);
         $heslo = (string) ($b['heslo'] ?? '');
-        if (mb_strlen($heslo) < 12) {
-            return [422, ['chyby' => ['heslo' => 'Heslo musí mať aspoň 12 znakov.']], null];
+        if (mb_strlen($heslo) < 8) {
+            return [422, ['chyby' => ['heslo' => 'Heslo musí mať aspoň 8 znakov.']], null];
         }
         $u = $this->db->overToken('crm_odkazy', (string) ($b['token'] ?? ''), true);
         if ($u === null) {

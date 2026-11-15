@@ -33,7 +33,7 @@ $check('odkaz pre neznámy e-mail: rovnaká odpoveď, žiadny e-mail', [200, 0],
 $r = $h('POST', '/api/crm/odkaz', ['email' => 'jan@najby.sk']);
 $check('prvý správca dostal odkaz', [200, 'jan@najby.sk', true], [$r[0], $posta[0]['komu'] ?? '', str_contains($posta[0]['telo'] ?? '', 'https://crm.test/#heslo=')]);
 $t = $token($posta[0]['telo']);
-$check('krátke heslo 422', 422, $h('POST', '/api/crm/heslo', ['token' => $t, 'heslo' => 'kratke'])[0]);
+$check('krátke heslo (7 znakov) 422', 422, $h('POST', '/api/crm/heslo', ['token' => $t, 'heslo' => 'kratke7'])[0]);
 $r = $h('POST', '/api/crm/heslo', ['token' => $t, 'heslo' => 'spravne-heslo-123']);
 $check('heslo nastavené, prihlásený (cookie)', [200, true], [$r[0], strlen((string) ($r[2][0] ?? '')) > 30]);
 $adm = $r[2][0];
