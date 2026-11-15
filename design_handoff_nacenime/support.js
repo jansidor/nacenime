@@ -1579,8 +1579,10 @@
       const cls = "scp" + (n++).toString(36);
       const isPseudoElement = pseudo === "before" || pseudo === "after";
       const sel = isPseudoElement ? "." + cls + "::" + pseudo : "." + cls + ":" + pseudo;
+      // nacenime.sk: :hover len na zariadeniach s myšou. Na dotykových telefónoch by tlačidlo po ťuknutí ostalo zafarbené.
+      const rule = sel + "{" + (isPseudoElement ? css : importantify(css)) + "}";
       el.sheet.insertRule(
-        sel + "{" + (isPseudoElement ? css : importantify(css)) + "}",
+        pseudo === "hover" ? "@media (hover:hover){" + rule + "}" : rule,
         el.sheet.cssRules.length
       );
       cache.set(k, cls);

@@ -13,6 +13,10 @@ DirectoryIndex Nacenime.dc.html index.html
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
 </IfModule>
 
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     # www.nacenime.sk -> nacenime.sk (jedna adresa pre vyhľadávače)
