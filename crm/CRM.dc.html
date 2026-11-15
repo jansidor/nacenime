@@ -16,7 +16,13 @@
 <style>
 html,body{margin:0;background:#f6f4ef}
 *{box-sizing:border-box}
-a{color:#272361}a:hover{color:#11122f}
+a{color:#272361}@media (hover:hover){a:hover{color:#11122f}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.nm-koren{min-height:100vh;min-height:100dvh}
+/* Telefóny: pole s písmom pod 16 px iPhone pri ťuknutí priblíži, preto na dotykových zariadeniach 16 px. */
+@media (pointer:coarse){input,select,textarea{font-size:16px!important}}
+/* Úzky displej: údaje klienta pod sebou (popis nad hodnotou), aby sa telefón ani pole Meno nelámali. */
+@media (max-width:480px){.nm-dl{grid-template-columns:1fr!important;gap:0!important}.nm-dl dd{margin:0 0 12px!important}}
 button,input,select,textarea{font-family:'Space Grotesk',sans-serif}
 :focus-visible{outline:2px solid #272361;outline-offset:2px}
 input::placeholder,textarea::placeholder{color:#5c5d75;opacity:1}
@@ -25,7 +31,7 @@ button{white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
 </helmet>
-<div style="min-height:100vh;background:#f6f4ef;color:#11122f;font-family:'Space Grotesk',sans-serif;font-size:15px;line-height:1.45">
+<div class="nm-koren" style="background:#f6f4ef;color:#11122f;font-family:'Space Grotesk',sans-serif;font-size:15px;line-height:1.45">
 
 <sc-if value="{{ isSetPw }}" hint-placeholder-val="{{ false }}">
 <main data-screen-label="01b Nastavenie hesla" style="min-height:100vh;display:grid;place-items:center;padding:24px 16px">
@@ -55,7 +61,7 @@ button{white-space:nowrap}
       <sc-if value="{{ loginErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="font-size:14px;font-weight:700;color:#8f1229">{{ loginErr }}</div></sc-if>
       <button type="submit" style="min-height:48px;border:0;border-radius:8px;background:#272361;color:#fff;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#11122f">Prihlásiť</button>
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px">
-        <a href="#" onClick="{{ forgot }}">Zabudnuté heslo</a>
+        <a href="#" onClick="{{ forgot }}" style="display:inline-flex;align-items:center;min-height:44px">Zabudnuté heslo</a>
       </div>
     </form>
   </div>
@@ -369,7 +375,7 @@ button{white-space:nowrap}
 
         <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
           <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Klient</h3>
-          <dl style="margin:0;display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px 12px">
+          <dl class="nm-dl" style="margin:0;display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px 12px">
             <dt style="color:#5c5d75"><label for="dmeno">Meno</label></dt>
             <dd style="margin:0"><input id="dmeno" value="{{ menoEdit }}" onInput="{{ setMenoEdit }}" onBlur="{{ saveMeno }}" placeholder="Doplňte po telefonáte" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></dd>
             <dt style="color:#5c5d75">Žiadosť</dt><dd style="margin:0">{{ d.ziadost }}</dd>
@@ -378,7 +384,7 @@ button{white-space:nowrap}
               <sc-if value="{{ d.canCall }}" hint-placeholder-val="{{ true }}"><a href="{{ d.tel }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:700"><i class="ph ph-phone" aria-hidden="true"></i>{{ d.telefon }}</a></sc-if>
               <sc-if value="{{ d.nevolat }}" hint-placeholder-val="{{ false }}"><span>{{ d.telefon }} <span style="color:#8f1229;font-weight:700">(nevolať)</span></span></sc-if>
             </dd>
-            <dt style="color:#5c5d75">E-mail</dt><dd style="margin:0;overflow-wrap:anywhere"><a href="{{ d.mailto }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px">{{ d.email }}</a></dd>
+            <dt style="color:#5c5d75">E-mail</dt><dd style="margin:0;overflow-wrap:anywhere"><sc-if value="{{ d.hasEmail }}" hint-placeholder-val="{{ true }}"><a href="{{ d.mailto }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px">{{ d.email }}</a></sc-if><sc-if value="{{ d.noEmail }}" hint-placeholder-val="{{ false }}"><span>–</span></sc-if></dd>
             <dt style="color:#5c5d75">Súhlas s telefonátom</dt><dd style="margin:0">{{ d.suhlas }}</dd>
             <dt style="color:#5c5d75">Prijatý</dt><dd style="margin:0">{{ d.prijaty }}</dd>
             <dt style="color:#5c5d75">Zdroj</dt><dd style="margin:0">{{ d.zdroj }}</dd>
@@ -387,7 +393,7 @@ button{white-space:nowrap}
 
         <section style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 0 0 1px #dcd9d0">
           <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;margin:0 0 10px;color:#272361">Nehnuteľnosť z kalkulačky</h3>
-          <dl style="margin:0;display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px 12px">
+          <dl class="nm-dl" style="margin:0;display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px 12px">
             <dt style="color:#5c5d75">Adresa</dt><dd style="margin:0">{{ d.adresa }}</dd>
             <dt style="color:#5c5d75">Lokalita</dt><dd style="margin:0">{{ d.lokalita }}</dd>
             <dt style="color:#5c5d75">Typ</dt><dd style="margin:0">{{ d.typ }}</dd>
@@ -661,7 +667,7 @@ class Component extends DCLogic {
       stavOpts: this.ST.map((v) => ({ v, l: v })),
       makOpts: (canNone ? [{ v: '', l: 'Nepridelené' }] : []).concat(brokers.map((m) => ({ v: m.id, l: m.meno + ' (' + this.active(m.id) + ' aktívnych)' }))),
       setStav: (e) => this.tryStav(id, e.target.value), setMak: (e) => this.assign(id, e.target.value),
-      telefon: l.telefon, tel: 'tel:' + l.telefon.replace(/\s/g, ''), email: l.email, mailto: 'mailto:' + l.email, suhlas: l.suhlas ? 'áno' : 'nie',
+      telefon: l.telefon, tel: 'tel:' + l.telefon.replace(/\s/g, ''), email: l.email, mailto: 'mailto:' + l.email, hasEmail: !!l.email && l.email !== '–', noEmail: !l.email || l.email === '–', suhlas: l.suhlas ? 'áno' : 'nie',
       adresa: l.adresa, lokalita: l.lokalita, typ: this.TYP[l.typ], vymera: l.vymera + ' m²', izby: l.izby, stavNeh: l.stavNeh, dalsie: l.dalsie || '–',
       odhad: this.odhad(l), odhadInfo: l.odoslany ? 'Odhad v PDF poslaný klientovi e-mailom ' + this.fmt(l.odoslany) + '.' : 'Klient videl odhad v kalkulačke a požiadal o telefonát.', ziadost: l.ziadost,
       isSold: l.stav === 'Predané', predajCena: l.cena, predajDatum: l.datum,
