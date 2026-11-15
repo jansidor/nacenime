@@ -406,6 +406,9 @@ class Component extends DCLogic {
   TEXT_SIET = 'Nepodarilo sa spojiť so serverom. Skontrolujte pripojenie a skúste to znova.';
   TEXT_SERVER = 'Niečo sa pokazilo na našej strane. Skúste to o chvíľu znova.';
   textChyby = r => !r ? this.TEXT_SIET : r.status === 429 ? this.TEXT_LIMIT : this.TEXT_SERVER;
+  // Udalosti pre GA4 (cez GTM). dataLayer vzniká až po súhlase s analytikou (cookies/cookies.js), bez súhlasu sa nič neposiela.
+  // Žiadne osobné údaje: len typ nehnuteľnosti, výsledok a či dal súhlas s kontaktovaním.
+  udalost = (event, parametre) => { try { if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event, ...parametre }); } catch (e) { /* meranie nesmie rozbiť kalkulačku */ } };
   jeChyba = m => !!m && !/^(Ďakujeme|Odhad vám pošleme)/.test(m);
   chybaPola = (r, pole) => (r.data && r.data.chyby && r.data.chyby[pole]) || '';
   onAddress = e => {
@@ -489,7 +492,8 @@ class Component extends DCLogic {
       if (id !== this.rid) return;
       const d = r.data;
       if (!r.ok || !d || !d.stav) return this.setState({ odhadState: 'error', odhadChyba: this.textChyby(r) });
-      if (d.stav === 'mimo regiónu') return this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' });
+      if (d.stav === 'mimo regiónu') { this.udalost('mimo_regionu', { typ }); return this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }); }
+      this.udalost('odhad', { typ, vysledok: d.stav });
       this.setState({ odhad: d, odhadState: 'ok', odhadId: d.odhad_id || null });
     } catch (err) { if (id === this.rid) this.setState({ odhadState: 'error', odhadChyba: this.TEXT_SIET }); }
   };
@@ -500,6 +504,7 @@ class Component extends DCLogic {
     this.setState({ busy: true });
     try {
       const r = await this.api('kontakt/' + cesta, { ...telo, web: this.state.web });
+      if (r.ok && r.data && r.data.sprava) this.udalost({ pdf: 'pdf', makler: 'telefonat', 'mimo-regionu': 'mimo_regionu_email' }[cesta], { typ: this.state.answers[1] || '', ...(cesta === 'pdf' ? { suhlas: !!telo.suhlas } : {}) });
       this.setState({ [kluc]: r.ok && r.data && r.data.sprava ? r.data.sprava : this.chybaPola(r, pole) || this.textChyby(r) });
     } catch (err) { this.setState({ [kluc]: this.TEXT_SIET }); }
     this.setState({ busy: false });
@@ -526,10 +531,10 @@ class Component extends DCLogic {
       useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0, suggestExpanded: sugg.length > 0 ? 'true' : 'false',
       suggestStatus: s.address.trim().length >= 3 && s.sugg.length ? s.sugg.length + (s.sugg.length === 1 ? ' návrh adresy' : s.sugg.length < 5 ? ' návrhy adries' : ' návrhov adries') : '',
       street: s.street, town: s.town, setStreet: set('street'), setTown: e => this.setState({ town: e.target.value, townOut: false }), checkTown: async () => { const t = s.town.trim(); if (t) this.setState({ townOut: !(await this.overObec(t)) }); }, townOut: s.townOut,
-      submitFallback: async e => { e.preventDefault(); if (!(await this.overObec(s.town.trim()))) return this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
+      submitFallback: async e => { e.preventDefault(); if (!(await this.overObec(s.town.trim()))) return this.udalost('mimo_regionu', {}), this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
       confirmAddr: [place.line, [place.zip, place.town].filter(Boolean).join(' ')].filter(Boolean).join(', '), outOfRegion: !place.ok,
       goIntro: () => this.go({ screen: 'Úvod' }),
-      confirmAddress: () => place.ok ? this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: place }) : this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }),
+      confirmAddress: () => place.ok ? this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: place }) : (this.udalost('mimo_regionu', {}), this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' })),
       isOut: s.screen === 'Mimo regiónu', notifyEmail: s.notifyEmail, notifyMsg: s.notifyMsg, hasNotifyMsg: !!s.notifyMsg, notifyIsErr: this.jeChyba(s.notifyMsg),
       setNotifyEmail: e => this.setState({ notifyEmail: e.target.value, notifyMsg: '' }),
       sendNotify: e => { e.preventDefault(); this.poslat('mimo-regionu', { email: s.notifyEmail.trim() }, 'email', 'notifyMsg', /^\S+@\S+\.\S+$/.test(s.notifyEmail.trim()) ? '' : 'Zadajte e-mail.', 'Ďakujeme, dáme vám vedieť.'); },
