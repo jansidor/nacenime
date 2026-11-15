@@ -81,6 +81,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     ok('honeypot sa posiela prázdny', hp);
     ok('honeypot je skrytý pred čítačkou', await page.locator('input[name=web]').first().getAttribute('aria-hidden') === 'true' && await page.locator('input[name=web]').first().getAttribute('tabindex') === '-1');
     ok('knižnice sa načítali lokálne, nie z unpkg.com', !st.unpkg, st.unpkg);
+    ok('bez súhlasu s cookies sa neposielajú udalosti (dataLayer neexistuje)', await page.evaluate(() => window.dataLayer === undefined));
     ok('písmo Archivo z vlastného servera, nič z Google Fonts', st.googleFonts === 0 && await page.evaluate(async () => { await document.fonts.ready; return document.fonts.check('800 20px Archivo') && document.fonts.check('400 20px Archivo') && [...document.fonts].some((f) => f.family.replace(/"/g, '') === 'Archivo' && f.status === 'loaded'); }), st.googleFonts);
     ok('bez chýb v konzole', st.chyby.length === 0, st.chyby);
     await page.context().close();
@@ -184,6 +185,22 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const al = page.locator('form:has(#telefon) [role=alert]');
     await al.waitFor();
     ok('429 pri formulári: text a ikona chyby', (await al.innerText()).includes('Príliš veľa pokusov') && (await al.locator('svg').count()) === 1);
+    await page.context().close();
+  }
+
+  // 5c. So súhlasom s analytikou: udalosti pre GA4 bez osobných údajov
+  {
+    const { page } = await nova();
+    await page.getByRole('button', { name: 'Prijať všetko' }).click();
+    await page.fill('#adresa-uvod', 'Hlavná 1'); await page.waitForSelector('#ulica-uvod');
+    await page.fill('#obec-uvod', 'Martin'); await page.locator('form:has(#ulica-uvod) button[type=submit]').click();
+    await kalkulacka(page);
+    await page.waitForSelector('h1:has-text("až")', { timeout: 8000 });
+    await page.fill('#email-pdf', 'ga@example.sk'); await page.getByRole('checkbox').check(); await klik(page, 'Poslať PDF'); await page.waitForSelector('text=Odhad vám pošleme na e-mail.');
+    await page.fill('#telefon', '0900 222 333'); await klik(page, 'Zavolajte mi'); await page.waitForSelector('text=Ďakujeme, ozveme sa vám.');
+    const ev = await page.evaluate(() => window.dataLayer.filter((x) => x && ['odhad', 'pdf', 'telefonat'].includes(x.event)));
+    ok('GA4 udalosti: odhad, pdf (so súhlasom), telefonat', JSON.stringify(ev) === JSON.stringify([{ event: 'odhad', typ: 'Byt', vysledok: 'ok' }, { event: 'pdf', typ: 'Byt', suhlas: true }, { event: 'telefonat', typ: 'Byt' }]), ev);
+    ok('GA4 udalosti neobsahujú e-mail ani telefón', !JSON.stringify(await page.evaluate(() => window.dataLayer)).match(/ga@example|0900|222 333|Hlavná/));
     await page.context().close();
   }
 
