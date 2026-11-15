@@ -71,6 +71,10 @@ final class Crm
     private function prihlasenie(array $b, string $ip): array
     {
         $this->obmedz($ip, 10);
+        // Aj na účet (proti hádaniu hesla z mnohých IP): najviac 5 pokusov za minútu, rovnako pre existujúci aj neexistujúci e-mail.
+        if ($this->storage->zvysLimit('crm-ucet:' . hash('sha256', mb_strtolower(trim((string) ($b['email'] ?? ''))))) > 5) {
+            throw new ChybaCrm('Príliš veľa pokusov. Skúste to o minútu.', 429);
+        }
         $u = $this->db->pouzivatelPodlaEmailu((string) ($b['email'] ?? ''));
         $heslo = (string) ($b['heslo'] ?? '');
         if ($u === null || $u['heslo'] === null || !password_verify($heslo, (string) $u['heslo'])) {

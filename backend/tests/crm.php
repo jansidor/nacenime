@@ -136,4 +136,9 @@ $check('zmazaný lead nie je v CRM', false, (bool) array_filter($h('GET', '/api/
 $h('POST', '/api/crm/odhlasenie', [], $adm);
 $check('po odhlásení 401', 401, $h('GET', '/api/crm/data', [], $adm)[0]);
 
+// limit pokusov na účet (aj bez IP, napr. veľa rôznych IP)
+$kody = array_map(fn() => $h('POST', '/api/crm/prihlasenie', ['email' => 'Hadany@Ucet.sk', 'heslo' => 'zle-heslo-123456'])[0], range(1, 6));
+$check('6. pokus na ten istý účet za minútu: 429', [422, 422, 422, 422, 422, 429], $kody);
+$check('iný účet limit nezdieľa', 422, $h('POST', '/api/crm/prihlasenie', ['email' => 'iny@ucet.sk', 'heslo' => 'zle-heslo-123456'])[0]);
+
 exit($fail > 0 ? 1 : 0);
