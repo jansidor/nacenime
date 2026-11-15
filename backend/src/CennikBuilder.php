@@ -14,6 +14,9 @@ final class CennikBuilder
     public const MIN_POCET = 3;
     public const CENA_M2_MIN = 100;
     public const CENA_M2_MAX = 20000;
+    /** Pozemky sú lacnejšie (v cenníku bežne 20 až 150 €/m²), preto vlastné hranice pre varovanie. */
+    public const POZEMOK_M2_MIN = 5;
+    public const POZEMOK_M2_MAX = 1000;
 
     /**
      * @param list<array<string, string>> $riadky stĺpce: zdroj, typ, obec, stav, cena, plocha
@@ -45,7 +48,8 @@ final class CennikBuilder
                 continue;
             }
             $m2 = $cena / $plocha;
-            if ($m2 < self::CENA_M2_MIN || $m2 > self::CENA_M2_MAX) {
+            [$min, $max] = $typ === 'Pozemok' ? [self::POZEMOK_M2_MIN, self::POZEMOK_M2_MAX] : [self::CENA_M2_MIN, self::CENA_M2_MAX];
+            if ($m2 < $min || $m2 > $max) {
                 $varovania[] = sprintf('riadok %d: %d €/m² je podozrivé (cena %s, plocha %s), záznam zahrnutý', $c, $m2, $cena, $plocha);
             }
             [$obec, $okres] = $loc;
@@ -71,6 +75,33 @@ final class CennikBuilder
     }
 
     /** @param list<float|int> $zoradene vzostupne @return float */
+    /** Okresy, ktorých sa skupiny týkajú (obec cez zoznam lokalít, okres z názvu „okres X“).
+     * @param list<array<string, mixed>> $skupiny @param array<string, string> $lokality @return list<string> */
+    public static function okresy(array $skupiny, array $lokality): array
+    {
+        $o = [];
+        foreach ($skupiny as $g) {
+            $l = (string) $g['lokalita'];
+            $ok = $g['uroven'] === 'okres' ? substr($l, strlen('okres ')) : ($lokality[$l] ?? null);
+            if ($ok !== null) { $o[$ok] = true; }
+        }
+        $o = array_keys($o);
+        sort($o);
+        return $o;
+    }
+
+    /**
+     * Doplnenie: v starom cenníku nahradí len okresy, ktoré obsahuje nový vstup. Ostatné okresy ostanú nedotknuté.
+     * @param list<array<string, mixed>> $stary @param list<array<string, mixed>> $novy @param array<string, string> $lokality
+     * @return list<array<string, mixed>>
+     */
+    public static function doplnOkresy(array $stary, array $novy, array $lokality): array
+    {
+        $nahradit = array_flip(self::okresy($novy, $lokality));
+        $ostava = array_values(array_filter($stary, fn($g) => !isset($nahradit[self::okresy([$g], $lokality)[0] ?? ''])));
+        return array_merge($ostava, $novy); // poradie starých skupín ostane, nové sa pridajú na koniec
+    }
+
     public static function kvantil(array $zoradene, float $p): float
     {
         $n = count($zoradene);
