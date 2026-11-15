@@ -293,7 +293,7 @@ main>section{animation:nc-in 150ms linear}
         <p style="margin:0;font-size:16px;max-width:62ch">{{ summary }}</p>
         <sc-if value="{{ resLoading }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:16px 0 0;font-weight:600">Počítame odhad.</p></sc-if>
         <sc-if value="{{ resError }}" hint-placeholder-val="{{ false }}">
-          <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Odhad sa teraz nepodarilo načítať.</span></p>
+          <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ resErrorText }}</span></p>
           <p style="margin:12px 0 0"><a href="#" onClick="{{ retry }}" style="font-weight:600">Skúsiť znova</a></p>
         </sc-if>
         <sc-if value="{{ resOk }}" hint-placeholder-val="{{ false }}">
@@ -398,6 +398,12 @@ class Component extends DCLogic {
   };
   // Session token pre Google: jedno písanie plus výber jednej adresy.
   tok = () => this._tok || (this._tok = (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : (Math.random().toString(36) + '00000000').slice(2, 14) + Date.now().toString(36)));
+  // Texty chýb (schválené 15. 11. 2026): 429 = príliš veľa pokusov, sieť = bez spojenia, inak chyba servera.
+  TEXT_LIMIT = 'Príliš veľa pokusov za krátky čas. Skúste to o minútu.';
+  TEXT_SIET = 'Nepodarilo sa spojiť so serverom. Skontrolujte pripojenie a skúste to znova.';
+  TEXT_SERVER = 'Niečo sa pokazilo na našej strane. Skúste to o chvíľu znova.';
+  textChyby = r => !r ? this.TEXT_SIET : r.status === 429 ? this.TEXT_LIMIT : this.TEXT_SERVER;
+  jeChyba = m => !!m && !/^(Ďakujeme|Odhad vám pošleme)/.test(m);
   chybaPola = (r, pole) => (r.data && r.data.chyby && r.data.chyby[pole]) || '';
   onAddress = e => {
     const v = e.target.value, long = v.trim().length >= 3;
@@ -435,7 +441,7 @@ class Component extends DCLogic {
     if (this.demo || !town) return true;
     try { const r = await this.api('obec?obec=' + encodeURIComponent(town)); return r.ok && r.data ? !!r.data.v_regione : true; } catch (err) { return true; }
   };
-  state = { zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  state = { odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
   componentDidUpdate(prev) {
     this.synchronizujMapu();
     if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, step: 0 }, () => this.props.startScreen === 'Výsledok' && this.runOdhad());
@@ -479,10 +485,10 @@ class Component extends DCLogic {
       const r = await this.api('odhad', body);
       if (id !== this.rid) return;
       const d = r.data;
-      if (!r.ok || !d || !d.stav) return this.setState({ odhadState: 'error' });
+      if (!r.ok || !d || !d.stav) return this.setState({ odhadState: 'error', odhadChyba: this.textChyby(r) });
       if (d.stav === 'mimo regiónu') return this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' });
       this.setState({ odhad: d, odhadState: 'ok', odhadId: d.odhad_id || null });
-    } catch (err) { if (id === this.rid) this.setState({ odhadState: 'error' }); }
+    } catch (err) { if (id === this.rid) this.setState({ odhadState: 'error', odhadChyba: this.TEXT_SIET }); }
   };
   // Kontaktné formuláre: server vráti hotový text (200) alebo vetu pod pole (422).
   poslat = async (cesta, telo, pole, kluc, chybaDemo, okDemo) => {
@@ -491,8 +497,8 @@ class Component extends DCLogic {
     this.setState({ busy: true });
     try {
       const r = await this.api('kontakt/' + cesta, { ...telo, web: this.state.web });
-      this.setState({ [kluc]: r.ok && r.data && r.data.sprava ? r.data.sprava : this.chybaPola(r, pole) || 'Nepodarilo sa odoslať. Skúste to znova.' });
-    } catch (err) { this.setState({ [kluc]: 'Nepodarilo sa odoslať. Skúste to znova.' }); }
+      this.setState({ [kluc]: r.ok && r.data && r.data.sprava ? r.data.sprava : this.chybaPola(r, pole) || this.textChyby(r) });
+    } catch (err) { this.setState({ [kluc]: this.TEXT_SIET }); }
     this.setState({ busy: false });
   };
   go(patch) { this.setState(patch); window.scrollTo(0, 0); }
@@ -521,7 +527,7 @@ class Component extends DCLogic {
       confirmAddr: [place.line, [place.zip, place.town].filter(Boolean).join(' ')].filter(Boolean).join(', '), outOfRegion: !place.ok,
       goIntro: () => this.go({ screen: 'Úvod' }),
       confirmAddress: () => place.ok ? this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: place }) : this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }),
-      isOut: s.screen === 'Mimo regiónu', notifyEmail: s.notifyEmail, notifyMsg: s.notifyMsg, hasNotifyMsg: !!s.notifyMsg, notifyIsErr: /^Zadajte/.test(s.notifyMsg),
+      isOut: s.screen === 'Mimo regiónu', notifyEmail: s.notifyEmail, notifyMsg: s.notifyMsg, hasNotifyMsg: !!s.notifyMsg, notifyIsErr: this.jeChyba(s.notifyMsg),
       setNotifyEmail: e => this.setState({ notifyEmail: e.target.value, notifyMsg: '' }),
       sendNotify: e => { e.preventDefault(); this.poslat('mimo-regionu', { email: s.notifyEmail.trim() }, 'email', 'notifyMsg', /^\S+@\S+\.\S+$/.test(s.notifyEmail.trim()) ? '' : 'Zadajte e-mail.', 'Ďakujeme, dáme vám vedieť.'); },
       web: s.web, setWeb: e => this.setState({ web: e.target.value }),
@@ -532,7 +538,7 @@ class Component extends DCLogic {
       submitPrice: e => { e.preventDefault(); this.go({ answers: { ...s.answers, 5: s.price.trim() }, step: needObec ? 6 : 7 }); },
       skipPrice: e => { e.preventDefault(); this.go({ price: '', step: needObec ? 6 : 7 }); },
       isIntro: s.screen === 'Úvod', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
-      address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: /^Zadajte/.test(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: /^Zadajte/.test(s.callMsg),
+      address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: this.jeChyba(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: this.jeChyba(s.callMsg),
       setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'),
       setArea: e => this.setState({ area: e.target.value, areaError: false }),
       toggleConsent: () => this.setState(p => ({ consent: !p.consent })),
@@ -559,7 +565,7 @@ class Component extends DCLogic {
         if (!s.area.trim() || !(n >= 10 && n <= 2000)) return this.setState({ areaError: true });
         this.go({ answers: { ...s.answers, 2: n }, step: pozemok ? 4 : 3 });
       },
-      resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
+      resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resErrorText: s.odhadChyba || this.TEXT_SERVER, resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
       priceText: resOk ? fmt(od.od) + ' až ' + fmt(od.do) + '\u00a0€' : '', hasNadpis: resNoPrice && !!od.nadpis, nadpis: od && od.nadpis || '',
       hasVeta: !!(od && od.veta), veta: od && od.veta || '', hasScaleNote: !!scaleNote, scaleNote, maklerName: (od && od.makler) || this.props.maklerName || '[MENO MAKLÉRA]',
       scaleFrom: resOk ? k(od.od) : '', scaleTo: resOk ? k(od.do) : '', scaleLabel: resOk ? 'Ilustračná stupnica, odhad od ' + k(od.od) + ' do ' + k(od.do) + ' tisíc eur' : '',

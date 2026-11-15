@@ -151,6 +151,28 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await kalkulacka(page);
     await page.waitForSelector('text=Skúsiť znova', { timeout: 8000 });
     ok('chyba servera: ukáže sa „Skúsiť znova“', true);
+    ok('chyba servera: text o chybe na našej strane', (await page.getByText('Niečo sa pokazilo na našej strane. Skúste to o chvíľu znova.').count()) === 1);
+    await page.context().close();
+  }
+
+  // 5b. Príliš veľa požiadaviek (429) pri odhade aj pri formulári
+  {
+    let odhadov = 0;
+    const { page } = await nova(async (p) => {
+      await p.route('**/api/odhad', (r) => (++odhadov === 1 ? r.fulfill({ status: 429, json: { chyba: 'Príliš veľa požiadaviek. Skúste to o chvíľu.' } }) : r.continue()));
+      await p.route('**/api/kontakt/makler', (r) => r.fulfill({ status: 429, json: { chyba: 'Príliš veľa požiadaviek. Skúste to o chvíľu.' } }));
+    });
+    await page.fill('#adresa-uvod', 'Hlavná 1'); await page.waitForSelector('#ulica-uvod');
+    await page.fill('#obec-uvod', 'Martin'); await page.locator('form:has(#ulica-uvod) button[type=submit]').click();
+    await kalkulacka(page);
+    await page.waitForSelector('text=Príliš veľa pokusov za krátky čas. Skúste to o minútu.', { timeout: 8000 }).then(() => ok('429 pri odhade: text o počkaní', true), () => ok('429 pri odhade: text o počkaní', false));
+    await page.getByRole('link', { name: 'Skúsiť znova' }).click();
+    await page.waitForSelector('h1:has-text("až")', { timeout: 8000 });
+    ok('Skúsiť znova po 429 ukáže odhad', true);
+    await page.fill('#telefon', '0900 000 000'); await klik(page, 'Zavolajte mi');
+    const al = page.locator('form:has(#telefon) [role=alert]');
+    await al.waitFor();
+    ok('429 pri formulári: text a ikona chyby', (await al.innerText()).includes('Príliš veľa pokusov') && (await al.locator('svg').count()) === 1);
     await page.context().close();
   }
 
