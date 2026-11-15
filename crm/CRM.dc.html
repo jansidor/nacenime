@@ -34,7 +34,7 @@ button{white-space:nowrap}
   <div style="width:min(400px,100%)">
     <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:26px;letter-spacing:-0.02em;color:#272361;margin-bottom:24px">{{ brand }}</div>
     <h1 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;line-height:1.05;letter-spacing:-0.03em;color:#272361;margin:0 0 6px">Nastavenie hesla</h1>
-    <p style="margin:0 0 20px;color:#5c5d75">Heslo musí mať aspoň 12 znakov.</p>
+    <p style="margin:0 0 20px;color:#5c5d75">Heslo musí mať aspoň 8 znakov.</p>
     <form onSubmit="{{ savePw }}" style="background:#fff;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 0 1px #dcd9d0">
       <div><label for="np1" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Nové heslo</label><input id="np1" type="password" autocomplete="new-password" value="{{ pw1 }}" onChange="{{ setPw1 }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
       <div><label for="np2" style="display:block;font-size:13px;color:#5c5d75;margin-bottom:4px">Heslo ešte raz</label><input id="np2" type="password" autocomplete="new-password" value="{{ pw2 }}" onChange="{{ setPw2 }}" style="width:100%;min-height:44px;padding:0 12px;border:1.5px solid #8a8899;border-radius:8px;background:#fff;color:#11122f;font-size:15px"></div>
@@ -840,7 +840,7 @@ class Component extends DCLogic {
       savePw: async (e) => {
         e.preventDefault();
         const a = this.state.pw1, b = this.state.pw2;
-        if (a.length < 12) return this.setState({ pwErr: 'Heslo musí mať aspoň 12 znakov.' });
+        if (a.length < 8) return this.setState({ pwErr: 'Heslo musí mať aspoň 8 znakov.' });
         if (a !== b) return this.setState({ pwErr: 'Heslá sa nezhodujú.' });
         try {
           const r = await this.api('heslo', { token: this.state.setPwToken, heslo: a });
