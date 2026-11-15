@@ -5,6 +5,14 @@
 # Ak by DirectoryIndex nefungoval, ostáva záloha: index.html presmeruje na Nacenime.dc.html.
 DirectoryIndex Nacenime.dc.html index.html
 
+# Bezpečnostné hlavičky (HSTS už nastavuje hosting). Bez Content-Security-Policy: prototypový runtime potrebuje eval a inline štýly.
+<IfModule mod_headers.c>
+    # Stránku nemožno vložiť do rámu cudzieho webu (clickjacking). Vlastný Prehľad v rámci tej istej domény ostáva.
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+</IfModule>
+
 <IfModule mod_mime.c>
     AddType application/manifest+json .webmanifest
 </IfModule>

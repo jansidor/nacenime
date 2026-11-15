@@ -52,6 +52,15 @@ CREATE TABLE IF NOT EXISTS kontakty (
   oznamene INTEGER NOT NULL DEFAULT 0, oznam_pokusy INTEGER NOT NULL DEFAULT 0
 );
 SQL);
+        // Indexy pre časté dotazy (kontrola duplicít, GDPR podľa e-mailu/telefónu, retencia, cron PDF). Idempotentné.
+        $this->pdo->exec(<<<'SQL'
+CREATE INDEX IF NOT EXISTS kontakty_odhad ON kontakty (odhad_id);
+CREATE INDEX IF NOT EXISTS kontakty_druh_odhad ON kontakty (druh, odhad_id, vytvorene);
+CREATE INDEX IF NOT EXISTS kontakty_email ON kontakty (email);
+CREATE INDEX IF NOT EXISTS kontakty_telefon ON kontakty (telefon);
+CREATE INDEX IF NOT EXISTS kontakty_vytvorene ON kontakty (vytvorene);
+CREATE INDEX IF NOT EXISTS odhady_vytvorene ON odhady (vytvorene);
+SQL);
         $this->doplnStlpec('odhady', 'veta', 'TEXT');
         $this->doplnStlpec('kontakty', 'pokusy', 'INTEGER NOT NULL DEFAULT 0');
         if ($this->doplnStlpec('kontakty', 'oznamene', 'INTEGER NOT NULL DEFAULT 0')) {

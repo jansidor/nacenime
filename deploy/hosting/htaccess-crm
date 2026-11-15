@@ -6,6 +6,7 @@ DirectoryIndex CRM.dc.html
     Header always set X-Robots-Tag "noindex, nofollow"
     Header always set X-Frame-Options "DENY"
     Header always set Referrer-Policy "no-referrer"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
 </IfModule>
 
 <IfModule mod_rewrite.c>
