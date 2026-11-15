@@ -72,6 +72,20 @@ $check('nový release nájde tú istú databázu (shared prežije)', true, (func
     $c = Config::nacitaj(Cesty::envSubor("$novy/backend"));
     return Cesty::dbCesta($c, "$novy/backend") === "$web/shared/var/nacenime.sqlite" && is_file("$web/shared/var/nacenime.sqlite");
 })());
+// CRM API len cez vstup crm/api.php (crm.nacenime.sk), nie cez verejný web
+$prihlasenie = json_encode(['email' => 'nikto@nikde.sk', 'heslo' => 'nespravne-heslo-12']);
+$check('verejný web: /api/crm/* je 404', 404, $req('POST', '/api/crm/prihlasenie', $prihlasenie)[0]);
+$portCrm = random_int(40001, 50000);
+$procCrm = proc_open(['php', '-S', "127.0.0.1:$portCrm", '-t', "$release/crm", "$release/crm/api.php"],
+    [1 => ['file', "$web/out-crm.log", 'w'], 2 => ['file', "$web/err-crm.log", 'w']], $pipesCrm, null, ['PATH' => (string) getenv('PATH')]);
+for ($i = 0; $i < 50 && !@fsockopen('127.0.0.1', $portCrm); $i++) { usleep(100000); }
+$ch = curl_init("http://127.0.0.1:$portCrm/api/crm/prihlasenie");
+curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_POSTFIELDS => $prihlasenie]);
+curl_exec($ch);
+$check('CRM doména: /api/crm/* funguje (zlé heslo = 422)', 422, (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE));
+curl_close($ch);
+proc_terminate($procCrm);
+
 $err = (string) @file_get_contents("$web/err.log");
 $check('žiadne PHP varovania v logu', 0, preg_match_all('/Warning|Notice|Deprecated|Fatal/', $err));
 
