@@ -109,6 +109,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     });
     await page.fill('#adresa-uvod', 'Bystr');
     await page.waitForSelector('[role=option]', { timeout: 5000 });
+    ok('našepkávač: pole je combobox, rozbalené, s počtom návrhov pre čítačku', await page.locator('#adresa-uvod').getAttribute('role') === 'combobox' && await page.locator('#adresa-uvod').getAttribute('aria-expanded') === 'true' && await page.locator('#adresa-uvod').getAttribute('aria-controls') === 'navrhy-adries' && (await page.locator('[role=status]').first().innerText()) === '1 návrh adresy');
     ok('našepkávač: ukáže návrh od servera', (await page.locator('[role=option]').first().innerText()).includes('Bystrická cesta 12'));
     const a = st.req.find((r) => r.url.startsWith('/api/adresa?'));
     ok('našepkávač: token 8 až 64 znakov', a && /token=[A-Za-z0-9_-]{8,64}$/.test(a.url), a);

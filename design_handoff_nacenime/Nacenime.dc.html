@@ -85,12 +85,13 @@ main>section{animation:nc-in 150ms linear}
         <form onSubmit="{{ startCalc }}" style="margin:32px 0 0;max-width:760px">
           <label for="adresa-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Adresa nehnuteľnosti</label>
           <div style="display:flex;flex-wrap:wrap;gap:12px">
-            <input id="adresa-uvod" type="text" autoComplete="street-address" placeholder="Bystrická cesta 12, Ružomberok" value="{{ address }}" onChange="{{ setAddress }}" style="flex:999 1 260px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <input id="adresa-uvod" type="text" role="combobox" aria-autocomplete="list" aria-controls="navrhy-adries" aria-expanded="{{ suggestExpanded }}" autoComplete="street-address" placeholder="Bystrická cesta 12, Ružomberok" value="{{ address }}" onChange="{{ setAddress }}" style="flex:999 1 260px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
             <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
           </div>
         </form>
+        <p role="status" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0">{{ suggestStatus }}</p>
         <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ true }}">
-          <div role="listbox" aria-label="Návrhy adries" style="margin-top:12px;max-width:760px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;overflow:hidden">
+          <div id="navrhy-adries" role="listbox" aria-label="Návrhy adries" style="margin-top:12px;max-width:760px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;overflow:hidden">
             <sc-for list="{{ suggestions }}" as="sg" hint-placeholder-count="1">
             <button type="button" role="option" onClick="{{ sg.pick }}" style="display:flex;flex-direction:column;gap:2px;width:100%;min-height:60px;padding:10px 20px;border:0;background:#ffffff;color:#11122f;text-align:left;font:400 19px/1.4 'Archivo',sans-serif;cursor:pointer" style-hover="background:#f6f4ef">
               <span style="font-weight:600;color:#272361">{{ sg.line }}</span>
@@ -513,7 +514,8 @@ class Component extends DCLogic {
     return {
       isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name,
       isConfirm: s.screen === 'Potvrdenie adresy',
-      useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0,
+      useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0, suggestExpanded: sugg.length > 0 ? 'true' : 'false',
+      suggestStatus: s.address.trim().length >= 3 && s.sugg.length ? s.sugg.length + (s.sugg.length === 1 ? ' návrh adresy' : s.sugg.length < 5 ? ' návrhy adries' : ' návrhov adries') : '',
       street: s.street, town: s.town, setStreet: set('street'), setTown: e => this.setState({ town: e.target.value, townOut: false }), checkTown: async () => { const t = s.town.trim(); if (t) this.setState({ townOut: !(await this.overObec(t)) }); }, townOut: s.townOut,
       submitFallback: async e => { e.preventDefault(); if (!(await this.overObec(s.town.trim()))) return this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
       confirmAddr: [place.line, [place.zip, place.town].filter(Boolean).join(' ')].filter(Boolean).join(', '), outOfRegion: !place.ok,
