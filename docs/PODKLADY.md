@@ -1,7 +1,7 @@
 # Podklady, ktoré treba doplniť (nacenime.sk)
 
 ## A. Blokuje funkčnosť
-1. **Cenníkové dáta (predaje a ponuky) pre okresy Tvrdošín, Turčianske Teplice a Námestovo.** Pre tieto okresy nie je žiadna skupina na úrovni okresu a takmer žiadna na úrovni obce, takže ľudia odtiaľ dostanú „málo dát“. Treba počet, q1, medián, q3 v €/m² podľa typu (Byt, Apartmán, Dom, Chata, Pozemok), stavu a lokality, vo formáte `design_handoff_nacenime/data/nacenime-cennik.json`.
+1. **Cenníkové dáta (predaje a ponuky) pre okresy Tvrdošín, Turčianske Teplice a Námestovo.** Kalkulačka tam teraz vráti „málo dát“. Stačí tabuľka jednotlivých predajov a inzerátov, návod a vzor sú v [`CENNIK-PODKLADY.md`](CENNIK-PODKLADY.md) a [`sablona-cennik.csv`](sablona-cennik.csv).
 2. ~~Zoznam obcí vo všetkých 7 okresoch~~ **Hotovo** (213 obcí, zdroj `backend/data/obce-siedmich-okresov.csv`). Na potvrdenie: `Dovalovo` (okres Liptovský Mikuláš) je v pôvodných dátach, ale nie v novom zozname. Ponechané, treba potvrdiť, či ide o platnú lokalitu.
 3. **Google Cloud (projekt `nacenime-sk`):** API kľúč pre **Places API (New)** (našepkávač adresy; mapa už Google nepotrebuje, je hotová cez OpenStreetMap), obmedzený na `nacenime.sk` a `*.nacenime.sk`, plus testovacia a lokálna doména. Kľúč nepísať do chatu ani do repa, ide do `backend/.env` (`NACENIME_GOOGLE_API_KEY`).
 4. **SMTP údaje na odosielanie PDF:** server, port, šifrovanie, používateľ, heslo a odosielacia adresa (napr. `noreply@nacenime.sk`). Idú do `backend/.env` (`NACENIME_SMTP_*`, `NACENIME_MAIL_FROM`).

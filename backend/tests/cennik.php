@@ -56,4 +56,20 @@ $res = $o->odhad(['typ' => 'Byt', 'obec' => 'Likavka', 'stav' => 'Pôvodný', 'v
 // Prah predajov je 4: skupina so stavom má len 3 záznamy, použije sa „všetky“ (1000, 2000, 3000, 4000 €/m²).
 $check('odhad z novo zostaveného cenníka', ['ok', 'okres', 'všetky', 105000, 195000], [$res['stav'], $res['uroven'], $res['pouzity_stav'], $res['od'], $res['do']]);
 
+// pozemok: bežná cena 30 €/m² nie je podozrivá, 2 €/m² áno
+$vz = CennikBuilder::zostav([$r('Predaje', 'Pozemok', 'Martin', '', 24000, 800), $r('Predaje', 'Pozemok', 'Martin', '', 1600, 800)], $lok, $zlavy, $stavy);
+$check('pozemok: varovanie len pri 2 €/m²', 1, count($vz['varovania']));
+
+// doplnenie okresov: nové dáta pre Tvrdošín nesmú zmazať ostatné okresy (so skutočným zoznamom lokalít)
+$lok = $d['lokality'];
+$tv = CennikBuilder::zostav(array_map(fn($c) => $r('Predaje', 'Byt', 'Trstená', 'Pôvodný', $c * 50, 50), [1500, 1600, 1700, 1800]), $lok, $zlavy, $stavy);
+$check('okresy vstupu', ['Tvrdošín'], CennikBuilder::okresy($tv['cennik'], $lok));
+$spolu = CennikBuilder::doplnOkresy($d['cennik'], $tv['cennik'], $lok);
+$check('doplnenie: ostatné okresy ostanú celé', count($d['cennik']) + count($tv['cennik']), count($spolu));
+$check('doplnenie: nová skupina okresu je v cenníku', true, in_array('Predaje|Byt|okres Tvrdošín|Pôvodný', array_column($spolu, 'kluc'), true));
+$check('doplnenie druhýkrát nahradí, nezdvojí', count($spolu), count(CennikBuilder::doplnOkresy($spolu, $tv['cennik'], $lok)));
+$o2 = new Odhad(['cennik' => $spolu] + $d);
+$check('po doplnení: Tvrdošín dá odhad, Ružomberok stále rovnaký', ['ok', (new Odhad($d))->odhad(['typ' => 'Byt', 'obec' => 'Ružomberok', 'stav' => 'Pôvodný', 'vymera' => 60])['od']],
+    [$o2->odhad(['typ' => 'Byt', 'obec' => 'Trstená', 'stav' => 'Pôvodný', 'vymera' => 60])['stav'], $o2->odhad(['typ' => 'Byt', 'obec' => 'Ružomberok', 'stav' => 'Pôvodný', 'vymera' => 60])['od']]);
+
 exit($fail > 0 ? 1 : 0);
