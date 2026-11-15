@@ -21,7 +21,7 @@ final class OdosielacPdf
                 continue;
             }
             try {
-                ($this->posli)($k['email'], 'Váš odhad ceny nehnuteľnosti', "Dobrý deň,\n\nv prílohe nájdete orientačný odhad ceny. Nejde o znalecký posudok.\n\nnacenime.sk", $this->pdf->vytvor($odhad, $makler), 'odhad-nacenime.pdf');
+                ($this->posli)($k['email'], 'Váš odhad ceny nehnuteľnosti', "Dobrý deň,\n\nv prílohe nájdete orientačný odhad ceny vašej nehnuteľnosti. Nejde o znalecký posudok.\n\nAk chcete presnú cenu, maklér si nehnuteľnosť pozrie. Stačí odpovedať na tento e-mail.\n\nNajBývanie Ružomberok, s. r. o.\nnacenime.sk", $this->pdf->vytvor($odhad, $makler), 'odhad-nacenime.pdf');
                 $this->storage->oznacOdoslane((int) $k['id']);
                 $r['odoslane']++;
             } catch (\Throwable $e) {
