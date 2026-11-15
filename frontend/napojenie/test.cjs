@@ -42,8 +42,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   async function kalkulacka(page, { typ = 'Byt', stav = 'Pôvodný', obec } = {}) {
     await klik(page, 'Len zisťujem'); await klik(page, typ);
     await page.fill('#vymera', '66,5'); await page.locator('form:has(#vymera) button[type=submit]').click();
-    if (typ !== 'Pozemok') await klik(page, stav);
-    await klik(page, 'Nie');
+    if (typ !== 'Pozemok') { await klik(page, stav); await klik(page, 'Nie'); }
     await page.getByRole('link', { name: 'Preskočiť' }).click();
     if (obec) { await page.fill('#obec-kalk', obec); await page.locator('form:has(#obec-kalk) button[type=submit]').click(); }
     await page.locator('button:has-text("Zobraziť")').first().click();
@@ -136,10 +135,20 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const { page, st } = await nova();
     await page.fill('#adresa-uvod', 'zzz'); await page.waitForSelector('#ulica-uvod');
     await page.getByRole('link', { name: 'Oceňujete pozemok? Pokračujte bez adresy.' }).click();
-    await kalkulacka(page, { typ: 'Pozemok', obec: 'Liptovský Mikuláš' });
+    // pozemok: po výmere rovno predstava o cene (bez stavu a balkóna), späť vedie na výmeru
+    await klik(page, 'Len zisťujem'); await klik(page, 'Pozemok');
+    await page.fill('#vymera', '800'); await page.locator('form:has(#vymera) button[type=submit]').click();
+    await page.waitForSelector('#cena');
+    ok('pozemok: bez otázky na stav a balkón', (await page.getByText('Má balkón, loggiu alebo terasu?').count()) === 0 && (await page.getByText('V akom je stave?').count()) === 0);
+    await page.getByRole('button', { name: 'Späť' }).click().catch(() => {});
+    ok('pozemok: Späť z ceny vedie na výmeru', (await page.locator('#vymera').count()) === 1);
+    await page.locator('form:has(#vymera) button[type=submit]').click();
+    await page.getByRole('link', { name: 'Preskočiť' }).click();
+    await page.fill('#obec-kalk', 'Liptovský Mikuláš'); await page.locator('form:has(#obec-kalk) button[type=submit]').click();
+    await page.locator('button:has-text("Zobraziť")').first().click();
     await page.waitForSelector('h1', { timeout: 8000 }); await page.waitForTimeout(500);
     const o = JSON.parse(st.req.find((r) => r.url === '/api/odhad').telo);
-    ok('pozemok: bez stavu, bez_adresy, obec z otázky', o.typ === 'Pozemok' && !('stav' in o) && o.adresa.bez_adresy === true && o.obec === 'Liptovský Mikuláš', o);
+    ok('pozemok: bez stavu a balkóna, bez_adresy, obec z otázky', o.typ === 'Pozemok' && !('stav' in o) && !('balkon' in o) && o.adresa.bez_adresy === true && o.obec === 'Liptovský Mikuláš', o);
     await page.context().close();
   }
 

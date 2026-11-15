@@ -552,12 +552,12 @@ class Component extends DCLogic {
         return { label, bg: on ? '#272361' : '#ffffff', fg: on ? '#ffffff' : '#272361',
           pick: () => this.go({ answers: { ...s.answers, [step]: label }, step: auto ? step + 1 : step }) };
       }),
-      back: () => step === 0 ? this.go({ screen: s.from }) : this.go({ step: step === 7 && !needObec ? 5 : step === 4 && pozemok ? 2 : step - 1 }),
+      back: () => step === 0 ? this.go({ screen: s.from }) : this.go({ step: step === 7 && !needObec ? 5 : step === 5 && pozemok ? 2 : step - 1 }),
       submitArea: e => {
         e.preventDefault();
         const n = Number(String(s.area).replace(',', '.').trim());
         if (!s.area.trim() || !(n >= 10 && n <= 2000)) return this.setState({ areaError: true });
-        this.go({ answers: { ...s.answers, 2: n }, step: pozemok ? 4 : 3 });
+        this.go({ answers: { ...s.answers, 2: n }, step: pozemok ? 5 : 3 }); // pozemok preskakuje stav aj balkón
       },
       resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
       priceText: resOk ? fmt(od.od) + ' až ' + fmt(od.do) + '\u00a0€' : '', hasNadpis: resNoPrice && !!od.nadpis, nadpis: od && od.nadpis || '',
