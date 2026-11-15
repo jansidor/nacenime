@@ -30,6 +30,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     page.on('pageerror', (e) => st.chyby.push(String(e)));
     page.on('request', (r) => { if (r.url().startsWith(base + '/api/')) st.req.push({ url: r.url().slice(base.length), metoda: r.method(), telo: r.postData() }); });
     page.on('request', (r) => { if (/unpkg\.com/.test(r.url())) st.unpkg = (st.unpkg || 0) + 1; });
+    st.googleFonts = 0; page.on('request', (r) => { if (/fonts\.(googleapis|gstatic)\.com/.test(r.url())) st.googleFonts++; });
     page.on('request', (r) => { if (/\/mapa\//.test(r.url())) st.mapa.push(r.url()); });
     await page.route(/^https:\/\/unpkg\.com\//, (r) => r.fulfill({ status: 404, body: '' })); // runtime je lokálny (vendor/), unpkg sa nesmie použiť
     await page.route(/^https?:\/\/(?!127\.0\.0\.1|unpkg\.com)/, (r) => r.fulfill({ status: 200, contentType: r.request().resourceType() === 'stylesheet' ? 'text/css' : 'text/javascript', body: '' }));
@@ -81,6 +82,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     ok('honeypot je skrytý pred čítačkou', await page.locator('input[name=web]').first().getAttribute('aria-hidden') === 'true' && await page.locator('input[name=web]').first().getAttribute('tabindex') === '-1');
     ok('knižnice sa načítali lokálne, nie z unpkg.com', !st.unpkg, st.unpkg);
     ok('bez súhlasu s cookies sa neposielajú udalosti (dataLayer neexistuje)', await page.evaluate(() => window.dataLayer === undefined));
+    ok('písmo Archivo z vlastného servera, nič z Google Fonts', st.googleFonts === 0 && await page.evaluate(async () => { await document.fonts.ready; return document.fonts.check('800 20px Archivo') && document.fonts.check('400 20px Archivo') && [...document.fonts].some((f) => f.family.replace(/"/g, '') === 'Archivo' && f.status === 'loaded'); }), st.googleFonts);
     ok('bez chýb v konzole', st.chyby.length === 0, st.chyby);
     await page.context().close();
   }
