@@ -20,5 +20,9 @@ fi
 
 cp "$koren/deploy/hosting/api.php" "$ciel/design_handoff_nacenime/api.php"
 cp "$koren/deploy/hosting/htaccess" "$ciel/design_handoff_nacenime/.htaccess"
+# CRM (crm.nacenime.sk má koreň v crm/): rovnaký vstup do API, vlastný .htaccess, lokálny React runtime.
+cp "$koren/deploy/hosting/api.php" "$ciel/crm/api.php"
+cp "$koren/deploy/hosting/htaccess-crm" "$ciel/crm/.htaccess"
+cp -r "$ciel/design_handoff_nacenime/vendor" "$ciel/crm/vendor"
 printf 'zdroj: %s\nzostavené: %s\n' "$(git rev-parse HEAD)" "$(date -u +%FT%TZ)" > "$ciel/DEPLOY.txt"
 echo "Hotovo: $ciel ($(find "$ciel" -type f | wc -l) súborov)"

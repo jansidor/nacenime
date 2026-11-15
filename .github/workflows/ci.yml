@@ -31,6 +31,8 @@ jobs:
         run: php backend/tests/api.php
       - name: PHP testy PDF a e-mailov
         run: php backend/tests/pdf.php
+      - name: CRM (prihlásenie, role, leady)
+        run: php backend/tests/crm.php
       - name: Oznámenia o leadoch
         run: php backend/tests/oznamenia.php
       - name: Testy prevádzky (konfigurácia, záloha)

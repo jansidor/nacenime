@@ -38,7 +38,7 @@ curl -s -X POST localhost:8080/api/odhad -H 'Content-Type: application/json' \
 
 ## Testy
 ```bash
-for t in run api pdf oznamenia cennik prevadzka http subeznost fuzz; do php backend/tests/$t.php || break; done
+for t in run api pdf oznamenia crm cennik prevadzka http subeznost fuzz; do php backend/tests/$t.php || break; done
 backend/tests/parity.sh        # PHP vs. JS referencia
 php backend/bin/kontrola-cennika.php
 ```

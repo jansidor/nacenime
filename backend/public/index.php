@@ -8,8 +8,14 @@ require __DIR__ . '/../src/Validator.php';
 require __DIR__ . '/../src/Adresy.php';
 require __DIR__ . '/../src/Storage.php';
 require __DIR__ . '/../src/Api.php';
+require __DIR__ . '/../src/Posta.php';
+require __DIR__ . '/../src/CrmStorage.php';
+require __DIR__ . '/../src/Crm.php';
+if (is_file(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php'; // PHPMailer pre e-maily z CRM
+}
 
-use Nacenime\{Api, Cesty, Config, Odhad, Storage};
+use Nacenime\{Api, Cesty, Config, Crm, CrmStorage, Odhad, Posta, Storage};
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -53,7 +59,20 @@ try {
             [$kod, $odpoved] = [400, ['chyba' => 'Neplatný JSON.']];
         } else {
             $cesta = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-            [$kod, $odpoved] = $api->handle($metoda, $cesta, $json, $_GET, $ip);
+            if (str_starts_with($cesta, '/api/crm/')) {
+                // CRM: prihlásenie cez HttpOnly cookie, oprávnenia v triede Crm.
+                $storage = new Storage($dbCesta);
+                $crm = new Crm(new CrmStorage($storage), $storage, $config, (new Posta($config))->posliText(...));
+                [$kod, $odpoved, $cookie] = $crm->handle($metoda, $cesta, $json, (string) ($_COOKIE[Crm::COOKIE] ?? ''), $ip);
+                if ($cookie !== null) {
+                    setcookie(Crm::COOKIE, $cookie[0], [
+                        'expires' => $cookie[1] > 0 ? time() + $cookie[1] : time() - 3600, 'path' => '/',
+                        'secure' => $config->get('CRM_COOKIE_SECURE', '1') !== '0', 'httponly' => true, 'samesite' => 'Strict',
+                    ]);
+                }
+            } else {
+                [$kod, $odpoved] = $api->handle($metoda, $cesta, $json, $_GET, $ip);
+            }
         }
     }
 } catch (Throwable $e) {

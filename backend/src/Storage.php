@@ -61,6 +61,12 @@ SQL);
         $this->doplnStlpec('kontakty', 'oznam_pokusy', 'INTEGER NOT NULL DEFAULT 0');
     }
 
+    /** Spoločné spojenie pre CRM (rovnaká databáza a nastavenia). */
+    public function pdo(): \PDO
+    {
+        return $this->pdo;
+    }
+
     /** Jednoduchá migrácia pre databázy vytvorené staršou verziou schémy. Vráti true, ak stĺpec pridala. */
     private function doplnStlpec(string $tabulka, string $stlpec, string $typ): bool
     {
