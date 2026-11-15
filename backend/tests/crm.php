@@ -115,7 +115,30 @@ $check('odstránený maklér stratí reláciu', 401, $h('GET', '/api/crm/data', 
 $r = $h('POST', '/api/crm/lead', ['id' => $tel['id'], 'akcia' => 'vymazat'], $adm);
 $check('vymazanie údajov klienta', ['Vymazaný klient', '–', '–', [], 'údaje klienta vymazané'], [$r[1]['lead']['meno'], $r[1]['lead']['telefon'], $r[1]['lead']['adresa'], $r[1]['lead']['notes'], end($r[1]['lead']['history'])['text']]);
 $check('audit obsahuje vymazanie', true, (bool) array_filter($h('GET', '/api/crm/data', [], $adm)[1]['audit'], fn($a) => str_contains($a['text'], 'vymazal údaje')));
+$check('po vymazaní nie je meno klienta ani v histórii', false, (bool) array_filter($r[1]['lead']['history'], fn($x) => str_contains($x['text'], 'Jana Nová')));
+$check('história ostane s udalosťou bez mena', true, (bool) array_filter($r[1]['lead']['history'], fn($x) => $x['text'] === 'meno klienta: (vymazané)'));
+
+// nové heslo cez odkaz odhlási staré relácie
+$posta = [];
+$h('POST', '/api/crm/odkaz', ['email' => 'jan@najby.sk']);
+$r = $h('POST', '/api/crm/heslo', ['token' => $token($posta[0]['telo'] ?? ''), 'heslo' => 'uplne-nove-heslo-1']);
+$check('nové heslo: stará relácia neplatí, nová áno', [200, 401, 200], [$r[0], $h('GET', '/api/crm/data', [], $adm)[0], $h('GET', '/api/crm/data', [], $r[2][0])[0]]);
+$adm = $r[2][0];
+
+// GDPR zmazanie kontaktu (bin/gdpr.php zmaz) zmaže aj CRM záznamy: meno, poznámky, históriu
+$kid = (int) preg_replace('/\D/', '', $pdf['id']);
+$h('POST', '/api/crm/lead', ['id' => $pdf['id'], 'akcia' => 'poznamka', 'text' => 'volať po 17:00'], $adm);
+$st->zmazKontakty('so@suhlasom.sk');
+$zvysky = array_sum(array_map(fn($t) => (int) $st->pdo()->query("SELECT COUNT(*) FROM $t WHERE kontakt_id = $kid")->fetchColumn(), ['crm_leady', 'crm_poznamky', 'crm_historia']));
+$check('GDPR zmazanie upratá CRM (lead, poznámky, história)', 0, $zvysky);
+$check('zmazaný lead nie je v CRM', false, (bool) array_filter($h('GET', '/api/crm/data', [], $adm)[1]['leads'], fn($l) => $l['id'] === $pdf['id']));
+
 $h('POST', '/api/crm/odhlasenie', [], $adm);
 $check('po odhlásení 401', 401, $h('GET', '/api/crm/data', [], $adm)[0]);
+
+// limit pokusov na účet (aj bez IP, napr. veľa rôznych IP)
+$kody = array_map(fn() => $h('POST', '/api/crm/prihlasenie', ['email' => 'Hadany@Ucet.sk', 'heslo' => 'zle-heslo-123456'])[0], range(1, 6));
+$check('6. pokus na ten istý účet za minútu: 429', [422, 422, 422, 422, 422, 429], $kody);
+$check('iný účet limit nezdieľa', 422, $h('POST', '/api/crm/prihlasenie', ['email' => 'iny@ucet.sk', 'heslo' => 'zle-heslo-123456'])[0]);
 
 exit($fail > 0 ? 1 : 0);

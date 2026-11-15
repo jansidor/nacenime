@@ -119,6 +119,12 @@ SQL);
         return $this->pouzivatel((int) $id);
     }
 
+    /** Zruší všetky relácie používateľa okrem žiadnej (napr. po zmene hesla cez odkaz). */
+    public function zrusRelacieUzivatela(int $pouzivatelId): void
+    {
+        $this->pdo->prepare('DELETE FROM crm_relacie WHERE pouzivatel_id = ?')->execute([$pouzivatelId]);
+    }
+
     public function zrusRelaciu(string $token): void
     {
         $this->pdo->prepare('DELETE FROM crm_relacie WHERE token = ?')->execute([hash('sha256', $token)]);
@@ -210,7 +216,10 @@ SQL);
         $this->pdo->prepare('UPDATE kontakty SET email = NULL, telefon = NULL, odoslane = CASE WHEN odoslane = 0 THEN 2 ELSE odoslane END WHERE id = ?')->execute([$kontaktId]);
         $this->pdo->prepare('UPDATE odhady SET adresa = NULL, psc = NULL, lat = NULL, lng = NULL, predstava_ceny = NULL WHERE id = (SELECT odhad_id FROM kontakty WHERE id = ?)')->execute([$kontaktId]);
         $this->pdo->prepare('DELETE FROM crm_poznamky WHERE kontakt_id = ?')->execute([$kontaktId]);
-        $this->upravLead($kontaktId, ['meno' => 'Vymazaný klient', 'vymazany' => 1, 'krok_text' => null, 'krok_at' => null]);
+        // V histórii ostanú len udalosti, nie osobné údaje: meno klienta a voľný text dôvodu straty sa prepíšu.
+        $this->pdo->prepare("UPDATE crm_historia SET text = 'meno klienta: (vymazané)' WHERE kontakt_id = ? AND text LIKE 'meno klienta:%'")->execute([$kontaktId]);
+        $this->pdo->prepare("UPDATE crm_historia SET text = substr(text, 1, instr(text, 'dôvod: iné (') + length('dôvod: iné') - 1) WHERE kontakt_id = ? AND instr(text, 'dôvod: iné (') > 0")->execute([$kontaktId]);
+        $this->upravLead($kontaktId, ['meno' => 'Vymazaný klient', 'vymazany' => 1, 'krok_text' => null, 'krok_at' => null, 'dovod_text' => null]);
     }
 
     /** Kroky, ktorých termín nastal a pripomienka ešte neodišla. @return list<array<string, mixed>> */

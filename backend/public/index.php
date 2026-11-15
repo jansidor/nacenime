@@ -59,7 +59,10 @@ try {
             [$kod, $odpoved] = [400, ['chyba' => 'Neplatný JSON.']];
         } else {
             $cesta = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-            if (str_starts_with($cesta, '/api/crm/')) {
+            if (str_starts_with($cesta, '/api/crm/') && Cesty::jeNasadenie($root) && !defined('NACENIME_CRM_VSTUP')) {
+                // Na nasadení je CRM API len na crm.nacenime.sk (vstup crm/api.php), nie na verejnom webe.
+                [$kod, $odpoved] = [404, ['chyba' => 'Nenájdené.']];
+            } elseif (str_starts_with($cesta, '/api/crm/')) {
                 // CRM: prihlásenie cez HttpOnly cookie, oprávnenia v triede Crm.
                 $storage = new Storage($dbCesta);
                 $crm = new Crm(new CrmStorage($storage), $storage, $config, (new Posta($config))->posliText(...));

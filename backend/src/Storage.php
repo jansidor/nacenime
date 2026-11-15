@@ -238,6 +238,7 @@ SQL);
             foreach ($odhady as $id) {
                 $d->execute([$id]);
             }
+            $this->zmazOsireleCrm();
             return $n->rowCount();
         });
     }
@@ -251,8 +252,18 @@ SQL);
             $k->execute([$hranica]);
             $o = $this->pdo->prepare('DELETE FROM odhady WHERE vytvorene < ? AND id NOT IN (SELECT odhad_id FROM kontakty WHERE odhad_id IS NOT NULL)');
             $o->execute([$hranica]);
+            $this->zmazOsireleCrm();
             return ['kontakty' => $k->rowCount(), 'odhady' => $o->rowCount()];
         });
+    }
+
+    /** CRM záznamy (meno klienta, poznámky, história) k zmazaným kontaktom. Tabuľky CRM nemusia existovať. */
+    private function zmazOsireleCrm(): void
+    {
+        $tabulky = $this->pdo->query("SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('crm_leady', 'crm_poznamky', 'crm_historia')")->fetchAll(\PDO::FETCH_COLUMN);
+        foreach ($tabulky as $t) {
+            $this->pdo->exec("DELETE FROM $t WHERE kontakt_id NOT IN (SELECT id FROM kontakty)");
+        }
     }
 
     private function vTransakcii(callable $f): mixed
