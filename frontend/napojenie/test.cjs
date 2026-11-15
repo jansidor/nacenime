@@ -133,6 +133,16 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await page.context().close();
   }
 
+  // 3b. Odkaz pre pozemok je na úvode aj vtedy, keď Google funguje
+  {
+    const { page } = await nova(async (p) => { await p.route('**/api/adresa?*', (r) => r.fulfill({ json: { navrhy: [] } })); });
+    const odkaz = page.getByRole('link', { name: 'Oceňujete pozemok? Pokračujte bez adresy.' });
+    ok('pozemok: odkaz na úvode pri fungujúcom Google', (await page.locator('#adresa-uvod').count()) === 1 && (await odkaz.count()) === 1);
+    await odkaz.click();
+    ok('pozemok: odkaz vedie rovno na otázku 1', (await page.getByText('Prečo zisťujete cenu?').count()) === 1);
+    await page.context().close();
+  }
+
   // 4. Pozemok bez adresy: bez stavu, bez_adresy, obec z poslednej otázky
   {
     const { page, st } = await nova();

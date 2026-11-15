@@ -122,8 +122,8 @@ main>section{animation:nc-in 150ms linear}
           </div>
         </form>
         <sc-if value="{{ townOut }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p></sc-if>
-        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
         </sc-if>
+        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
         <p style="margin:24px 0 0;max-width:62ch">Liptov, Turiec, Orava. Orientačný odhad, nie znalecký posudok.</p>
         <nav aria-label="Mestá" style="margin:4px 0 0;max-width:760px;display:flex;flex-wrap:wrap;gap:0 24px">
           <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
@@ -203,8 +203,8 @@ main>section{animation:nc-in 150ms linear}
           </div>
         </form>
         <sc-if value="{{ townOut }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p></sc-if>
-        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
             </sc-if>
+        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
             <p style="margin:24px 0 0;max-width:62ch">Orientačný odhad, nie znalecký posudok.</p>
           </div>
           <div style="min-height:clamp(240px,38vw,480px);border-radius:20px;background:#dcd9d0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#11122f;position:relative;overflow:hidden">{{ cityPhoto }}<sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ cityAlt }}" style="position:absolute;inset:0;background-image:{{ cityBg }};background-size:cover;background-position:center"></div></sc-if></div>
