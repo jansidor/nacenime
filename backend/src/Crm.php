@@ -114,6 +114,7 @@ final class Crm
             return [422, ['chyba' => 'Odkaz už neplatí. Požiadajte o nový cez „Zabudnuté heslo“.'], null];
         }
         $this->db->nastavHeslo((int) $u['id'], $heslo);
+        $this->db->zrusRelacieUzivatela((int) $u['id']); // nové heslo odhlási všetky staré relácie (aj prípadného útočníka)
         $this->db->audit($u['meno'], 'nastavenie hesla');
         return [200, ['ok' => true], [$this->db->novyToken('crm_relacie', (int) $u['id'], self::RELACIA_S), self::RELACIA_S]];
     }

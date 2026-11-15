@@ -629,7 +629,8 @@ class Component extends DCLogic {
   exportCsv() {
     const rows = this.filtered().slice().sort((a, b) => b.prijaty - a.prijaty);
     const head = ['Číslo', 'Prijatý', 'Meno', 'Telefón', 'E-mail', 'Súhlas s telefonátom', 'Lokalita', 'Typ', 'Odhad od (tis. €)', 'Odhad do (tis. €)', 'Stav', 'Maklér', 'Ďalší krok', 'Prioritný'];
-    const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    // Bunka začínajúca =, +, -, @, tabulátorom alebo CR by sa v Exceli vykonala ako vzorec (CSV injection): pridáme apostrof.
+    const q = (v) => { let t = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"'; };
     const csv = '\uFEFF' + [head].concat(rows.map((l) => [l.cislo, this.fmt(l.prijaty), l.meno, l.telefon, l.email, l.suhlas ? 'áno' : 'nie', l.lokalita, this.TYP[l.typ], l.od, l.do, l.stav, l.pridelene ? this.nameOf(l.pridelene) : '', l.krokAt ? l.krokText + ' (' + this.fmt(l.krokAt) + ')' : '', l.prio ? 'áno' : 'nie'])).map((r) => r.map(q).join(';')).join('\r\n');
     try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'leady-' + new Date().toISOString().slice(0, 10) + '.csv'; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
     this.api('audit', { akcia: 'export', pocet: rows.length }).catch(() => {});
