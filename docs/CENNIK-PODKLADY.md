@@ -1,6 +1,6 @@
 # Cenové dáta pre nové okresy: čo pripraviť
 
-Pre okresy **Tvrdošín, Turčianske Teplice a Námestovo** kalkulačka zatiaľ nemá ceny, takže tam ukáže „Na odhad tu máme málo predajov“. Stačí pripraviť jednu tabuľku (Excel alebo CSV) podľa tohto návodu.
+Pre okresy **Tvrdošín, Turčianske Teplice a Námestovo** kalkulačka zatiaľ nemá vlastné ceny. Dočasne počíta približne podľa susedného okresu (Tvrdošín a Námestovo podľa Dolného Kubína, Turčianske Teplice podľa Martina, nastavenie `nahradne_okresy` v cenníku) a vo výsledku to povie. Keď prídu skutočné dáta, majú automaticky prednosť. Stačí pripraviť jednu tabuľku (Excel alebo CSV) podľa tohto návodu.
 
 Vzor: [`sablona-cennik.csv`](sablona-cennik.csv) (tri ukážkové riadky, pred odoslaním ich zmažte).
 

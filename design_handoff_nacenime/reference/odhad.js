@@ -8,7 +8,8 @@ export function pripravCennik(data) {
     stavy: [...new Set(data.cennik.map(g => g.stav))].filter(s => s !== 'všetky'),
     typy: Object.keys(data.zlavy),
     prahy: data.prahy,
-    zlavy: data.zlavy
+    zlavy: data.zlavy,
+    nahradne: data.nahradne_okresy || {}
   };
 }
 
@@ -40,6 +41,28 @@ export function odhad(c, { typ, obec, stav, vymera }, { typyBezRozpatia = [] } =
       do: round1000(g.q3 * vymera - (predaj ? 0 : zlavaMin)),
       pocet: g.pocet, zdroj, uroven, pouzity_stav: s, veta, nadpis: null
     };
+  }
+  // Okres bez vlastných dát: približný odhad podľa susedného okresu (cenník: nahradne_okresy). Vlastné dáta majú prednosť.
+  const nahradny = c.nahradne[lok.okres];
+  if (nahradny) {
+    for (const [zdroj, uroven, s] of poradie(stav)) {
+      if (uroven !== 'okres') continue;
+      const g = c.skupiny.get([zdroj, typ, 'okres ' + nahradny, s].join('|'));
+      if (!g || g.pocet < c.prahy[zdroj.toLowerCase()]) continue;
+      const [zlavaMin, zlavaMax] = c.zlavy[typ];
+      const predaj = zdroj === 'Predaje';
+      const veta = [
+        predaj ? `Približný odhad podľa ${g.pocet} predajov v susednom okrese ${nahradny}.` : `Približný odhad podľa ${g.pocet} ponúk v susednom okrese ${nahradny}, po odpočítaní bežnej zľavy pri predaji.`,
+        s === 'všetky' && 'Bez rozlíšenia stavu.',
+        `Pre okres ${lok.okres} zatiaľ nemáme vlastné údaje.`
+      ].filter(Boolean).join(' ');
+      return {
+        stav: 'ok',
+        od: round1000(g.q1 * vymera - (predaj ? 0 : zlavaMax)),
+        do: round1000(g.q3 * vymera - (predaj ? 0 : zlavaMin)),
+        pocet: g.pocet, zdroj, uroven: 'susedný okres', pouzity_stav: s, veta, nadpis: null
+      };
+    }
   }
   return { stav: 'málo dát', ...prazdny, veta: 'Maklér vám povie cenu po obhliadke.', nadpis: 'Na odhad tu máme málo predajov' };
 }
