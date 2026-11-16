@@ -28,8 +28,8 @@ test('Chata, Dolný Kubín → málo dát', () => {
   assert.equal(r.stav, 'málo dát');
   assert.equal(r.veta, 'Maklér vám povie cenu po obhliadke.');
 });
-test('Byt, Námestovo → málo dát', () => {
-  assert.equal(odhad(c, { typ: 'Byt', obec: 'Námestovo', stav: 'Pôvodný', vymera: 50 }).stav, 'málo dát');
+test('Byt, Námestovo → približne podľa susedného okresu', () => {
+  assert.equal(odhad(c, { typ: 'Byt', obec: 'Námestovo', stav: 'Pôvodný', vymera: 50 }).uroven, 'susedný okres');
 });
 test('obec mimo zoznamu → mimo regiónu; bez diakritiky a veľkosti písmen sa nájde', () => {
   assert.equal(odhad(c, { typ: 'Byt', obec: 'Žilina', stav: 'Pôvodný', vymera: 50 }).stav, 'mimo regiónu');
@@ -39,4 +39,10 @@ test('typ vypnutý prepínačom → maklér', () => {
   const r = odhad(c, { typ: 'Byt', obec: 'Martin', stav: 'Pôvodný', vymera: 60 }, { typyBezRozpatia: ['Byt'] });
   assert.equal(r.stav, 'maklér');
   assert.equal(r.nadpis, 'Cenu vám povie maklér');
+});
+
+test('Tvrdošín bez vlastných dát: približne podľa Dolného Kubína', () => {
+  const r = odhad(c, { typ: 'Byt', obec: 'Trstená', stav: 'Pôvodný', vymera: 60 });
+  assert.equal(r.stav, 'ok'); assert.equal(r.uroven, 'susedný okres');
+  assert.match(r.veta, /susednom okrese Dolný Kubín.*Pre okres Tvrdošín zatiaľ nemáme vlastné údaje\./);
 });

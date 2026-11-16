@@ -117,7 +117,7 @@ components:
         do: { type: integer, nullable: true }
         pocet: { type: integer, nullable: true }
         zdroj: { type: string, nullable: true, enum: [Predaje, Ponuky] }
-        uroven: { type: string, nullable: true, enum: [obec, okres] }
+        uroven: { type: string, nullable: true, enum: [obec, okres, susedný okres], description: '„susedný okres“ = približný odhad pre okres bez vlastných dát (cenník: nahradne_okresy)' }
         pouzity_stav: { type: string, nullable: true }
         veta: { type: string, nullable: true, description: Veta o zdroji. }
         nadpis: { type: string, nullable: true, description: Nadpis pre stavy málo dát a maklér. }

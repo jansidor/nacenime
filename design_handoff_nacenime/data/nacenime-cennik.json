@@ -27,6 +27,11 @@
    0
   ]
  },
+ "nahradne_okresy": {
+  "Tvrdošín": "Dolný Kubín",
+  "Námestovo": "Dolný Kubín",
+  "Turčianske Teplice": "Martin"
+ },
  "lokality": {
   "Bešeňová": "Ružomberok",
   "Hubová": "Ružomberok",

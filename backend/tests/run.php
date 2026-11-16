@@ -28,7 +28,7 @@ $check('Pozemok veta', true, str_ends_with($r['veta'], 'Bez rozlíšenia stavu. 
 
 $r = $o->odhad(['typ' => 'Chata', 'obec' => 'Dolný Kubín', 'stav' => 'Pôvodný', 'vymera' => 50]);
 $check('Chata málo dát', ['málo dát', 'Maklér vám povie cenu po obhliadke.'], [$r['stav'], $r['veta']]);
-$check('Byt Námestovo málo dát', 'málo dát', $o->odhad(['typ' => 'Byt', 'obec' => 'Námestovo', 'stav' => 'Pôvodný', 'vymera' => 50])['stav']);
+$check('Byt Námestovo: približne podľa susedného okresu', ['ok', 'susedný okres'], [($x = $o->odhad(['typ' => 'Byt', 'obec' => 'Námestovo', 'stav' => 'Pôvodný', 'vymera' => 50]))['stav'], $x['uroven']]);
 $check('mimo regiónu', 'mimo regiónu', $o->odhad(['typ' => 'Byt', 'obec' => 'Žilina', 'stav' => 'Pôvodný', 'vymera' => 50])['stav']);
 $check('diakritika/veľkosť', 131000, $o->odhad(['typ' => 'Byt', 'obec' => 'ruzomberok', 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66])['od']);
 $check('RUŽOMBEROK veľké', 131000, $o->odhad(['typ' => 'Byt', 'obec' => ' RUŽOMBEROK ', 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66])['od']);
@@ -42,5 +42,21 @@ $check('Trstená (Tvrdošín) a Trstené (Liptov) sú rozlíšené', ['Tvrdoší
 $check('všetkých 7 okresov má obce', 7, count(array_unique(array_column((new ReflectionProperty($o, 'lokality'))->getValue($o), 'okres'))));
 $r = $o->odhad(['typ' => 'Byt', 'obec' => 'Martin', 'stav' => 'Pôvodný', 'vymera' => 60], ['Byt']);
 $check('typ bez rozpätia', ['maklér', 'Cenu vám povie maklér'], [$r['stav'], $r['nadpis']]);
+
+// okresy bez vlastných dát: približne podľa susedného okresu
+$r = $o->odhad(['typ' => 'Byt', 'obec' => 'Trstená', 'stav' => 'Pôvodný', 'vymera' => 60]);
+$check('Tvrdošín: približne podľa Dolného Kubína', ['ok', 'susedný okres', true, true], [$r['stav'], $r['uroven'], str_contains($r['veta'], 'susednom okrese Dolný Kubín'), str_contains($r['veta'], 'Pre okres Tvrdošín zatiaľ nemáme vlastné údaje.')]);
+$dk = $o->odhad(['typ' => 'Byt', 'obec' => 'Dolný Kubín', 'stav' => 'Pôvodný', 'vymera' => 60]);
+$check('rovnaké rozpätie ako okres Dolný Kubín (ak tam nie je skupina obce)', true, $r['od'] > 0 && $r['do'] >= $r['od']);
+$r = $o->odhad(['typ' => 'Byt', 'obec' => 'Turčianske Teplice', 'stav' => 'Pôvodný', 'vymera' => 60]);
+$check('Turčianske Teplice: približne podľa Martina', ['ok', true], [$r['stav'], str_contains($r['veta'], 'okrese Martin')]);
+$r = $o->odhad(['typ' => 'Apartmán', 'obec' => 'Námestovo', 'stav' => 'Novostavba', 'vymera' => 50]);
+$check('ani susedný okres nemá dáta: málo dát', 'málo dát', $r['stav']);
+$check('okres s vlastnými dátami sa nemení', ['ok', 'obec'], [($x = $o->odhad(['typ' => 'Byt', 'obec' => 'Ružomberok', 'stav' => 'Pôvodný', 'vymera' => 60]))['stav'], $x['uroven']]);
+$bez = json_decode(file_get_contents($cennik), true); unset($bez['nahradne_okresy']);
+$check('bez nastavenia nahradne_okresy: málo dát (pôvodné správanie)', 'málo dát', (new Odhad($bez))->odhad(['typ' => 'Byt', 'obec' => 'Trstená', 'stav' => 'Pôvodný', 'vymera' => 60])['stav']);
+$vlastne = json_decode(file_get_contents($cennik), true);
+$vlastne['cennik'][] = ['kluc' => 'Predaje|Byt|okres Tvrdošín|všetky', 'zdroj' => 'Predaje', 'typ' => 'Byt', 'uroven' => 'okres', 'lokalita' => 'okres Tvrdošín', 'stav' => 'všetky', 'pocet' => 10, 'q1' => 1000, 'median' => 1100, 'q3' => 1200];
+$check('vlastné dáta okresu majú prednosť pred susedným', ['okres', 60000, 72000], [($x = (new Odhad($vlastne))->odhad(['typ' => 'Byt', 'obec' => 'Trstená', 'stav' => 'Pôvodný', 'vymera' => 60]))['uroven'], $x['od'], $x['do']]);
 
 exit($fail > 0 ? 1 : 0);

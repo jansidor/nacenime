@@ -17,6 +17,8 @@ final class Odhad
     private array $prahy;
     /** @var array<string, array{0: int|float, 1: int|float}> */
     private array $zlavy;
+    /** @var array<string, string> okres bez vlastných dát => susedný okres, podľa ktorého sa počíta približný odhad */
+    private array $nahradne;
 
     /** @param array<string, mixed> $data obsah nacenime-cennik.json */
     public function __construct(array $data)
@@ -29,6 +31,7 @@ final class Odhad
         }
         $this->prahy = $data['prahy'];
         $this->zlavy = $data['zlavy'];
+        $this->nahradne = $data['nahradne_okresy'] ?? [];
     }
 
     public static function zo_suboru(string $cesta): self
@@ -127,6 +130,35 @@ final class Odhad
                 'pocet' => $g['pocet'], 'zdroj' => $zdroj, 'uroven' => $uroven,
                 'pouzity_stav' => $s, 'veta' => $veta, 'nadpis' => null,
             ];
+        }
+        // Okres bez vlastných dát: približný odhad podľa susedného okresu (cenník: nahradne_okresy). Vlastné dáta majú prednosť.
+        $nahradny = $this->nahradne[$lok['okres']] ?? null;
+        if ($nahradny !== null) {
+            foreach ($this->poradie($stav) as [$zdroj, $uroven, $s]) {
+                if ($uroven !== 'okres') {
+                    continue;
+                }
+                $g = $this->skupiny[implode('|', [$zdroj, $typ, 'okres ' . $nahradny, $s])] ?? null;
+                if ($g === null || $g['pocet'] < $this->prahy[strtolower($zdroj)]) {
+                    continue;
+                }
+                [$zlavaMin, $zlavaMax] = $this->zlavy[$typ];
+                $predaj = $zdroj === 'Predaje';
+                $veta = implode(' ', array_filter([
+                    $predaj
+                        ? "Približný odhad podľa {$g['pocet']} predajov v susednom okrese {$nahradny}."
+                        : "Približný odhad podľa {$g['pocet']} ponúk v susednom okrese {$nahradny}, po odpočítaní bežnej zľavy pri predaji.",
+                    $s === 'všetky' ? 'Bez rozlíšenia stavu.' : null,
+                    "Pre okres {$lok['okres']} zatiaľ nemáme vlastné údaje.",
+                ]));
+                return [
+                    'stav' => 'ok',
+                    'od' => self::round1000($g['q1'] * $vymera - ($predaj ? 0 : $zlavaMax)),
+                    'do' => self::round1000($g['q3'] * $vymera - ($predaj ? 0 : $zlavaMin)),
+                    'pocet' => $g['pocet'], 'zdroj' => $zdroj, 'uroven' => 'susedný okres',
+                    'pouzity_stav' => $s, 'veta' => $veta, 'nadpis' => null,
+                ];
+            }
         }
         return ['stav' => 'málo dát'] + array_merge($prazdny, [
             'veta' => 'Maklér vám povie cenu po obhliadke.',
