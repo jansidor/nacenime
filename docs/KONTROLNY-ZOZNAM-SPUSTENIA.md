@@ -1,41 +1,42 @@
 # Kontrolný zoznam spustenia nacenime.sk
 
-Stav k 15. 11. 2026. Overené priamo na webe, ak nie je uvedené inak.
+Stav k 16. 11. 2026. Overené priamo na webe, ak nie je uvedené inak.
 
 ## Hotové a overené
-- ✅ **HTTPS** (Let's Encrypt), `www` presmeruje na `https://nacenime.sk/`, aplikácia na `/`.
-- ✅ **Backend beží zo `shared/`** (`/api/health` = ok), meno makléra nastavené.
-- ✅ **Kalkulačka napojená na API:** našepkávač adries cez Google vracia návrhy, odhad zo servera, formuláre „Odhad v PDF“ a „Zavolajte mi“ ukladajú kontakt (200).
-- ✅ **Mapa** (Leaflet + OpenStreetMap) na obrazovke Potvrdenie adresy. Skutočné dlaždice z môjho prostredia neoverené, treba pozrieť v prehliadači.
-- ✅ **React a Babel lokálne** z `vendor/`, nič sa nesťahuje z `unpkg.com`. Hosting komprimuje (brotli) a cachuje statické súbory.
-- ✅ **Cenník a `reference/` skryté** (`/data/nacenime-cennik.json` = 404).
-- ✅ **Cookie lišta:** GTM a Clarity až po súhlase.
-- ✅ **Právne stránky** (ochrana osobných údajov, cookies, kontakt) zverejnené, bez `noindex`, v sitemap.
-- ✅ **SEO a Search Console:** doména overená, sitemap odoslaná, 4 stránky požiadané o indexovanie.
-- ✅ **Prístupnosť** (mobil aj počítač): písmo nikde pod 16 px, kontrast aspoň 4,5 : 1, bez vodorovného pretečenia, viditeľný fokus.
-- ✅ **CRM a oznámenia o leadoch** v kóde (PR #14, #15).
+- ✅ **HTTPS**, `www` presmeruje na `https://nacenime.sk/`, bezpečnostné hlavičky (HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy).
+- ✅ **Kalkulačka napojená na API:** našepkávač adries cez Google, mapa (OpenStreetMap), odhad zo servera, formuláre „Odhad v PDF“ a „Zavolajte mi“ (s nepovinným menom). Pozemok preskakuje stav aj balkón, odkaz pre pozemok bez adresy je vždy na úvode.
+- ✅ **Bez cudzích serverov pred súhlasom:** písmo, React aj mapa idú z `nacenime.sk`. GTM a Clarity až po súhlase s cookies. Udalosti pre GA4 (`odhad`, `pdf`, `telefonat`) len po súhlase, bez osobných údajov (`docs/MERANIE.md`).
+- ✅ **Telefóny (iPhone, Android):** bez pretečenia, plochy na ťuknutie aspoň 44 px, bez prilepeného hoveru, správna klávesnica, manifest pre Android.
+- ✅ **Právne stránky** zverejnené, v sitemap, s menom v zásadách.
+- ✅ **SEO a Search Console:** doména overená, sitemap odoslaná, stránky požiadané o indexovanie.
+- ✅ **CRM** beží na `crm.nacenime.sk` (správca prihlásený). API CRM len na tejto doméne, limit pokusov, GDPR mazanie aj v CRM, opravy pre telefóny.
+- ✅ **PDF** s kontaktom na makléra, správnym obchodným menom; odpoveď klienta ide na `info@nacenime.sk`.
+- ✅ **Cenník a `reference/` skryté** (404), databáza s indexmi.
+- ✅ **CI** spúšťa PHP testy aj testy v prehliadači (kalkulačka, cookies, mapa, CRM).
 
 ## Na urobenie
 | # | Čo | Kto |
 |---|---|---|
-| 1 | **SMTP** do `shared/.env` a **cron** (`odosli-pdf.php` každú minútu, záloha a retencia denne); skúška PDF na vlastný e-mail | správca hostingu |
-| 2 | **Oznámenia o leadoch:** `NACENIME_LEAD_EMAIL` do `shared/.env` | správca hostingu |
-| 3 | **CRM:** subdoména `crm.nacenime.sk` → `web/current/crm` s SSL, `NACENIME_CRM_URL` a `NACENIME_CRM_ADMIN_EMAIL`, prvé prihlásenie cez „Zabudnuté heslo“ | správca hostingu |
-| 4 | **Zmazať skúšobné záznamy** v databáze (testovacie odhady a kontakty `test@example.com`, `0900 000 000`) | správca hostingu |
-| 5 | **Tag Manager** (`GTM-WHXQF3H7`): GA4 `G-X0825SJMQ2`, Publish; v GA4 vypnúť interakcie s formulármi, uchovávanie 14 mesiacov | kto má prístup ku GTM |
-| 6 | **E-mail DNS:** SPF, DKIM, DMARC pre `nacenime.sk` | správca domény |
-| 7 | **Cenové dáta** pre Tvrdošín, Turčianske Teplice a Námestovo (návod `docs/CENNIK-PODKLADY.md`) | majiteľ obsahu |
-| 8 | Fotky a texty miest (Martin, Dolný Kubín, Námestovo) | majiteľ obsahu |
-| 9 | Google Cloud: rozpočet a upozornenie v Billing, presun projektu na firemný účet | správca Google účtu |
-| 10 | GitHub: na `main` vyžadovať pull request | majiteľ repa |
+| 1 | **SMTP** do `shared/.env` a **cron** `odosli-pdf.php` každú minútu (+ záloha a retencia denne); skúška PDF na vlastný e-mail | správca hostingu |
+| 2 | **Oznámenia o leadoch:** `NACENIME_LEAD_EMAIL`; voliteľne SMS/Telegram cez n8n (`NACENIME_LEAD_WEBHOOK`) | správca hostingu |
+| 3 | **Monitoring** (UptimeRobot): `/api/health` a `/api/health/fronta` (beží cron, e-maily neviaznu). Návod v `deploy/NASADENIE-GIT.md` | správca |
+| 4 | **Zmazať skúšobné záznamy** (leady `0900 000 000`, `test@example.com`, testovacie odhady) cez `backend/bin/gdpr.php zmaz` | správca hostingu |
+| 5 | **CRM:** pozvať maklérov | majiteľ |
+| 6 | **GTM a GA4** podľa `docs/MERANIE.md`, kľúčové udalosti `pdf` a `telefonat` | kto má prístup ku GTM |
+| 7 | **E-mail DNS:** SPF, DKIM, DMARC | správca domény |
+| 8 | **Záloha mimo servera** (napr. n8n do Google Drive) | správca |
+| 9 | **Cenové dáta** pre Tvrdošín, Turčianske Teplice a Námestovo (`docs/CENNIK-PODKLADY.md`) | majiteľ obsahu |
+| 10 | Fotky a texty miest (Martin, Dolný Kubín, Námestovo) | majiteľ obsahu |
+| 11 | Google Cloud: rozpočet a upozornenie, presun projektu na firemný účet | správca Google účtu |
 
 ## Ručná kontrola po nastavení (5 minút)
-1. `https://nacenime.sk/` na mobile: napíš adresu, vyber návrh, mapa ukáže okolie so špendlíkom, prejdi 5 otázok, výsledok ukáže rozpätie.
-2. „Odhad v PDF“ na vlastný e-mail: PDF príde a nie je v spame.
-3. „Zavolajte mi“ s vymysleným číslom: príde oznámenie na `NACENIME_LEAD_EMAIL` a lead je v CRM. Potom ho zmaž.
-4. Cookie lišta v anonymnom okne: pred kliknutím žiadne požiadavky na `google|clarity`, po „Prijať všetko“ sa načíta `gtm.js` a GA4 v Realtime ukáže návštevu.
+1. `https://nacenime.sk/` na mobile: adresa, návrh, mapa, 5 otázok, výsledok s rozpätím.
+2. „Odhad v PDF“ na vlastný e-mail: PDF príde, nie je v spame, odpoveď ide na `info@nacenime.sk`.
+3. „Zavolajte mi“ s vymysleným číslom a menom: príde oznámenie, lead je v CRM s menom. Potom ho zmaž.
+4. `https://nacenime.sk/api/health/fronta` vráti `200` a `"stav": "ok"`.
+5. Cookie lišta v anonymnom okne: pred kliknutím žiadne požiadavky na `google|clarity`.
 
 ## Známe riziká
-- Stránka má po kompresii približne 150 kB (React, runtime, písmo). Babel z `vendor/` sa nesťahuje, runtime ho potrebuje len pre `.jsx` súbory, ktoré kalkulačka nepoužíva. React sa sťahuje súbežne so `support.js` (`preload`). Ďalšie zrýchlenie by vyžadovalo nahradiť prototypový runtime.
+- Prototypový runtime (React z `vendor/`, šablóny v prehliadači). Stránka má po kompresii približne 150 kB, ďalšie zrýchlenie by vyžadovalo nahradiť runtime.
 - Verejné dlaždice OpenStreetMap sú bez záruky dostupnosti. Pri raste návštevnosti treba platenú službu (jedna konštanta v `mapa/mapa.js`).
 - Cenník je verejný v repe na GitHube (nie tajomstvo, len na webe skrytý).
