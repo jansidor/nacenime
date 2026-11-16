@@ -5,6 +5,9 @@
 # Ak by DirectoryIndex nefungoval, ostáva záloha: index.html presmeruje na Nacenime.dc.html.
 DirectoryIndex Nacenime.dc.html index.html
 
+# Vlastná stránka pre neexistujúcu adresu (namiesto anglickej chyby hostingu). Platí aj pre skrytý cenník.
+ErrorDocument 404 /404.html
+
 # Bezpečnostné hlavičky (HSTS už nastavuje hosting). Bez Content-Security-Policy: prototypový runtime potrebuje eval a inline štýly.
 <IfModule mod_headers.c>
     # Stránku nemožno vložiť do rámu cudzieho webu (clickjacking). Vlastný Prehľad v rámci tej istej domény ostáva.
