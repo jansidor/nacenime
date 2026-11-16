@@ -14,6 +14,19 @@ final class Pdf
     /** @param array<string, mixed> $o riadok z tabuľky odhady */
     public function vytvor(array $o, string $makler = ''): string
     {
+        $opt = new Options();
+        $opt->set('isRemoteEnabled', false);
+        $opt->set('isPhpEnabled', false);
+        $d = new Dompdf($opt);
+        $d->loadHtml($this->html($o, $makler), 'UTF-8');
+        $d->setPaper('A4');
+        $d->render();
+        return (string) $d->output();
+    }
+
+    /** HTML, z ktorého sa PDF vykreslí (samostatne kvôli testom obsahu). @param array<string, mixed> $o */
+    public function html(array $o, string $makler = ''): string
+    {
         $h = fn(mixed $x): string => htmlspecialchars((string) $x, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $eur = fn(int $n): string => number_format($n, 0, ',', "\u{00a0}") . "\u{00a0}€";
         $adresa = trim(implode(', ', array_filter([$o['adresa'] ?? '', trim(($o['psc'] ?? '') . ' ' . ($o['obec'] ?? ''))])));
@@ -51,13 +64,6 @@ h1 { color: #272361; font-size: 22px; margin: 28px 0 6px; }
 <p class="poznamka">Orientačný, nezáväzný odhad. Nejde o znalecký posudok.<br>Vygenerované {$datum}. Prevádzkuje NajBývanie Ružomberok, s. r. o.</p>
 </body></html>
 HTML;
-        $opt = new Options();
-        $opt->set('isRemoteEnabled', false);
-        $opt->set('isPhpEnabled', false);
-        $d = new Dompdf($opt);
-        $d->loadHtml($html, 'UTF-8');
-        $d->setPaper('A4');
-        $d->render();
-        return (string) $d->output();
+        return $html;
     }
 }
