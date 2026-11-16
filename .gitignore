@@ -7,3 +7,6 @@ backend/var/*
 
 backend/vendor/
 node_modules/
+
+# Podklady k cenníku (jednotlivé inzeráty a predaje) nepatria do verejného repa
+docs/cennik/

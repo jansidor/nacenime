@@ -5,8 +5,8 @@ namespace Nacenime;
 
 /**
  * Zostaví cenník (kvartily €/m²) zo surových predajov a ponúk.
- * Metóda kvartilov: lineárna interpolácia (Excel QUARTILE.INC, numpy "linear"). Pôvodná metóda cenníka nie je
- * dokumentovaná, preto je to predpoklad na potvrdenie. Skupiny s menej ako MIN_POCET záznamami sa nevytvárajú
+ * Metóda kvartilov: lineárna interpolácia (Excel QUARTILE.INC, numpy "linear"). Potvrdené: pôvodný cenník počítal
+ * rovnako, zhoda overená na všetkých 147 skupinách (jediný rozdiel je zaokrúhlenie polovice, 1 €/m²). Skupiny s menej ako MIN_POCET záznamami sa nevytvárajú
  * (pôvodný cenník neobsahuje skupinu s menej ako 3 záznamami).
  */
 final class CennikBuilder
@@ -15,7 +15,7 @@ final class CennikBuilder
     public const CENA_M2_MIN = 100;
     public const CENA_M2_MAX = 20000;
     /** Pozemky sú lacnejšie (v cenníku bežne 20 až 150 €/m²), preto vlastné hranice pre varovanie. */
-    public const POZEMOK_M2_MIN = 5;
+    public const POZEMOK_M2_MIN = 3; // ako hranica čistenia ponúk v docs/CENNIK-VZORCE.md
     public const POZEMOK_M2_MAX = 1000;
 
     /**
@@ -43,7 +43,7 @@ final class CennikBuilder
                 $preskocene[] = "riadok $c: neplatný zdroj, typ, obec, cena alebo plocha";
                 continue;
             }
-            if ($typ !== 'Pozemok' && !in_array($stav, $stavy, true)) {
+            if ($typ !== 'Pozemok' && $stav !== '' && !in_array($stav, $stavy, true)) {
                 $preskocene[] = "riadok $c: neznámy stav '$stav'";
                 continue;
             }
@@ -53,7 +53,7 @@ final class CennikBuilder
                 $varovania[] = sprintf('riadok %d: %d €/m² je podozrivé (cena %s, plocha %s), záznam zahrnutý', $c, $m2, $cena, $plocha);
             }
             [$obec, $okres] = $loc;
-            $stavy_ = $typ === 'Pozemok' ? ['všetky'] : [$stav, 'všetky'];
+            $stavy_ = ($typ === 'Pozemok' || $stav === '') ? ['všetky'] : [$stav, 'všetky'];
             foreach ([['obec', $obec], ['okres', "okres $okres"]] as [$uroven, $lokalita]) {
                 foreach ($stavy_ as $s) {
                     $k = implode('|', [$zdroj, $typ, $lokalita, $s]);

@@ -53,4 +53,5 @@ Bežia aj v CI (`.github/workflows/ci.yml`).
 - API: `docs/openapi.yaml`, `backend/README.md`
 - Napojenie frontendu: `docs/NAPOJENIE-FRONTENDU.md`
 - Čo treba doplniť: `docs/PODKLADY.md`, cenové dáta: `docs/CENNIK-PODKLADY.md`
+- Cenník: odkiaľ sú čísla a vzorce rozpätia: `docs/CENNIK-VZORCE.md`
 - Stav spustenia: `docs/KONTROLNY-ZOZNAM-SPUSTENIA.md`

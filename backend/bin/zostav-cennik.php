@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 // Zostaví cenník zo surových predajov a ponúk.
-// Použitie: php bin/zostav-cennik.php vstup.csv [--zapis] [--doplnit | --nahradit-vsetko]
+// Použitie: php bin/zostav-cennik.php vstup.csv [--zapis] [--doplnit | --nahradit-vsetko] [--porovnaj]
+//   --porovnaj: nič nezapíše, len porovná zostavené skupiny so súčasným cenníkom (rozdiel = návratový kód 1).
+//   Podklady (podklady.csv) nie sú vo verejnom repe, uchováva ich majiteľ. Pozri docs/CENNIK-VZORCE.md.
 //   vstup.csv: hlavička zdroj,typ,obec,stav,cena,plocha (oddeľovač čiarka alebo bodkočiarka)
 //   zdroj = Predaje | Ponuky; typ = Byt|Apartmán|Dom|Chata|Pozemok; stav (pri pozemku prázdny); plocha v m² (pozemok: plocha pozemku)
 //   Bez --zapis sa len vypíše súhrn (nič sa nemení).
@@ -42,6 +44,21 @@ $v = CennikBuilder::zostav($riadky, $d['lokality'], $d['zlavy'], $stavy);
 echo count($riadky) . ' riadkov, ' . count($v['cennik']) . ' skupín, preskočených: ' . count($v['preskocene']) . ', varovaní: ' . count($v['varovania']) . "\n";
 foreach (array_slice($v['preskocene'], 0, 20) as $p) { echo "preskočené: $p\n"; }
 foreach (array_slice($v['varovania'], 0, 20) as $p) { echo "varovanie: $p\n"; }
+if (in_array('--porovnaj', $argv, true)) {
+    $stary = array_column($d['cennik'], null, 'kluc');
+    $novy = array_column($v['cennik'], null, 'kluc');
+    $rozdiely = [];
+    foreach (array_diff_key($stary, $novy) as $k => $_) { $rozdiely[] = "len v cenníku: $k"; }
+    foreach (array_diff_key($novy, $stary) as $k => $_) { $rozdiely[] = "len v podkladoch: $k"; }
+    foreach (array_intersect_key($novy, $stary) as $k => $g) {
+        foreach (['pocet', 'q1', 'median', 'q3'] as $p) {
+            if ($g[$p] != $stary[$k][$p]) { $rozdiely[] = "$k $p: {$stary[$k][$p]} -> {$g[$p]}"; }
+        }
+    }
+    foreach ($rozdiely as $x) { echo "rozdiel: $x\n"; }
+    echo $rozdiely ? count($rozdiely) . " rozdielov. Spustite zostav-cennik.php s --zapis.\n" : "Cenník zodpovedá podkladom.\n";
+    exit($rozdiely ? 1 : 0);
+}
 $vstupOkresy = CennikBuilder::okresy($v['cennik'], $d['lokality']);
 $stareOkresy = CennikBuilder::okresy($d['cennik'], $d['lokality']);
 $chybaju = array_values(array_diff($stareOkresy, $vstupOkresy));
