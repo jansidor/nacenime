@@ -41,3 +41,8 @@ Nasadzovaný strom obsahuje priečinok `crm/` (stránka CRM, `api.php`, vlastný
 2. Do `shared/.env` doplniť `NACENIME_CRM_URL=https://crm.nacenime.sk` a `NACENIME_CRM_ADMIN_EMAIL=<e-mail správcu>` (voliteľne `NACENIME_CRM_ADMIN_MENO`).
 3. Prvé prihlásenie: na crm.nacenime.sk zadať e-mail správcu a kliknúť **Zabudnuté heslo**. Kým v CRM nie je nikto, účet sa pre tento e-mail založí a príde odkaz na nastavenie hesla. Maklérov potom pozýva správca v časti **Členovia**.
 4. Pripomienky ďalších krokov posiela existujúci cron `odosli-pdf.php` (netreba novú úlohu).
+
+## Monitoring (napr. UptimeRobot, zadarmo)
+Dva monitory typu HTTP(s), interval 5 minút, upozornenie e-mailom:
+1. `https://nacenime.sk/api/health`: web a databáza bežia (`200`).
+2. `https://nacenime.sk/api/health/fronta`: beží cron `odosli-pdf.php` a PDF ani oznámenia o leadoch nečakajú dlhšie ako 15 minút. `503` s `"stav": "cron nebeží"` znamená, že cron nie je nastavený alebo padá; `"fronta stojí"`, že cron beží, ale e-maily neodchádzajú (napr. zlé SMTP). Odpoveď obsahuje len počty a minúty, žiadne osobné údaje. `vzdane_pdf` = PDF, ktoré po 5 pokusoch neodišli.

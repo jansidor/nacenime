@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS odhady (
 );
 CREATE TABLE IF NOT EXISTS denne_pocitadla (kluc TEXT NOT NULL, den TEXT NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, den));
 CREATE TABLE IF NOT EXISTS limity (kluc TEXT NOT NULL, okno INTEGER NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, okno));
+CREATE TABLE IF NOT EXISTS stav (kluc TEXT PRIMARY KEY, hodnota TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS kontakty (
   id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
   druh TEXT NOT NULL CHECK (druh IN ('pdf','makler','mimo_regionu')),
@@ -116,6 +117,37 @@ SQL);
         $s = $this->pdo->prepare('SELECT pocet FROM limity WHERE kluc = ? AND okno = ?');
         $s->execute([$kluc, $okno]);
         return (int) $s->fetchColumn();
+    }
+
+    public function nastavStav(string $kluc, string $hodnota): void
+    {
+        $this->pdo->prepare('INSERT INTO stav (kluc, hodnota) VALUES (?, ?) ON CONFLICT (kluc) DO UPDATE SET hodnota = excluded.hodnota')->execute([$kluc, $hodnota]);
+    }
+
+    public function stav(string $kluc): ?string
+    {
+        $s = $this->pdo->prepare('SELECT hodnota FROM stav WHERE kluc = ?');
+        $s->execute([$kluc]);
+        $v = $s->fetchColumn();
+        return $v === false ? null : (string) $v;
+    }
+
+    /**
+     * Nevybavená fronta pre monitoring: PDF na odoslanie a (ak sa oznamujú) leady na oznámenie, ktoré ešte majú pokusy.
+     * @return array{pocet: int, najstarsi: ?string, vzdane: int} najstarší = čas vytvorenia (ISO 8601), vzdané = PDF, ktoré po všetkých pokusoch neodišli
+     */
+    public function fronta(bool $ajOznamenia, int $maxPokusov = 5): array
+    {
+        $podm = "(druh = 'pdf' AND odoslane = 0 AND pokusy < :m)";
+        if ($ajOznamenia) {
+            $podm .= " OR ((druh = 'makler' OR (druh = 'pdf' AND suhlas = 1)) AND oznamene = 0 AND oznam_pokusy < :m)";
+        }
+        $s = $this->pdo->prepare("SELECT COUNT(*) AS pocet, MIN(vytvorene) AS najstarsi FROM kontakty WHERE $podm");
+        $s->execute(['m' => $maxPokusov]);
+        $r = $s->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $v = $this->pdo->prepare("SELECT COUNT(*) FROM kontakty WHERE druh = 'pdf' AND odoslane = 0 AND pokusy >= ?");
+        $v->execute([$maxPokusov]);
+        return ['pocet' => (int) ($r['pocet'] ?? 0), 'najstarsi' => $r['najstarsi'] ?? null, 'vzdane' => (int) $v->fetchColumn()];
     }
 
     /** Kontrola dostupnosti databázy (zápis aj čítanie). */

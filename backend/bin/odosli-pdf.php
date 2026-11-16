@@ -10,6 +10,7 @@ $root = dirname(__DIR__);
 $config = Config::nacitaj(Cesty::envSubor($root));
 $posta = new Posta($config);
 $storage = new Storage(Cesty::dbCesta($config, $root));
+$storage->nastavStav('cron_posledny', (string) time()); // pre monitoring /api/health/fronta
 $r = (new OdosielacPdf($storage, new Pdf($config->get('KONTAKT_TELEFON', '+421 951 161 561'), $config->get('KONTAKT_EMAIL', 'info@nacenime.sk')), $posta->posli(...)))->spusti($config->get('MAKLER_NAME'));
 echo "Odoslané: {$r['odoslane']}, zlyhalo: {$r['zlyhalo']}, preskočené: {$r['preskocene']}\n";
 
