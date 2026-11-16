@@ -1,5 +1,5 @@
 {
- "vytvorene": "2026-11-11",
+ "vytvorene": "2026-11-16",
  "jednotka": "EUR za m2 (byt, apartmán, dom, chata: úžitková plocha; pozemok: plocha pozemku)",
  "prahy": {
   "predaje": 4,
@@ -249,102 +249,6 @@
   "Dovalovo": "Liptovský Mikuláš"
  },
  "cennik": [
-  {
-   "kluc": "Predaje|Byt|Ružomberok|Kompletná rekonštrukcia",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "obec",
-   "lokalita": "Ružomberok",
-   "stav": "Kompletná rekonštrukcia",
-   "pocet": 6,
-   "q1": 1980,
-   "median": 2135,
-   "q3": 2192
-  },
-  {
-   "kluc": "Predaje|Byt|Ružomberok|Novostavba",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "obec",
-   "lokalita": "Ružomberok",
-   "stav": "Novostavba",
-   "pocet": 3,
-   "q1": 2611,
-   "median": 2753,
-   "q3": 2759
-  },
-  {
-   "kluc": "Predaje|Byt|Ružomberok|Pôvodný",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "obec",
-   "lokalita": "Ružomberok",
-   "stav": "Pôvodný",
-   "pocet": 4,
-   "q1": 1832,
-   "median": 1852,
-   "q3": 1941
-  },
-  {
-   "kluc": "Predaje|Byt|Ružomberok|všetky",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "obec",
-   "lokalita": "Ružomberok",
-   "stav": "všetky",
-   "pocet": 16,
-   "q1": 1884,
-   "median": 2135,
-   "q3": 2343
-  },
-  {
-   "kluc": "Predaje|Byt|okres Ružomberok|Kompletná rekonštrukcia",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "okres",
-   "lokalita": "okres Ružomberok",
-   "stav": "Kompletná rekonštrukcia",
-   "pocet": 6,
-   "q1": 1980,
-   "median": 2135,
-   "q3": 2192
-  },
-  {
-   "kluc": "Predaje|Byt|okres Ružomberok|Novostavba",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "okres",
-   "lokalita": "okres Ružomberok",
-   "stav": "Novostavba",
-   "pocet": 3,
-   "q1": 2611,
-   "median": 2753,
-   "q3": 2759
-  },
-  {
-   "kluc": "Predaje|Byt|okres Ružomberok|Pôvodný",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "okres",
-   "lokalita": "okres Ružomberok",
-   "stav": "Pôvodný",
-   "pocet": 4,
-   "q1": 1832,
-   "median": 1852,
-   "q3": 1941
-  },
-  {
-   "kluc": "Predaje|Byt|okres Ružomberok|všetky",
-   "zdroj": "Predaje",
-   "typ": "Byt",
-   "uroven": "okres",
-   "lokalita": "okres Ružomberok",
-   "stav": "všetky",
-   "pocet": 16,
-   "q1": 1884,
-   "median": 2135,
-   "q3": 2343
-  },
   {
    "kluc": "Ponuky|Apartmán|Demänovská Dolina|všetky",
    "zdroj": "Ponuky",
@@ -1553,7 +1457,7 @@
    "lokalita": "Bystrička",
    "stav": "všetky",
    "pocet": 11,
-   "q1": 30,
+   "q1": 31,
    "median": 50,
    "q3": 78
   },
@@ -2012,6 +1916,102 @@
    "q1": 75,
    "median": 117,
    "q3": 124
+  },
+  {
+   "kluc": "Predaje|Byt|Ružomberok|Kompletná rekonštrukcia",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "obec",
+   "lokalita": "Ružomberok",
+   "stav": "Kompletná rekonštrukcia",
+   "pocet": 6,
+   "q1": 1980,
+   "median": 2135,
+   "q3": 2192
+  },
+  {
+   "kluc": "Predaje|Byt|Ružomberok|Novostavba",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "obec",
+   "lokalita": "Ružomberok",
+   "stav": "Novostavba",
+   "pocet": 3,
+   "q1": 2611,
+   "median": 2753,
+   "q3": 2759
+  },
+  {
+   "kluc": "Predaje|Byt|Ružomberok|Pôvodný",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "obec",
+   "lokalita": "Ružomberok",
+   "stav": "Pôvodný",
+   "pocet": 4,
+   "q1": 1832,
+   "median": 1852,
+   "q3": 1941
+  },
+  {
+   "kluc": "Predaje|Byt|Ružomberok|všetky",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "obec",
+   "lokalita": "Ružomberok",
+   "stav": "všetky",
+   "pocet": 16,
+   "q1": 1884,
+   "median": 2135,
+   "q3": 2343
+  },
+  {
+   "kluc": "Predaje|Byt|okres Ružomberok|Kompletná rekonštrukcia",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "okres",
+   "lokalita": "okres Ružomberok",
+   "stav": "Kompletná rekonštrukcia",
+   "pocet": 6,
+   "q1": 1980,
+   "median": 2135,
+   "q3": 2192
+  },
+  {
+   "kluc": "Predaje|Byt|okres Ružomberok|Novostavba",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "okres",
+   "lokalita": "okres Ružomberok",
+   "stav": "Novostavba",
+   "pocet": 3,
+   "q1": 2611,
+   "median": 2753,
+   "q3": 2759
+  },
+  {
+   "kluc": "Predaje|Byt|okres Ružomberok|Pôvodný",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "okres",
+   "lokalita": "okres Ružomberok",
+   "stav": "Pôvodný",
+   "pocet": 4,
+   "q1": 1832,
+   "median": 1852,
+   "q3": 1941
+  },
+  {
+   "kluc": "Predaje|Byt|okres Ružomberok|všetky",
+   "zdroj": "Predaje",
+   "typ": "Byt",
+   "uroven": "okres",
+   "lokalita": "okres Ružomberok",
+   "stav": "všetky",
+   "pocet": 16,
+   "q1": 1884,
+   "median": 2135,
+   "q3": 2343
   }
  ]
 }

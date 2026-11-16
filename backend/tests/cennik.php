@@ -56,6 +56,15 @@ $res = $o->odhad(['typ' => 'Byt', 'obec' => 'Likavka', 'stav' => 'Pôvodný', 'v
 // Prah predajov je 4: skupina so stavom má len 3 záznamy, použije sa „všetky“ (1000, 2000, 3000, 4000 €/m²).
 $check('odhad z novo zostaveného cenníka', ['ok', 'okres', 'všetky', 105000, 195000], [$res['stav'], $res['uroven'], $res['pouzity_stav'], $res['od'], $res['do']]);
 
+// prázdny stav (okrem pozemku): záznam ide len do skupín „všetky“, neznámy neprázdny stav sa preskočí
+$vs = CennikBuilder::zostav(array_merge(
+    array_map(fn($c) => $r('Ponuky', 'Byt', 'Martin', '', $c * 50, 50), [1500, 1600, 1700]),
+    [$r('Ponuky', 'Byt', 'Martin', 'Zbúraný', 100000, 50)]
+), $lok, $zlavy, $stavy);
+$kvs = array_column($vs['cennik'], 'kluc');
+$check('prázdny stav: len skupiny „všetky“ (obec aj okres)', ['Ponuky|Byt|Martin|všetky', 'Ponuky|Byt|okres Martin|všetky'], $kvs);
+$check('prázdny stav: 3 záznamy v „všetky“, neznámy stav preskočený', [3, 1], [$vs['cennik'][0]['pocet'], count($vs['preskocene'])]);
+
 // pozemok: bežná cena 30 €/m² nie je podozrivá, 2 €/m² áno
 $vz = CennikBuilder::zostav([$r('Predaje', 'Pozemok', 'Martin', '', 24000, 800), $r('Predaje', 'Pozemok', 'Martin', '', 1600, 800)], $lok, $zlavy, $stavy);
 $check('pozemok: varovanie len pri 2 €/m²', 1, count($vz['varovania']));

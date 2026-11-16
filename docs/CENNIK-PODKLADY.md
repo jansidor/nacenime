@@ -12,7 +12,7 @@ Jeden riadok = jeden predaj alebo jeden inzerát.
 | `zdroj` | `Predaje` (skutočne predané, napr. vlastné obchody, kataster) alebo `Ponuky` (inzeráty) | `Predaje` |
 | `typ` | `Byt`, `Apartmán`, `Dom`, `Chata` alebo `Pozemok` | `Byt` |
 | `obec` | názov obce presne ako v zozname nižšie (diakritika a veľké písmená nevadia) | `Trstená` |
-| `stav` | `Pôvodný`, `Čiastočná rekonštrukcia`, `Kompletná rekonštrukcia` alebo `Novostavba`. Pri pozemku nechajte prázdne. | `Pôvodný` |
+| `stav` | `Pôvodný`, `Čiastočná rekonštrukcia`, `Kompletná rekonštrukcia` alebo `Novostavba`. Ak stav nepoznáte, nechajte prázdne (záznam sa započíta len bez rozlíšenia stavu). Pri pozemku vždy prázdne. | `Pôvodný` |
 | `cena` | celková cena v eurách, len číslo (bez €, medzier a bodiek) | `95000` |
 | `plocha` | úžitková plocha v m² (pri pozemku plocha pozemku), len číslo | `62` |
 
@@ -38,4 +38,6 @@ php backend/bin/zostav-cennik.php data.csv --zapis --doplnit    # nahradí len o
 php backend/bin/kontrola-cennika.php
 ```
 `--doplnit` je dôležité: bez neho by sa prepísal celý cenník a zmizli by ceny ostatných okresov (skript to odmietne). Potom testy a pull request.
-Metóda kvartilov (lineárna interpolácia) je predpoklad, ktorý treba potvrdiť s tým, kto pripravoval pôvodný cenník.
+Metóda kvartilov (lineárna interpolácia, `QUARTILE.INC`) je **potvrdená**: pôvodný cenník počítal rovnako, zhoda je overená na všetkých 147 skupinách. Celý postup a vzorce: [`CENNIK-VZORCE.md`](CENNIK-VZORCE.md).
+
+Hlavný súbor podkladov je `podklady.csv` (u majiteľa, nie vo verejnom repe; pracovná kópia v `docs/cennik/` je v `.gitignore`). Nové dáta pre tri okresy sa pridajú do neho a cenník sa zostaví z celého súboru s `--nahradit-vsetko`, alebo len nové riadky s `--doplnit`.
