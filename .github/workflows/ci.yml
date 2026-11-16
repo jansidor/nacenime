@@ -75,3 +75,5 @@ jobs:
         run: node design_handoff_nacenime/mapa/test.cjs
       - name: Napojenie na API (celý tok)
         run: node frontend/napojenie/test.cjs
+      - name: CRM (prihlásenie, role, detail, telefóny)
+        run: node crm/test.cjs
