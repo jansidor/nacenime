@@ -9,7 +9,7 @@ final class Leady
     /** @param list<array<string, mixed>> $riadky */
     public static function csv(array $riadky): string
     {
-        $stlpce = ['id', 'vytvorene', 'druh', 'telefon', 'email', 'adresa', 'psc', 'obec', 'typ', 'vymera', 'stav', 'cena_od', 'cena_do', 'dovod', 'predstava_ceny'];
+        $stlpce = ['id', 'vytvorene', 'druh', 'meno', 'telefon', 'email', 'adresa', 'psc', 'obec', 'typ', 'vymera', 'stav', 'cena_od', 'cena_do', 'dovod', 'predstava_ceny'];
         $f = fopen('php://memory', 'w+');
         fwrite($f, "\xEF\xBB\xBF"); // BOM, aby Excel čítal diakritiku
         fputcsv($f, $stlpce, ';', '"', '\\');

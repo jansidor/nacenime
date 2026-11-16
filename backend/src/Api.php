@@ -119,7 +119,11 @@ final class Api
         if ($id === false) {
             return [422, ['chyby' => ['odhad_id' => 'Neznámy odhad.']]];
         }
-        $this->storage->ulozKontakt('makler', null, $tel, false, $id);
+        $meno = Validator::meno($b['meno'] ?? null);
+        if ($meno === false) {
+            return [422, ['chyby' => ['meno' => 'Meno je príliš dlhé.']]];
+        }
+        $this->storage->ulozKontakt('makler', null, $tel, false, $id, meno: $meno);
         return [200, ['sprava' => 'Ďakujeme, ozveme sa vám.']];
     }
 

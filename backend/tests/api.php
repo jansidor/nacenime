@@ -163,4 +163,17 @@ $g2->handle('POST', '/api/kontakt/mimo-regionu', ['email' => 'stary@example.sk']
 $check('retencia: čerstvé ostáva', ['kontakty' => 0, 'odhady' => 0], $s2->zmazStarsie(24));
 $check('retencia: staré ide preč', 1, $s2->zmazStarsie(24, strtotime('+30 months'))['kontakty']);
 
+// nepovinné meno pri žiadosti o telefonát
+$sm = new Storage(':memory:'); $am = new Api($odhad, new Config(['NACENIME_RATE_LIMIT' => '0']), $sm);
+$om = $am->handle('POST', '/api/odhad', ['typ' => 'Byt', 'obec' => 'Martin', 'stav' => 'Pôvodný', 'vymera' => 60])[1]['odhad_id'];
+$am->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 111 222', 'meno' => "  Jana \t Nováková\u{0000} ", 'odhad_id' => $om]);
+$check('meno sa uloží očistené', 'Jana Nováková', $sm->kontakty('makler')[0]['meno'] ?? null);
+$am->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 333 444', 'meno' => '   ', 'odhad_id' => $om]);
+$k2 = $sm->kontakty('makler')[1] ?? [];
+$check('prázdne meno = null', [true, null], [array_key_exists('meno', $k2), $k2['meno'] ?? null]);
+$check('meno dlhšie ako 80 znakov: 422', [422, 'meno'], [($x = $am->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 555 666', 'meno' => str_repeat('a', 81), 'odhad_id' => $om]))[0], array_key_first($x[1]['chyby'] ?? [])]);
+$check('meno nie je text: ignoruje sa', 200, $am->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 777 888', 'meno' => ['x'], 'odhad_id' => $om])[0]);
+$am->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 111 222', 'odhad_id' => $om]);
+$check('opakovaná žiadosť bez mena meno nezmaže', 'Jana Nováková', $sm->kontakty('makler')[0]['meno']);
+
 exit($fail > 0 ? 1 : 0);

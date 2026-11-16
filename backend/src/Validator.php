@@ -55,6 +55,19 @@ final class Validator
         return mb_strlen($s) <= 254 && filter_var($s, FILTER_VALIDATE_EMAIL) ? $s : null;
     }
 
+    /** Nepovinné meno: null = nezadané, false = neplatné (dlhšie ako 80 znakov). Riadiace znaky a viac medzier sa odstránia. */
+    public static function meno(mixed $v): string|null|false
+    {
+        if (!is_string($v)) {
+            return null;
+        }
+        $s = trim((string) preg_replace('/\s+/u', ' ', (string) preg_replace('/[\p{C}]/u', '', $v)));
+        if ($s === '') {
+            return null;
+        }
+        return mb_strlen($s) > 80 ? false : $s;
+    }
+
     /** Telefón: aspoň 9 číslic, povolené sú len číslice, medzery, +, -, (), /. */
     public static function telefon(mixed $v): ?string
     {

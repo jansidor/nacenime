@@ -19,7 +19,7 @@ Ukážkový režim: adresa s `?screen=…` (napr. na stránke Prehľad) beží b
 | Posun špendlíka | mapa je hotový modul `design_handoff_nacenime/mapa/` (Leaflet + OpenStreetMap, zadarmo), `naZmenu` dá nové `lat`/`lng`, pošlú sa v `adresa` pri odhade |
 | Kalkulačka, „Zobraziť odhad“ | `POST /api/odhad`, uloží si `odhad_id` |
 | Výsledok: Odhad v PDF | `POST /api/kontakt/pdf` s `email`, `suhlas`, `odhad_id` |
-| Výsledok: Cena od makléra | `POST /api/kontakt/makler` s `telefon`, `odhad_id` |
+| Výsledok: Cena od makléra | `POST /api/kontakt/makler` s `telefon`, nepovinné `meno`, `odhad_id` |
 | Mimo regiónu | `POST /api/kontakt/mimo-regionu` s `email` |
 
 ## Session token pre Google

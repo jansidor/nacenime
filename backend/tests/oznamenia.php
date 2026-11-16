@@ -14,7 +14,7 @@ $st = new Storage(':memory:');
 $api = new Api($odhad, new Config([]), $st);
 $id = $api->handle('POST', '/api/odhad', ['typ' => 'Byt', 'obec' => 'Ružomberok', 'stav' => 'Kompletná rekonštrukcia', 'vymera' => 66, 'dovod' => 'Predaj', 'adresa' => ['ulica' => 'Podhora 48', 'psc' => '034 01']])[1]['odhad_id'];
 
-$api->handle('POST', '/api/kontakt/makler', ['telefon' => '0905 123 456', 'odhad_id' => $id]);
+$api->handle('POST', '/api/kontakt/makler', ['telefon' => '0905 123 456', 'meno' => 'Jana Nováková', 'odhad_id' => $id]);
 $api->handle('POST', '/api/kontakt/pdf', ['email' => 'bez@suhlasu.sk', 'odhad_id' => $id]);
 $api->handle('POST', '/api/kontakt/pdf', ['email' => 'so@suhlasom.sk', 'suhlas' => true, 'odhad_id' => $id]);
 $api->handle('POST', '/api/kontakt/mimo-regionu', ['email' => 'mimo@regionu.sk']);
@@ -38,6 +38,7 @@ $check('telo obsahuje telefón, adresu a odhad', [true, true, true, true], [
     str_contains($poslane[0]['telo'], 'Dôvod: Predaj'),
 ]);
 $check('odpoveď ide na e-mail klienta', [null, 'so@suhlasom.sk'], [$poslane[0]['odpoved'], $poslane[2]['odpoved']]);
+$check('e-mail aj webhook obsahujú meno z kalkulačky', [true, 'Jana Nováková'], [str_contains($poslane[0]['telo'], 'Meno: Jana Nováková'), $webhook[0]['meno'] ?? null]);
 $check('webhook dostal oba leady', [['telefonat', '0905 123 456', null], ['pdf_suhlas', null, 'so@suhlasom.sk']], array_map(fn($d) => [$d['ziadost'], $d['telefon'], $d['email']], $webhook));
 $check('webhook má čísla ako čísla', [66.0, 131000], [$webhook[0]['vymera'], $webhook[0]['cena_od']]);
 $check('druhý beh nič neposiela', ['oznamene' => 0, 'zlyhalo' => 0], (new Oznamovac($st, $posli, ['jan@x.sk']))->spusti());
