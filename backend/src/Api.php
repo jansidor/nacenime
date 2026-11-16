@@ -6,7 +6,7 @@ namespace Nacenime;
 /** HTTP-nezávislá aplikačná vrstva: handle() vráti [HTTP kód, telo]. Ľahko sa testuje. */
 final class Api
 {
-    private const POZNAMKA = [
+    public const POZNAMKA = [
         'Byt' => 'Vyššiu cenu dosahujú byty po rekonštrukcii a s dobrou prípravou predaja.',
         'Apartmán' => 'Vyššiu cenu dosahujú apartmány po rekonštrukcii a s dobrou prípravou predaja.',
         'Dom' => 'Vyššiu cenu dosahujú domy po rekonštrukcii a s dobrou prípravou predaja.',

@@ -14,6 +14,8 @@ final class Posta
     {
         $this->odosli($komu, $predmet, $telo, function (PHPMailer $m) use ($pdf, $nazovPrilohy): void {
             $m->addStringAttachment($pdf, $nazovPrilohy, PHPMailer::ENCODING_BASE64, 'application/pdf');
+            // Odpoveď klienta na PDF e-mail ide do skutočnej schránky, nie na noreply@.
+            $m->addReplyTo($this->config->get('KONTAKT_EMAIL', 'info@nacenime.sk'));
         });
     }
 

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 // Odošle čakajúce e-maily s PDF a oznámenia o nových leadoch. Pusti z cronu každú minútu: * * * * * php backend/bin/odosli-pdf.php
 require __DIR__ . '/../vendor/autoload.php';
-foreach (['Config', 'Cesty', 'Storage', 'Pdf', 'Posta', 'OdosielacPdf', 'Oznamovac', 'CrmStorage', 'Crm'] as $c) { require __DIR__ . "/../src/$c.php"; }
+foreach (['Config', 'Cesty', 'Storage', 'Api', 'Pdf', 'Posta', 'OdosielacPdf', 'Oznamovac', 'CrmStorage', 'Crm'] as $c) { require __DIR__ . "/../src/$c.php"; }
 
 use Nacenime\{Cesty, Config, Crm, CrmStorage, OdosielacPdf, Oznamovac, Pdf, Posta, Storage};
 
@@ -10,7 +10,7 @@ $root = dirname(__DIR__);
 $config = Config::nacitaj(Cesty::envSubor($root));
 $posta = new Posta($config);
 $storage = new Storage(Cesty::dbCesta($config, $root));
-$r = (new OdosielacPdf($storage, new Pdf(), $posta->posli(...)))->spusti($config->get('MAKLER_NAME'));
+$r = (new OdosielacPdf($storage, new Pdf($config->get('KONTAKT_TELEFON', '+421 951 161 561'), $config->get('KONTAKT_EMAIL', 'info@nacenime.sk')), $posta->posli(...)))->spusti($config->get('MAKLER_NAME'));
 echo "Odoslané: {$r['odoslane']}, zlyhalo: {$r['zlyhalo']}, preskočené: {$r['preskocene']}\n";
 
 // Oznámenia o leadoch: e-mail na NACENIME_LEAD_EMAIL (čiarkou oddelené), voliteľne webhook NACENIME_LEAD_WEBHOOK (n8n, CRM).
