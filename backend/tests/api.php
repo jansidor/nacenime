@@ -176,4 +176,20 @@ $check('meno nie je text: ignoruje sa', 200, $am->handle('POST', '/api/kontakt/m
 $am->handle('POST', '/api/kontakt/makler', ['telefon' => '0900 111 222', 'odhad_id' => $om]);
 $check('opakovaná žiadosť bez mena meno nezmaže', 'Jana Nováková', $sm->kontakty('makler')[0]['meno']);
 
+// monitoring cronu: /api/health/fronta
+$sf = new Storage(':memory:'); $af = new Api($odhad, new Config(['NACENIME_RATE_LIMIT' => '0']), $sf);
+$t0 = strtotime('2026-11-16 10:00:00 UTC');
+$check('cron ešte nebežal: 503', [503, 'cron nebeží'], [($x = $af->healthFronta($t0))[0], $x[1]['stav']]);
+$sf->nastavStav('cron_posledny', (string) ($t0 - 60));
+$check('cron beží, prázdna fronta: 200', [200, 'ok', 1, 0], [($x = $af->healthFronta($t0))[0], $x[1]['stav'], $x[1]['cron_pred_minutami'], $x[1]['cakajuce']]);
+$of = $af->handle('POST', '/api/odhad', ['typ' => 'Byt', 'obec' => 'Martin', 'stav' => 'Pôvodný', 'vymera' => 60])[1]['odhad_id'];
+$sf->ulozKontakt('pdf', 'a@b.sk', null, false, $of, 600, $t0 - 120);
+$check('PDF čaká 2 minúty: ešte ok', [200, 1], [($x = $af->healthFronta($t0))[0], $x[1]['cakajuce']]);
+$sf->nastavStav('cron_posledny', (string) ($t0 + 17 * 60)); // cron beží, ale PDF neodchádza (napr. zlé SMTP)
+$check('PDF čaká 20 minút: 503 fronta stojí', [503, 'fronta stojí', 20], [($x = $af->healthFronta($t0 + 18 * 60))[0], $x[1]['stav'], $x[1]['najdlhsie_caka_minut']]);
+$check('cron 20 minút nebežal: 503', [503, 'cron nebeží'], [($x = $af->healthFronta($t0 + 38 * 60))[0], $x[1]['stav']]);
+$check('telefonát bez nastavených oznámení frontu nezdrží', 0, (function () use ($sf, $of, $t0) { $sf->ulozKontakt('makler', null, '0900 111 222', false, $of, 600, $t0); return $sf->fronta(false)['pocet'] - 1; })());
+$check('s nastaveným NACENIME_LEAD_EMAIL sa ráta aj oznámenie', 2, $sf->fronta(true)['pocet']);
+$check('cez HTTP cestu aj mimo limitu požiadaviek', 503, (new Api($odhad, new Config(['NACENIME_RATE_LIMIT' => '1']), new Storage(':memory:')))->handle('GET', '/api/health/fronta', [], [], '1.2.3.4')[0]);
+
 exit($fail > 0 ? 1 : 0);

@@ -34,6 +34,9 @@ final class Api
         if ($path === '/api/health') {
             return $method === 'GET' ? $this->health() : $this->chyba(405, 'Použite GET.'); // mimo limitu, pre monitoring
         }
+        if ($path === '/api/health/fronta') {
+            return $method === 'GET' ? $this->healthFronta() : $this->chyba(405, 'Použite GET.');
+        }
         $limit = (int) $this->config->get('RATE_LIMIT', '60');
         if ($ip !== '' && $limit > 0 && $this->storage->zvysLimit(hash('sha256', $ip)) > $limit) {
             return [429, ['chyba' => 'Príliš veľa požiadaviek. Skúste to o chvíľu.']];
@@ -173,6 +176,34 @@ final class Api
             $ok = false;
         }
         return $ok ? [200, ['stav' => 'ok']] : [503, ['stav' => 'chyba']];
+    }
+
+    /**
+     * Monitoring cronu (bin/odosli-pdf.php): 503, keď cron dlhšie nebežal alebo PDF/oznámenie čaká dlhšie ako limit.
+     * Bez osobných údajov, len počty a minúty. Limit: NACENIME_FRONTA_MINUTY (predvolene 15).
+     * @return array{0: int, 1: array<string, mixed>}
+     */
+    public function healthFronta(?int $teraz = null): array
+    {
+        $teraz ??= time();
+        $limit = max(2, (int) $this->config->get('FRONTA_MINUTY', '15'));
+        try {
+            $cron = $this->storage->stav('cron_posledny');
+            $f = $this->storage->fronta($this->config->zoznam('LEAD_EMAIL') !== [] || $this->config->get('LEAD_WEBHOOK') !== '');
+        } catch (\Throwable $e) {
+            error_log('health/fronta: ' . $e->getMessage());
+            return [503, ['stav' => 'chyba']];
+        }
+        $cronMin = $cron === null ? null : intdiv(max(0, $teraz - (int) $cron), 60);
+        $cakaMin = $f['najstarsi'] === null ? 0 : intdiv(max(0, $teraz - (int) strtotime((string) $f['najstarsi'])), 60);
+        $telo = ['cron_pred_minutami' => $cronMin, 'cakajuce' => $f['pocet'], 'najdlhsie_caka_minut' => $cakaMin, 'vzdane_pdf' => $f['vzdane']];
+        if ($cronMin === null || $cronMin > $limit) {
+            return [503, ['stav' => 'cron nebeží'] + $telo];
+        }
+        if ($f['pocet'] > 0 && $cakaMin > $limit) {
+            return [503, ['stav' => 'fronta stojí'] + $telo];
+        }
+        return [200, ['stav' => 'ok'] + $telo];
     }
 
     /** @return array{0: int, 1: array<string, mixed>} */

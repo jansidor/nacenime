@@ -18,6 +18,12 @@ paths:
         '200': { description: Výsledok, content: { application/json: { schema: { $ref: '#/components/schemas/OdhadVystup' } } } }
         '422': { $ref: '#/components/responses/Validacia' }
         '429': { $ref: '#/components/responses/Limit' }
+  /api/health/fronta:
+    get:
+      summary: Monitoring cronu (bin/odosli-pdf.php). 503, keď cron nebežal dlhšie ako NACENIME_FRONTA_MINUTY (15) alebo PDF či oznámenie o leade čaká dlhšie. Bez osobných údajov.
+      responses:
+        '200': { description: 'OK: {stav: ok, cron_pred_minutami, cakajuce, najdlhsie_caka_minut, vzdane_pdf}' }
+        '503': { description: 'stav: cron nebeží | fronta stojí | chyba' }
   /api/adresa:
     get:
       summary: Našepkávač adresy (Google Places proxy)
