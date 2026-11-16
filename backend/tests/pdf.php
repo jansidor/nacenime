@@ -36,4 +36,15 @@ for ($i = 0; $i < 7; $i++) { $vysledky[] = (new OdosielacPdf($st, new Pdf(), $zl
 $check('zlyhanie sa opakuje najviac 3×', [1, 1, 1, 0, 0, 0, 0], $vysledky);
 $check('po oprave sa neposiela, čo sa vzdalo', 0, (new OdosielacPdf($st, new Pdf(), $ok, 3))->spusti()['odoslane']);
 
+// obsah PDF (HTML pred vykreslením)
+$o = ['adresa' => 'Bystrická cesta 12', 'psc' => '034 01', 'obec' => 'Ružomberok', 'typ' => 'Byt', 'vymera' => 66.5, 'vysledok' => 'ok', 'cena_od' => 131000, 'cena_do' => 145000, 'veta' => 'Podľa 6 podobných predajov v okolí.'];
+$html = (new Pdf('+421 900 000 001', 'test@nacenime.sk'))->html($o, 'Ján Sidor');
+$check('PDF: obchodné meno, cena, veta pod cenou', [true, true, true], [str_contains($html, 'NajBývanie Ružomberok, s. r. o.'), str_contains($html, "131\u{00a0}000\u{00a0}€ až 145\u{00a0}000\u{00a0}€"), str_contains($html, Api::POZNAMKA['Byt'])]);
+$check('PDF: kontakt na makléra (meno, telefón, e-mail)', [true, true, true], [str_contains($html, 'Maklér Ján Sidor'), str_contains($html, '+421 900 000 001'), str_contains($html, 'test@nacenime.sk')]);
+$check('PDF: dátum v slovenskom tvare', 1, preg_match('/Vygenerované \d{1,2}\. \d{1,2}\. \d{4}\./u', $html));
+$check('PDF: zástupné meno makléra sa nezobrazí', [false, true], [str_contains($p = (new Pdf())->html($o, '[MENO MAKLÉRA]'), '[MENO'), str_contains($p, 'Maklér NajBývanie')]);
+$poz = (new Pdf())->html(['adresa' => null, 'psc' => null, 'obec' => 'Liptovský Mikuláš', 'typ' => 'Pozemok', 'vymera' => 800, 'vysledok' => 'málo dát', 'cena_od' => null, 'cena_do' => null, 'veta' => null]);
+$check('PDF pozemok bez adresy: zhrnutie nezačína bodkou, bez rozpätia', [false, true, true], [str_contains($poz, '<p>. '), str_contains($poz, '<p>Liptovský Mikuláš. Pozemok 800 m²</p>'), str_contains($poz, 'Cenu vám povie maklér')]);
+$check('PDF: HTML z adresy je escapované', false, str_contains((new Pdf())->html(['adresa' => '<b>x</b>'] + $o), '<b>x</b>'));
+
 exit($fail > 0 ? 1 : 0);
