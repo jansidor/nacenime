@@ -122,12 +122,12 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-stlpce i.on{background:#7fe0c8}
 @keyframes nm-rast{from{transform:scaleY(.1)}to{transform:scaleY(1)}}
 .nm-ukazka-pozn{margin:12px 0 0;font-size:16px;color:#c9c8e6}
-.nm-cisla{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(201,200,230,.18)}
+.nm-cisla{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(201,200,230,.18);background:linear-gradient(90deg,rgba(17,18,47,.35),rgba(17,18,47,.8))}
 .nm-cisla div{padding:28px 24px 32px 0}
 .nm-cisla div+div{padding-left:24px;border-left:1px solid rgba(201,200,230,.18)}
 .nm-cisla b{display:block;font:800 clamp(32px,4vw,44px)/1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#7fe0c8;font-variant-numeric:tabular-nums}
 .nm-cisla span{display:block;margin-top:8px;font-size:16px;color:#c9c8e6;max-width:20ch}
-@media (max-width:760px){.nm-cisla{grid-template-columns:1fr 1fr}.nm-cisla div:nth-child(3){padding-left:0;border-left:0}.nm-cisla div:nth-child(n+3){border-top:1px solid rgba(201,200,230,.18)}}
+@media (max-width:760px){.nm-cisla div{padding:20px 12px 24px 0}.nm-cisla div+div{padding-left:12px}}
 .nm-uvod h2{margin:0;font:800 clamp(32px,4.4vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;max-width:20ch}
 .nm-uvod h3{margin:0;font:800 24px/1.15 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361}
 .nm-blok{padding-top:clamp(64px,9vw,120px)}
@@ -252,7 +252,6 @@ main>section{animation:nc-in 150ms linear}
         <div><b>5</b><span>otázok a máte cenu</span></div>
         <div><b>7</b><span>okresov Liptova, Turca a Oravy</span></div>
         <div><b>213</b><span>obcí v kalkulačke</span></div>
-        <div><b>0</b><span>registrácií a telefonátov</span></div>
       </div>
     </section>
 
