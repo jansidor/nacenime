@@ -80,6 +80,10 @@ a{color:#272361;text-decoration:underline;text-underline-offset:4px}
 input::placeholder{color:#50516a;opacity:1}
 a:focus-visible,button:focus-visible,input:focus-visible,[role="img"]:focus-visible{outline:3px solid #272361;outline-offset:2px}
 footer a:focus-visible{outline-color:#f6f4ef}
+.nm-faq-a,.nm-faq-b,.nm-faq-stop{position:absolute;left:0;top:0;height:4px;width:100%;background:#272361;transform-origin:left}
+.nm-faq-a{animation:nm-faq-a 5s linear both}.nm-faq-b{animation:nm-faq-b 5s linear both}.nm-faq-stop{transform:scaleX(0)}
+@keyframes nm-faq-a{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes nm-faq-b{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){.nm-faq-a,.nm-faq-b{display:none}}
 @media (hover:hover){.nm-faq-karta:hover{border-color:#11122f;background:#f6f4ef !important}}
 @keyframes nc-in{from{opacity:0}to{opacity:1}}
 main>section{animation:nc-in 150ms linear}
@@ -134,21 +138,17 @@ main>section{animation:nc-in 150ms linear}
             <a href="#" onClick="{{ c.open }}" style="display:inline-flex;align-items:center;min-height:48px">{{ c.name }}</a>
           </sc-for>
         </nav>
-        <section aria-labelledby="faq-nadpis" onMouseEnter="{{ faqHoldOn }}" onMouseLeave="{{ faqHoldOff }}" onFocus="{{ faqHoldOn }}" onBlur="{{ faqHoldOff }}" style="margin:clamp(48px,6vw,80px) 0 0;max-width:760px">
+        <section aria-labelledby="faq-nadpis" onFocus="{{ faqHoldOn }}" onBlur="{{ faqHoldOff }}" style="margin:clamp(48px,6vw,80px) 0 0;max-width:760px">
           <h2 id="faq-nadpis" style="margin:0 0 16px;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">Časté otázky</h2>
           <div aria-live="{{ faqLive }}" aria-atomic="true">
-            <a class="nm-faq-karta" href="{{ faqHref }}" style="display:flex;flex-direction:column;gap:12px;min-height:200px;padding:clamp(24px,4vw,40px);border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+            <a class="nm-faq-karta" href="{{ faqHref }}" style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px;min-height:200px;padding:clamp(24px,4vw,40px);border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+              <span class="{{ faqProgClass }}" aria-hidden="true"></span>
               <span style="font:800 clamp(24px,4vw,32px)/1.15 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-decoration:underline;text-underline-offset:6px;text-wrap:balance">{{ faqQ }}</span>
               <span style="font-size:clamp(19px,2.6vw,24px);line-height:1.4;max-width:36ch">{{ faqA }}</span>
               <span style="margin-top:auto;font-weight:600;color:#272361">Celá odpoveď</span>
             </a>
           </div>
-          <div style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px">
-            <button type="button" onClick="{{ faqPrev }}" aria-label="Predchádzajúca otázka" style="min-height:60px;padding:0 24px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer">Späť</button>
-            <button type="button" onClick="{{ faqNext }}" aria-label="Ďalšia otázka" style="min-height:60px;padding:0 24px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer">Ďalej</button>
-            <button type="button" onClick="{{ faqToggle }}" aria-pressed="{{ faqPausedAria }}" style="min-height:60px;padding:0 24px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer">{{ faqToggleLabel }}</button>
-            <span style="margin-left:4px">{{ faqNo }}</span>
-          </div>
+          <p aria-hidden="true" style="margin:12px 0 0;font-size:16px;font-variant-numeric:tabular-nums">{{ faqNo }}</p>
           <p style="margin:16px 0 0"><a href="./faq.html">Všetky otázky a odpovede</a></p>
         </section>
       </section>
@@ -466,19 +466,23 @@ class Component extends DCLogic {
     if (this.demo || !town) return true;
     try { const r = await this.api('obec?obec=' + encodeURIComponent(town)); return r.ok && r.data ? !!r.data.v_regione : true; } catch (err) { return true; }
   };
-  state = { faqIdx: 0, faqStop: false, faqHold: false, callName: '', odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  state = { faqIdx: 0, faqHold: false, callName: '', odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
   componentDidUpdate(prev) {
+    const faqKluc = this.state.faqIdx + '|' + this.state.faqHold + '|' + this.state.screen;
+    if (faqKluc !== this.faqKluc) { this.faqKluc = faqKluc; this.faqPlan(); }
     this.synchronizujMapu();
     if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, step: 0 }, () => this.props.startScreen === 'Výsledok' && this.runOdhad());
   }
-  faqTik() {
+  faqPlan() {
+    clearTimeout(this.faqCasovac);
     const s = this.state;
-    if (s.screen !== 'Úvod' || s.faqStop || s.faqHold || document.hidden) return;
+    if (s.screen !== 'Úvod' || s.faqHold || document.hidden) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    this.setState(p => ({ faqIdx: (p.faqIdx + 1) % this.FAQS.length }));
+    this.faqCasovac = setTimeout(() => this.setState(p => ({ faqIdx: (p.faqIdx + 1) % this.FAQS.length })), 5000);
   }
-  componentDidMount() { this.faqCasovac = setInterval(() => this.faqTik(), 5000); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
-  componentWillUnmount() { clearInterval(this.faqCasovac); this.zrusMapu(); }
+  faqViditelnost = () => this.faqPlan();
+  componentDidMount() { this.faqPlan(); document.addEventListener('visibilitychange', this.faqViditelnost); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
+  componentWillUnmount() { clearTimeout(this.faqCasovac); document.removeEventListener('visibilitychange', this.faqViditelnost); this.zrusMapu(); }
   // Mapa (Leaflet + OpenStreetMap, modul mapa/) sa načíta až na obrazovke Potvrdenie adresy. React jej obsah nespravuje.
   zrusMapu() { if (this._mapa) this._mapa.zrus(); this._mapa = null; this._mapaEl = null; }
   synchronizujMapu() {
@@ -554,10 +558,7 @@ class Component extends DCLogic {
       isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name,
       isConfirm: s.screen === 'Potvrdenie adresy',
       faqQ: this.FAQS[s.faqIdx].q, faqA: this.FAQS[s.faqIdx].a, faqHref: './faq.html#' + this.FAQS[s.faqIdx].id, faqNo: (s.faqIdx + 1) + ' z ' + this.FAQS.length,
-      faqLive: s.faqStop || s.faqHold ? 'polite' : 'off', faqPausedAria: s.faqStop ? 'true' : 'false', faqToggleLabel: s.faqStop ? 'Spustiť' : 'Pozastaviť',
-      faqPrev: () => this.setState(p => ({ faqIdx: (p.faqIdx + this.FAQS.length - 1) % this.FAQS.length })),
-      faqNext: () => this.setState(p => ({ faqIdx: (p.faqIdx + 1) % this.FAQS.length })),
-      faqToggle: () => this.setState(p => ({ faqStop: !p.faqStop })),
+      faqLive: s.faqHold ? 'polite' : 'off', faqProgClass: s.faqHold ? 'nm-faq-stop' : s.faqIdx % 2 ? 'nm-faq-b' : 'nm-faq-a',
       faqHoldOn: () => this.setState({ faqHold: true }), faqHoldOff: () => this.setState({ faqHold: false }),
       useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0, suggestExpanded: sugg.length > 0 ? 'true' : 'false',
       suggestStatus: s.address.trim().length >= 3 && s.sugg.length ? s.sugg.length + (s.sugg.length === 1 ? ' návrh adresy' : s.sugg.length < 5 ? ' návrhy adries' : ' návrhov adries') : '',
