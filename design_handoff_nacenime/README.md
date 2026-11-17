@@ -14,7 +14,7 @@ Prototyp sa otvára priamo v prehliadači (`support.js` musí ležať vedľa). O
 ## Rozšírený dizajn (17. 11. 2026, schválil majiteľ, má prednosť pred obmedzeniami nižšie)
 Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, `#f6f4ef`, jediné červené tlačidlo `#d32441` na obrazovke a text min. 16 px. Pribúda:
 - **Akcent mätová** `#7fe0c8` len na tmavom pozadí (čísla, grafy, logo „.sk“, štítky, zameranie), `#0e6b58` na svetlom (nadpisové štítky, pruh času vo FAQ). Doplnkový text na tmavom `#c9c8e6`.
-- **Pozadie tmavých pásov**: katastrálna mapa centra Ružomberka (`img/kataster.webp`, čiary `#c9c8e6` na čiernej, `mix-blend-mode: screen`, krytie 0,2–0,3, doľava/nadol slabne). Zdroj ZBGIS, © ÚGKK SR, CC BY 4.0, uvedené v pätičke všetkých stránok.
+- **Pozadie tmavých pásov**: farebná katastrálna mapa Ružomberka zo ZBGIS (`img/kataster.webp`) pod tmavomodrým závojom (zľava 0,95 → vpravo 0,5; na mobile zhora nadol). © ÚGKK SR, CC BY 4.0, uvedené v pätičke všetkých stránok.
 - **Tmavá hlavička** `#11122f` na všetkých obrazovkách a podstránkach: logo „nacenime“ biele + „.sk“ mätové, vpravo odkazy 16 px (na úvode aj „Ako to funguje“ a „Mestá“).
 - **Úvod** (`.nm-uvod`, mimo `<main>`): tmavý hero s jemnou mriežkou a mätovou žiarou, formulár v bielej karte (polomer 20 px, tieň), vedľa „Ukážka výsledku“ (rozpätie, stupnica, stĺpcový graf; vždy označené ako vzorové údaje), pás čísel (5 otázok, 7 okresov, 213 obcí, 0 registrácií), „Ako to funguje“ (3 karty s ikonami), pás „Časté otázky“ na `#272361` s automatickou kartou, dlaždice miest s fotkami (Ružomberok veľká), tri sľuby s čiarou 3 px.
 - **Tiene** povolené na kartách: `0 1px 2px rgba(17,18,47,.06), 0 12px 32px -12px rgba(17,18,47,.18)`; na tmavom výraznejšie.

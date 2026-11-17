@@ -14,7 +14,7 @@ header, main, footer > div, .pas-hero { width: 100%; max-width: calc(1060px + 2 
 
 /* Tmavý pás s hlavičkou */
 .pas { position: relative; overflow: hidden; background: #11122f; color: #ffffff; }
-.pas::before { content: ""; position: absolute; inset: 0; background: url(img/kataster.webp) right center / cover no-repeat; mix-blend-mode: screen; opacity: .22; -webkit-mask-image: linear-gradient(to right, transparent 10%, #000 70%); mask-image: linear-gradient(to right, transparent 10%, #000 70%); pointer-events: none; }
+.pas { background: linear-gradient(90deg, rgba(17,18,47,.96) 0%, rgba(17,18,47,.88) 45%, rgba(17,18,47,.6) 100%), url(img/kataster.webp) center / cover #11122f; }
 .pas > * { position: relative; }
 .pas a:focus-visible { outline-color: #7fe0c8; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 16px; padding-bottom: 16px; }
