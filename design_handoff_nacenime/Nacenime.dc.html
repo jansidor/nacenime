@@ -140,8 +140,9 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-kroky svg{width:48px;height:48px;padding:10px;border-radius:12px;background:#272361;fill:none;stroke:#7fe0c8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nm-kroky h3{margin-top:24px}
 .nm-kroky p{margin:8px 0 0;color:#50516a}
-.nm-faq-pas{position:relative;overflow:hidden;margin-top:clamp(64px,9vw,120px);background:#272361}
-.nm-faq-pas::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(201,200,230,.12) 1.5px,transparent 1.5px);background-size:28px 28px}
+.nm-faq-pas{position:relative;overflow:hidden;margin-top:clamp(64px,9vw,120px);background:linear-gradient(90deg,rgba(39,35,97,.84) 0%,rgba(39,35,97,.9) 45%,rgba(39,35,97,.7) 100%),url(img/kataster-dk.webp) center/cover #272361}
+.nm-faq-pas::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(39,35,97,.35),transparent 30%,transparent 70%,rgba(39,35,97,.35))}
+@media (max-width:900px){.nm-faq-pas{background:linear-gradient(180deg,rgba(39,35,97,.84) 0%,rgba(39,35,97,.92) 45%,rgba(39,35,97,.97) 100%),url(img/kataster-dk.webp) center top/cover #272361}}
 .nm-faq-in{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(32px,5vw,72px);align-items:center;padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(56px,8vw,96px)}
 @media (max-width:900px){.nm-faq-in{grid-template-columns:1fr}}
 .nm-uvod h2.nm-svetly-h{color:#ffffff}
