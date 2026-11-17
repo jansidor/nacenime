@@ -51,6 +51,7 @@ Prototyp sa otvára priamo v prehliadači (`support.js` musí ležať vedľa). O
 - Výsledok: blok „Cena od makléra“ je prvý (hlavný, červený), „Odhad v PDF“ druhý (vedľajší). Poradie v DOM zodpovedá poradiu Tabu.
 - Pätička: „Prevádzkuje NajBývanie, s.r.o.“
 - Úvod: tri otázky ostávajú ako tichý text bez kariet a ikon. Hlavička je len logo.
+- Úvod (17. 11. 2026, schválené majiteľom v chate): tri otázky nahradil vodorovný slider „Časté otázky“ so 6 kartami, každá vedie na `faq.html#kotva`. Pod ním odkaz „Všetky otázky a odpovede“. Natívne posúvanie (scroll-snap), bez animácie. Odkaz „Časté otázky“ je aj v pätičke všetkých stránok. Podstránka `faq.html` má 37 otázok v 4 skupinách a JSON-LD `FAQPage`.
 
 ## Nové hodnoty v logike (`renderVals`)
 - `hasPdfMsg`: `true`, keď `pdfMsg` nie je prázdne (po odoslaní formulára Odhad v PDF).

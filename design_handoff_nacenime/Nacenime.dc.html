@@ -28,8 +28,11 @@
 {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
+  "@id": "https://nacenime.sk/#firma",
   "name": "NajBývanie Ružomberok, s. r. o.",
   "url": "https://nacenime.sk/",
+  "logo": "https://nacenime.sk/icon-512.png",
+  "email": "info@nacenime.sk",
   "telephone": "+421951161561",
   "address": {
     "@type": "PostalAddress",
@@ -77,6 +80,9 @@ a{color:#272361;text-decoration:underline;text-underline-offset:4px}
 input::placeholder{color:#50516a;opacity:1}
 a:focus-visible,button:focus-visible,input:focus-visible,[role="img"]:focus-visible{outline:3px solid #272361;outline-offset:2px}
 footer a:focus-visible{outline-color:#f6f4ef}
+.nm-faq-slider{scrollbar-color:#272361 #dcd9d0}
+.nm-faq-slider:focus-visible{outline:3px solid #272361;outline-offset:2px}
+@media (hover:hover){.nm-faq-karta:hover{border-color:#11122f;background:#f6f4ef !important}}
 @keyframes nc-in{from{opacity:0}to{opacity:1}}
 main>section{animation:nc-in 150ms linear}
 @media (prefers-reduced-motion:reduce){main>section{animation:none}}
@@ -130,20 +136,48 @@ main>section{animation:nc-in 150ms linear}
             <a href="#" onClick="{{ c.open }}" style="display:inline-flex;align-items:center;min-height:48px">{{ c.name }}</a>
           </sc-for>
         </nav>
-        <div style="margin:clamp(48px,6vw,80px) 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:32px 48px">
-          <div>
-            <div style="font-weight:600;color:#272361">Musím zadať kontakt?</div>
-            <div style="margin-top:4px;max-width:36ch">Nie. E-mail len vtedy, ak chcete odhad v PDF.</div>
-          </div>
-          <div>
-            <div style="font-weight:600;color:#272361">Z čoho cenu rátate?</div>
-            <div style="margin-top:4px;max-width:36ch">Z predajov vo vašom okolí.</div>
-          </div>
-          <div>
-            <div style="font-weight:600;color:#272361">Bude mi niekto volať?</div>
-            <div style="margin-top:4px;max-width:36ch">Iba ak o to požiadate.</div>
-          </div>
-        </div>
+        <section aria-labelledby="faq-nadpis" style="margin:clamp(48px,6vw,80px) 0 0">
+          <h2 id="faq-nadpis" style="margin:0 0 16px;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">Časté otázky</h2>
+          <ul class="nm-faq-slider" tabindex="0" aria-label="Časté otázky, posúvajte do strany" style="display:flex;gap:16px;margin:0 calc(-1 * clamp(20px,5vw,64px));padding:4px clamp(20px,5vw,64px) 16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 clamp(20px,5vw,64px);overscroll-behavior-x:contain">
+            <li style="flex:0 0 min(78%,300px);scroll-snap-align:start;list-style:none">
+              <a class="nm-faq-karta" href="./faq.html#kontakt" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+                <span style="font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px">Musím zadať kontakt?</span>
+                <span>Nie. E-mail len vtedy, ak chcete odhad v PDF.</span>
+              </a>
+            </li>
+            <li style="flex:0 0 min(78%,300px);scroll-snap-align:start;list-style:none">
+              <a class="nm-faq-karta" href="./faq.html#zdroj" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+                <span style="font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px">Z čoho cenu rátate?</span>
+                <span>Z predajov vo vašom okolí.</span>
+              </a>
+            </li>
+            <li style="flex:0 0 min(78%,300px);scroll-snap-align:start;list-style:none">
+              <a class="nm-faq-karta" href="./faq.html#volanie" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+                <span style="font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px">Bude mi niekto volať?</span>
+                <span>Iba ak o to požiadate.</span>
+              </a>
+            </li>
+            <li style="flex:0 0 min(78%,300px);scroll-snap-align:start;list-style:none">
+              <a class="nm-faq-karta" href="./faq.html#zavaznost" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+                <span style="font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px">Je odhad záväzný?</span>
+                <span>Nie. Orientačný odhad, nie znalecký posudok.</span>
+              </a>
+            </li>
+            <li style="flex:0 0 min(78%,300px);scroll-snap-align:start;list-style:none">
+              <a class="nm-faq-karta" href="./faq.html#oblast" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+                <span style="font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px">Pre ktoré mestá to funguje?</span>
+                <span>Liptov, Turiec a Orava.</span>
+              </a>
+            </li>
+            <li style="flex:0 0 min(78%,300px);scroll-snap-align:start;list-style:none">
+              <a class="nm-faq-karta" href="./faq.html#pozemok" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;text-decoration:none">
+                <span style="font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px">Oceňujem pozemok. Dá sa to?</span>
+                <span>Áno, pokračujte bez adresy.</span>
+              </a>
+            </li>
+          </ul>
+          <p style="margin:8px 0 0"><a href="./faq.html">Všetky otázky a odpovede</a></p>
+        </section>
       </section>
     </sc-if>
 
@@ -367,6 +401,7 @@ main>section{animation:nc-in 150ms linear}
     </sc-if>
     <span>Prevádzkuje NajBývanie Ružomberok, s. r. o.</span>
     <nav style="display:flex;flex-wrap:wrap;gap:8px 28px">
+      <a href="./faq.html" style="color:#f6f4ef">Časté otázky</a>
       <a href="./ochrana-osobnych-udajov.html" style="color:#f6f4ef">Ochrana osobných údajov</a>
       <a href="./cookies.html" style="color:#f6f4ef">Cookies</a>
       <a href="./kontakt.html" style="color:#f6f4ef">Kontakt</a>
