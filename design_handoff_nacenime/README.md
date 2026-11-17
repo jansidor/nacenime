@@ -19,7 +19,7 @@ Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, 
 - **Tiene** povolené na kartách: `0 1px 2px rgba(17,18,47,.06), 0 12px 32px -12px rgba(17,18,47,.18)`; na tmavom výraznejšie.
 - **Pohyb**: okrem fade 150 ms aj nadvihnutie kariet a tlačidla (1–3 px), rast stĺpcov grafu, otočenie „+“ vo FAQ. Pri `prefers-reduced-motion` nič.
 - **Podstránky** (`pravne.css`): tmavý pás s hlavičkou, FAQ má tmavé záhlavie s vyhľadávaním (`faq.js`), bočný zoznam skupín a rozbaľovacie otázky (`<details>`, otázka je `<h3>`); `faq.html#kotva` otvorí danú otázku.
-- **Fotky miest**: `img/*.jpg`, zdroje a licencie na `fotografie.html` (odkaz „Zdroje fotografií“ v pätičke).
+- **Fotky miest**: `img/ruzomberok.jpg`, `img/liptovsky-mikulas.jpg`. Martin, Dolný Kubín a Námestovo zatiaľ bez fotky: tmavomodrá dlaždica s mriežkou (úvod) a s názvom mesta (stránka mesta). Pri doplnení fotky s licenciou CC BY/BY-SA treba uviesť autora a licenciu (napr. stránka `fotografie.html` s odkazom v pätičke).
 
 ## Dizajnové hodnoty (aktuálna vizuálna vrstva, nahrádza staršie hodnoty)
 

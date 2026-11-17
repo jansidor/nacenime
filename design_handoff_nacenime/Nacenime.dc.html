@@ -82,7 +82,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,[role="img"]:focus-visi
 footer a:focus-visible{outline-color:#f6f4ef}
 /* Rozšírený dizajn 17. 11. 2026 (moderný, technický): akcent mätová #7fe0c8 len na tmavom, #0e6b58 na svetlom. */
 .nm-wrap{width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding-left:clamp(20px,5vw,64px);padding-right:clamp(20px,5vw,64px)}
-.nm-main-skryty{display:none !important}
+.nm-main-uvod{max-width:none !important;padding:0 !important}
 .nm-hlavicka-pas{background:#11122f}
 .nm-hlavicka{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-top:16px;padding-bottom:16px}
 .nm-logo{font:800 24px/1.2 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff !important;text-decoration:none !important}
@@ -95,19 +95,19 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-hero{position:relative;overflow:hidden;background:#11122f;color:#ffffff}
 .nm-hero::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:120%;background:radial-gradient(closest-side,rgba(127,224,200,.16),transparent);pointer-events:none}
 .nm-mriezka{position:absolute;inset:0;background-image:linear-gradient(rgba(201,200,230,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(201,200,230,.07) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent);mask-image:linear-gradient(to bottom,#000 30%,transparent)}
-.nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:center;padding-top:clamp(32px,6vw,72px);padding-bottom:clamp(40px,6vw,72px)}
+.nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:start;padding-top:clamp(24px,4vw,48px);padding-bottom:clamp(40px,6vw,72px)}
 @media (max-width:900px){.nm-hero-in{grid-template-columns:1fr}}
-.nm-stitok{display:inline-flex;align-items:center;gap:10px;margin:0 0 20px;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
+.nm-stitok{display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
 .nm-bod{width:8px;height:8px;border-radius:50%;background:#7fe0c8;box-shadow:0 0 0 4px rgba(127,224,200,.18)}
-.nm-hero h1{margin:0;font:800 clamp(44px,7vw,72px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance;max-width:13ch}
-.nm-lead{margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2vw,24px);color:#c9c8e6}
-.nm-hladanie{margin-top:36px;max-width:680px;padding:20px;background:#ffffff;border-radius:20px;color:#11122f;box-shadow:0 24px 60px -20px rgba(0,0,0,.5)}
+.nm-hero h1{margin:0;font:800 clamp(44px,6vw,64px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance;max-width:13ch}
+.nm-lead{margin:20px 0 0;max-width:40ch;font-size:clamp(19px,2vw,24px);color:#c9c8e6}
+.nm-hladanie{margin-top:28px;max-width:680px;padding:20px;background:#ffffff;border-radius:20px;color:#11122f;box-shadow:0 24px 60px -20px rgba(0,0,0,.5)}
 .nm-hladanie button[type=submit]{transition:background .15s,transform .15s}
 @media (hover:hover){.nm-hladanie button[type=submit]:hover{transform:translateY(-1px)}}
 .nm-pod{margin:16px 0 0}
 .nm-pod a{color:#c9c8e6}
 @media (hover:hover){.nm-pod a:hover{color:#ffffff}}
-.nm-ukazka{padding:28px;border:1px solid rgba(201,200,230,.2);border-radius:20px;background:rgba(39,35,97,.55)}
+.nm-ukazka{margin-top:clamp(0px,3vw,40px);padding:28px;border:1px solid rgba(201,200,230,.2);border-radius:20px;background:rgba(39,35,97,.55)}
 .nm-ukazka-hlava{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:16px;color:#c9c8e6}
 .nm-cip{padding:4px 12px;border-radius:999px;background:rgba(127,224,200,.14);color:#7fe0c8;font-weight:600}
 .nm-ukazka-cena{margin:16px 0 24px;white-space:nowrap;font:800 clamp(28px,3.2vw,40px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:#ffffff}
@@ -158,6 +158,10 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-mesto{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;border-radius:20px;overflow:hidden;color:#ffffff !important;text-decoration:none !important;background-color:#272361;background-size:cover;background-position:center}
 .nm-mesto::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(17,18,47,.92),rgba(17,18,47,.35) 70%,rgba(17,18,47,.15))}
 .nm-mesto-velke{grid-column:span 2;grid-row:span 2}
+.nm-mesto-bez,.nm-mesto-foto-bez{background-color:#272361 !important;background-image:linear-gradient(rgba(201,200,230,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(201,200,230,.09) 1px,transparent 1px) !important;background-size:28px 28px !important}
+.nm-mesto-foto-bez{justify-content:flex-start !important;align-items:flex-end !important;text-align:left !important;padding:28px !important}
+.nm-mesto-foto-text{display:flex;flex-direction:column;color:#ffffff}
+.nm-mesto-foto-text b{font:800 clamp(32px,4vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em}
 .nm-mesto b{font:800 clamp(24px,2.6vw,32px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em}
 .nm-reg{font-size:16px;color:#7fe0c8;font-weight:600;margin-bottom:4px}
 .nm-mesto::after{content:"→";position:absolute;top:18px;right:20px;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16);font-size:20px;transition:transform .2s,background .2s}
@@ -184,6 +188,8 @@ main>section{animation:nc-in 150ms linear}
     </nav>
   </header>
   </div>
+
+  <main class="{{ mainClass }}" style="flex:1;width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:clamp(40px,6vw,72px) clamp(20px,5vw,64px) clamp(48px,7vw,96px)">
 
   <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
   <div data-screen-label="01 Úvod" class="nm-uvod">
@@ -294,8 +300,6 @@ main>section{animation:nc-in 150ms linear}
   </div>
   </sc-if>
 
-  <main class="{{ mainClass }}" style="flex:1;width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:clamp(40px,6vw,72px) clamp(20px,5vw,64px) clamp(48px,7vw,96px)">
-
 
     <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
       <section data-screen-label="01b Potvrdenie adresy">
@@ -357,7 +361,7 @@ main>section{animation:nc-in 150ms linear}
         <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
             <p style="margin:24px 0 0;max-width:62ch">Orientačný odhad, nie znalecký posudok.</p>
           </div>
-          <div style="min-height:clamp(240px,38vw,480px);border-radius:20px;background:#dcd9d0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#11122f;position:relative;overflow:hidden">{{ cityPhoto }}<sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ cityAlt }}" style="position:absolute;inset:0;background-image:{{ cityBg }};background-size:cover;background-position:center"></div></sc-if></div>
+          <div class="{{ cityBoxCls }}" style="min-height:clamp(240px,38vw,480px);border-radius:20px;background:#dcd9d0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#11122f;position:relative;overflow:hidden"><sc-if value="{{ cityNoPhoto }}" hint-placeholder-val="{{ false }}"><span class="nm-mesto-foto-text" aria-hidden="true"><span class="nm-reg">{{ cityReg }}</span><b>{{ cityAlt }}</b></span></sc-if><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ cityAlt }}" style="position:absolute;inset:0;background-image:{{ cityBg }};background-size:cover;background-position:center"></div></sc-if></div>
         </div>
 
         <div style="margin-top:clamp(64px,8vw,112px)">
@@ -522,7 +526,6 @@ main>section{animation:nc-in 150ms linear}
       <a href="./ochrana-osobnych-udajov.html" style="color:#f6f4ef">Ochrana osobných údajov</a>
       <a href="./cookies.html" style="color:#f6f4ef">Cookies</a>
       <a href="./kontakt.html" style="color:#f6f4ef">Kontakt</a>
-      <a href="./fotografie.html" style="color:#f6f4ef">Zdroje fotografií</a>
     </nav>
     </div>
   </footer>
@@ -541,9 +544,9 @@ class Component extends DCLogic {
   CITIES = [
     { name: 'Ružomberok', loc: 'v Ružomberku', reg: 'Liptov', photo: '', img: 'img/ruzomberok.jpg' },
     { name: 'Liptovský Mikuláš', loc: 'v Liptovskom Mikuláši', reg: 'Liptov', photo: '', img: 'img/liptovsky-mikulas.jpg' },
-    { name: 'Martin', loc: 'v Martine', reg: 'Turiec', photo: '', img: 'img/martin.jpg' },
-    { name: 'Dolný Kubín', loc: 'v Dolnom Kubíne', reg: 'Orava', photo: '', img: 'img/dolny-kubin.jpg' },
-    { name: 'Námestovo', loc: 'v Námestove', reg: 'Orava', photo: '', img: 'img/namestovo.jpg' }
+    { name: 'Martin', loc: 'v Martine', reg: 'Turiec', photo: '' },
+    { name: 'Dolný Kubín', loc: 'v Dolnom Kubíne', reg: 'Orava', photo: '' },
+    { name: 'Námestovo', loc: 'v Námestove', reg: 'Orava', photo: '' }
   ];
   ADDR = [
     { line: 'Vzorová ulica 1', town: 'Ružomberok', zip: '034 01', ok: true },
@@ -700,7 +703,7 @@ class Component extends DCLogic {
     const sugg = (s.sugg.length ? s.sugg : this.demo && (this.props.showSuggest ?? true) && !s.address.trim() ? [this.ADDR[0]] : []).map(a => ({ line: a.line, town: a.town,
       pick: () => this.pickAddr(a) }));
     return {
-      isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name,
+      isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityNoPhoto: !city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name, cityBoxCls: city.img ? '' : 'nm-mesto-foto-bez', cityReg: city.reg,
       isConfirm: s.screen === 'Potvrdenie adresy',
       faqQ: this.FAQS[s.faqIdx].q, faqA: this.FAQS[s.faqIdx].a, faqHref: './faq.html#' + this.FAQS[s.faqIdx].id, faqNo: (s.faqIdx + 1) + ' z ' + this.FAQS.length,
       faqLive: s.faqHold ? 'polite' : 'off', faqProgClass: s.faqHold ? 'nm-faq-stop' : s.faqIdx % 2 ? 'nm-faq-b' : 'nm-faq-a',
@@ -722,7 +725,7 @@ class Component extends DCLogic {
       submitObec: e => { e.preventDefault(); const v = s.obec.trim(); if (!v) return this.setState({ obecError: true }); this.go({ answers: { ...s.answers, 6: v }, step: 7 }); },
       submitPrice: e => { e.preventDefault(); this.go({ answers: { ...s.answers, 5: s.price.trim() }, step: needObec ? 6 : 7 }); },
       skipPrice: e => { e.preventDefault(); this.go({ price: '', step: needObec ? 6 : 7 }); },
-      isIntro: s.screen === 'Úvod', mainClass: s.screen === 'Úvod' ? 'nm-main-skryty' : '', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
+      isIntro: s.screen === 'Úvod', mainClass: s.screen === 'Úvod' ? 'nm-main-uvod' : '', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
       address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: this.jeChyba(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: this.jeChyba(s.callMsg),
       setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'), setCallName: set('callName'), callName: s.callName,
       setArea: e => this.setState({ area: e.target.value, areaError: false }),

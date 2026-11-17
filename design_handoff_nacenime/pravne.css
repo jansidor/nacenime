@@ -1,4 +1,4 @@
-/* Spoločný štýl podstránok (FAQ, právne stránky, 404, zdroje fotografií). Rozšírený dizajn 17. 11. 2026, pozri README. */
+/* Spoločný štýl podstránok (FAQ, právne stránky, 404). Rozšírený dizajn 17. 11. 2026, pozri README. */
 :root { color-scheme: light; }
 html, body { margin: 0; background: #f6f4ef; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -81,10 +81,5 @@ details p { margin: 0; padding: 0 20px 20px; max-width: 62ch; }
 .cta-pas { margin-top: 56px; padding: 32px; border-radius: 20px; background: #272361; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
 .cta-pas h2 { color: #ffffff; font-size: 32px; margin: 0; max-width: 16ch; }
 
-/* Zdroje fotografií */
-.foto-zoznam { list-style: none; padding: 0; display: grid; gap: 20px; }
-.foto-zoznam li { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 20px; align-items: center; margin: 0; padding: 16px; background: #ffffff; border: 1px solid #dcd9d0; border-radius: 12px; }
-.foto-zoznam img { width: 160px; height: 106px; object-fit: cover; border-radius: 8px; }
-@media (max-width: 520px) { .foto-zoznam li { grid-template-columns: 1fr; } .foto-zoznam img { width: 100%; height: auto; } }
 
 @media (prefers-reduced-motion: reduce) { details, summary::after, .tlacidlo { transition: none; } }
