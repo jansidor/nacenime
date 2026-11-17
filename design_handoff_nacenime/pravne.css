@@ -14,7 +14,7 @@ header, main, footer > div, .pas-hero { width: 100%; max-width: calc(1060px + 2 
 
 /* Tmavý pás s hlavičkou */
 .pas { position: relative; overflow: hidden; background: #11122f; color: #ffffff; }
-.pas::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(201,200,230,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(201,200,230,.07) 1px, transparent 1px); background-size: 48px 48px; -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent); mask-image: linear-gradient(to bottom, #000 30%, transparent); pointer-events: none; }
+.pas { background: linear-gradient(90deg, rgba(17,18,47,.96) 0%, rgba(17,18,47,.88) 45%, rgba(17,18,47,.6) 100%), url(img/kataster.webp) center / cover #11122f; }
 .pas > * { position: relative; }
 .pas a:focus-visible { outline-color: #7fe0c8; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 16px; padding-bottom: 16px; }
@@ -51,6 +51,8 @@ footer { background: #11122f; color: #c9c8e6; margin-top: 32px; font-size: 16px;
 footer > div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding-top: 32px; padding-bottom: 32px; }
 footer a { color: #f6f4ef; }
 footer a:focus-visible { outline-color: #f6f4ef; }
+.zdroj-mapy { flex: 1 0 100%; margin: 0; color: #c9c8e6; }
+.zdroj-mapy a { color: #c9c8e6; display: inline; min-height: 0; }
 
 /* Časté otázky */
 .faq-hladaj { position: relative; margin-top: 28px; max-width: 560px; }

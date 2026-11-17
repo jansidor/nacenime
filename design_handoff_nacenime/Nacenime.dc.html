@@ -93,9 +93,10 @@ footer a:focus-visible{outline-color:#f6f4ef}
 @media (hover:hover){.nm-nav a:hover{color:#ffffff}}
 @media (max-width:760px){.nm-nav-sek{display:none !important}}
 .nm-hlavicka a:focus-visible,.nm-hero a:focus-visible,.nm-faq-pas a:focus-visible{outline-color:#7fe0c8}
-.nm-hero{position:relative;overflow:hidden;background:#11122f;color:#ffffff}
+.nm-hero{position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(17,18,47,.95) 0%,rgba(17,18,47,.87) 42%,rgba(17,18,47,.5) 100%),url(img/kataster.webp) center/cover #11122f;color:#ffffff}
+@media (max-width:900px){.nm-hero{background:linear-gradient(180deg,rgba(17,18,47,.8) 0%,rgba(17,18,47,.9) 45%,rgba(17,18,47,.96) 100%),url(img/kataster.webp) 40% 0/cover no-repeat #11122f}}
 .nm-hero::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:120%;background:radial-gradient(closest-side,rgba(127,224,200,.16),transparent);pointer-events:none}
-.nm-mriezka{position:absolute;inset:0;background-image:linear-gradient(rgba(201,200,230,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(201,200,230,.07) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent);mask-image:linear-gradient(to bottom,#000 30%,transparent)}
+.nm-mriezka{display:none}
 .nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:start;padding-top:clamp(24px,4vw,48px);padding-bottom:clamp(40px,6vw,72px)}
 @media (max-width:900px){.nm-hero-in{grid-template-columns:1fr}}
 .nm-stitok{display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
@@ -528,6 +529,7 @@ main>section{animation:nc-in 150ms linear}
       <a href="./cookies.html" style="color:#f6f4ef">Cookies</a>
       <a href="./kontakt.html" style="color:#f6f4ef">Kontakt</a>
     </nav>
+    <p style="flex:1 0 100%;margin:0;color:#c9c8e6">Katastrálna mapa v pozadí: © <a href="https://www.skgeodesy.sk/" style="color:#c9c8e6">ÚGKK SR</a>, <a href="https://creativecommons.org/licenses/by/4.0/deed.sk" style="color:#c9c8e6">CC BY 4.0</a>, upravené.</p>
     </div>
   </footer>
 </div>
