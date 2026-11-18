@@ -411,20 +411,19 @@ main>section{animation:nc-in 150ms linear}
           <h2 style="margin:0;font:800 32px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Ceny {{ cityIn }}</h2>
           <div style="margin-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:32px 48px">
             <div>
-              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">[CENA ZA M² BYTY]</div>
-              <div style="margin-top:6px">priemerná cena bytu za m²</div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">{{ cityByt }}</div>
+              <div style="margin-top:6px">{{ cityBytLbl }}</div>
             </div>
             <div>
-              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">[CENA ZA M² DOMY]</div>
-              <div style="margin-top:6px">priemerná cena domu za m²</div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">{{ cityDom }}</div>
+              <div style="margin-top:6px">{{ cityDomLbl }}</div>
             </div>
             <div>
-              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">[POČET PREDAJOV]</div>
-              <div style="margin-top:6px">predajov, z ktorých rátame</div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">{{ cityPocet }}</div>
+              <div style="margin-top:6px">{{ cityPocetLbl }}</div>
             </div>
           </div>
-          <p style="margin:40px 0 0;max-width:62ch;text-wrap:pretty">[TEXT O ŠTVRTIACH A CENÁCH]</p>
-          <p style="margin:20px 0 0;max-width:62ch"><strong style="font-weight:600;color:#272361">Naposledy predané:</strong> [TYP, VÝMERA, ŠTVRŤ, CENA ZA M²]</p>
+          <p style="margin:40px 0 0;max-width:62ch;text-wrap:pretty">{{ cityText }}</p>
         </div>
       </section>
     </sc-if>
@@ -631,11 +630,11 @@ class Component extends DCLogic {
   ];
   FAQS = [{ id: "kontakt", q: "Musím zadať kontakt?", a: "Nie. E-mail len vtedy, ak chcete odhad v PDF." }, { id: "zdroj", q: "Z čoho cenu rátate?", a: "Z predajov vo vašom okolí." }, { id: "volanie", q: "Bude mi niekto volať?", a: "Iba ak o to požiadate." }, { id: "zavaznost", q: "Je odhad záväzný?", a: "Nie. Orientačný odhad, nie znalecký posudok." }, { id: "oblast", q: "Pre ktoré mestá to funguje?", a: "Liptov, Turiec a Orava." }, { id: "pozemok", q: "Oceňujem pozemok. Dá sa to?", a: "Áno, pokračujte bez adresy." }];
   CITIES = [
-    { name: 'Ružomberok', loc: 'v Ružomberku', reg: 'Liptov', photo: '', img: 'img/ruzomberok.jpg' },
-    { name: 'Liptovský Mikuláš', loc: 'v Liptovskom Mikuláši', reg: 'Liptov', photo: '', img: 'img/liptovsky-mikulas.jpg' },
-    { name: 'Martin', loc: 'v Martine', reg: 'Turiec', photo: '', img: 'img/martin.webp' },
-    { name: 'Dolný Kubín', loc: 'v Dolnom Kubíne', reg: 'Orava', photo: '', img: 'img/dolny-kubin.webp' },
-    { name: 'Námestovo', loc: 'v Námestove', reg: 'Orava', photo: '', img: 'img/namestovo.webp' }
+    { name: 'Ružomberok', loc: 'v Ružomberku', reg: 'Liptov', photo: '', img: 'img/ruzomberok.jpg', ceny: { byt: 2140, bytZ: 'Predaje', bytOkres: false, bytN: 16, dom: 1140, domZ: 'Ponuky', domOkres: true, domN: 20, okres: 'Ružomberok' } },
+    { name: 'Liptovský Mikuláš', loc: 'v Liptovskom Mikuláši', reg: 'Liptov', photo: '', img: 'img/liptovsky-mikulas.jpg', ceny: { byt: 2860, bytZ: 'Ponuky', bytOkres: false, bytN: 103, dom: 2290, domZ: 'Ponuky', domOkres: false, domN: 21, okres: 'Liptovský Mikuláš' } },
+    { name: 'Martin', loc: 'v Martine', reg: 'Turiec', photo: '', img: 'img/martin.webp', ceny: { byt: 2390, bytZ: 'Ponuky', bytOkres: false, bytN: 145, dom: 2160, domZ: 'Ponuky', domOkres: false, domN: 36, okres: 'Martin' } },
+    { name: 'Dolný Kubín', loc: 'v Dolnom Kubíne', reg: 'Orava', photo: '', img: 'img/dolny-kubin.webp', ceny: { byt: 2570, bytZ: 'Ponuky', bytOkres: false, bytN: 50, dom: 2570, domZ: 'Ponuky', domOkres: true, domN: 8, okres: 'Dolný Kubín' } },
+    { name: 'Námestovo', loc: 'v Námestove', reg: 'Orava', photo: '', img: 'img/namestovo.webp', ceny: { byt: 2440, bytZ: 'Ponuky', bytOkres: true, bytN: 59, dom: 2570, domZ: 'Ponuky', domOkres: true, domN: 8, okres: 'Dolný Kubín' } }
   ];
   ADDR = [
     { line: 'Vzorová ulica 1', town: 'Ružomberok', zip: '034 01', ok: true },
@@ -807,6 +806,9 @@ class Component extends DCLogic {
       pick: () => this.pickAddr(a) }));
     return {
       isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityNoPhoto: !city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name, cityBoxCls: city.img ? '' : 'nm-mesto-foto-bez', cityReg: city.reg,
+      ...(() => { const c = city.ceny || {}, e = n => n ? n.toLocaleString('sk-SK').replace(/\s/g, '\u00a0') + '\u00a0€/m²' : '–', lbl = (typ, z, ok) => 'medián ' + (z === 'Predaje' ? 'predajnej' : 'ponúkanej') + ' ceny ' + typ + ' za m²' + (ok ? ', okres ' + c.okres : '');
+        return { cityByt: e(c.byt), cityBytLbl: lbl('bytu', c.bytZ, c.bytOkres), cityDom: e(c.dom), cityDomLbl: lbl('domu', c.domZ, c.domOkres), cityPocet: String((c.bytN || 0) + (c.domN || 0)), cityPocetLbl: 'predajov a ponúk bytov a domov v dátach',
+          cityText: (c.bytOkres ? 'Pre ' + city.name + ' zatiaľ nemáme dosť vlastných predajov, preto ukazujeme ceny okresu ' + c.okres + '. ' : '') + 'Ponúkaná cena v inzerátoch býva vyššia ako cena, za ktorú sa nehnuteľnosť nakoniec predá. Kalkulačka to zohľadní a cenu ukáže pre vašu adresu, výmeru a stav. Údaje k 16. 11. 2026.' }; })(),
       isConfirm: s.screen === 'Potvrdenie adresy',
       faqQ: this.FAQS[s.faqIdx].q, faqA: this.FAQS[s.faqIdx].a, faqHref: './faq.html#' + this.FAQS[s.faqIdx].id, faqNo: (s.faqIdx + 1) + ' z ' + this.FAQS.length,
       faqLive: s.faqHold ? 'polite' : 'off', faqProgClass: s.faqHold ? 'nm-faq-stop' : s.faqIdx % 2 ? 'nm-faq-b' : 'nm-faq-a',
