@@ -93,10 +93,11 @@ footer a:focus-visible{outline-color:#f6f4ef}
 @media (hover:hover){.nm-nav a:hover{color:#ffffff}}
 @media (max-width:760px){.nm-nav-sek{display:none !important}}
 .nm-hlavicka a:focus-visible,.nm-hero a:focus-visible,.nm-faq-pas a:focus-visible{outline-color:#7fe0c8}
-.nm-hero{position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(17,18,47,.93) 0%,rgba(17,18,47,.8) 42%,rgba(17,18,47,.35) 100%),linear-gradient(0deg,rgba(17,18,47,.9),transparent 30%),url(img/uvod-liptov.webp) center 30%/cover #11122f;color:#ffffff}
-@media (max-width:900px){.nm-hero{background:linear-gradient(180deg,rgba(17,18,47,.6) 0%,rgba(17,18,47,.85) 40%,rgba(17,18,47,.95) 75%),url(img/uvod-liptov.webp) 50% 0/auto 560px no-repeat #11122f}}
+.nm-hero{position:relative;overflow:hidden;isolation:isolate;background:url(img/hory-video.jpg) center/cover #11122f;color:#ffffff}
+.nm-uvod-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
+@media (max-width:900px){.nm-uvod-video{display:none}.nm-hero{background:url(img/hory-video.jpg) 50% 0/auto 600px no-repeat #11122f}.nm-mriezka{background:linear-gradient(180deg,rgba(17,18,47,.55) 0%,rgba(17,18,47,.8) 40%,rgba(17,18,47,.95) 70%)}}
 .nm-hero::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:120%;background:radial-gradient(closest-side,rgba(127,224,200,.16),transparent);pointer-events:none}
-.nm-mriezka{display:none}
+.nm-mriezka{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(17,18,47,.9) 0%,rgba(17,18,47,.72) 42%,rgba(17,18,47,.3) 100%),linear-gradient(0deg,rgba(17,18,47,.9),transparent 30%)}
 .nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:start;padding-top:clamp(24px,4vw,48px);padding-bottom:clamp(40px,6vw,72px)}
 @media (max-width:900px){.nm-hero-in{grid-template-columns:1fr}}
 .nm-stitok{display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
@@ -140,10 +141,9 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-kroky svg{width:48px;height:48px;padding:10px;border-radius:12px;background:#272361;fill:none;stroke:#7fe0c8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nm-kroky h3{margin-top:24px}
 .nm-kroky p{margin:8px 0 0;color:#50516a}
-.nm-faq-pas{position:relative;overflow:hidden;isolation:isolate;margin-top:clamp(64px,9vw,120px);background:url(img/hory-video.jpg) center/cover #272361}
-.nm-faq-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
+.nm-faq-pas{position:relative;overflow:hidden;isolation:isolate;margin-top:clamp(64px,9vw,120px);background:url(img/hory-liptov.webp) center 40%/cover #272361}
 .nm-faq-pas::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(39,35,97,.86) 0%,rgba(39,35,97,.66) 45%,rgba(39,35,97,.3) 100%)}
-@media (max-width:900px){.nm-faq-video{display:none}.nm-faq-pas::before{background:linear-gradient(180deg,rgba(39,35,97,.75) 0%,rgba(39,35,97,.6) 45%,rgba(39,35,97,.45) 100%)}}
+@media (max-width:900px){.nm-faq-pas::before{background:linear-gradient(180deg,rgba(39,35,97,.75) 0%,rgba(39,35,97,.6) 45%,rgba(39,35,97,.45) 100%)}}
 .nm-faq-in{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(32px,5vw,72px);align-items:center;padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(56px,8vw,96px)}
 @media (max-width:900px){.nm-faq-in{grid-template-columns:1fr}}
 .nm-uvod h2.nm-svetly-h{color:#ffffff}
@@ -198,6 +198,7 @@ main>section{animation:nc-in 150ms linear}
   <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
   <div data-screen-label="01 Úvod" class="nm-uvod">
     <section class="nm-hero">
+      <video id="nm-uvod-video" class="nm-uvod-video" aria-hidden="true" tabindex="-1" loop playsInline preload="none" poster="img/hory-video.jpg"></video>
       <div class="nm-mriezka" aria-hidden="true"></div>
       <div class="nm-wrap nm-hero-in">
         <div>
@@ -267,7 +268,6 @@ main>section{animation:nc-in 150ms linear}
     </section>
 
     <section class="nm-faq-pas" aria-labelledby="faq-nadpis" onFocus="{{ faqHoldOn }}" onBlur="{{ faqHoldOff }}">
-      <video id="nm-faq-video" class="nm-faq-video" aria-hidden="true" tabindex="-1" loop playsInline preload="none" poster="img/hory-video.jpg"></video>
       <div class="nm-wrap nm-faq-in">
         <div>
           <p class="nm-kicker nm-svetly">Časté otázky</p>
@@ -633,9 +633,9 @@ class Component extends DCLogic {
     this.faqCasovac = setTimeout(() => this.setState(p => ({ faqIdx: (p.faqIdx + 1) % this.FAQS.length })), 5000);
   }
   faqViditelnost = () => this.faqPlan();
-  // Video v páse Časté otázky: len na širokej obrazovke, bez „zníženého pohybu“ a šetrenia dát; inak ostane statický obrázok.
+  // Video v pozadí úvodu: len na širokej obrazovke, bez „zníženého pohybu“ a šetrenia dát; inak ostane statický obrázok.
   faqVideo() {
-    const v = document.getElementById('nm-faq-video');
+    const v = document.getElementById('nm-uvod-video');
     if (!v || v.dataset.ok) return;
     const mm = q => window.matchMedia && window.matchMedia(q).matches;
     if (!mm('(min-width: 901px)') || mm('(prefers-reduced-motion: reduce)') || (navigator.connection && navigator.connection.saveData)) return;
