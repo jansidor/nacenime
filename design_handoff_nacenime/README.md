@@ -27,6 +27,7 @@ Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, 
 
 ## Kalkulačka a výsledok – konverzia (18. 11. 2026, schválil majiteľ)
 - Pod každou otázkou je šedá veta `#50516a` „prečo sa pýtame / čo tým získate“ (`QS[].h`, pre cenu a obec v `hint`).
+- Kalkulačka na šírke nad 900 px: vpravo karta „Váš odhad“ (sticky) s adresou a odpoveďami; vyplnené riadky majú mätovú fajku, aktuálna otázka pulzujúcu červenú bodku, pod tým rozmazaný graf ako náznak výsledku. Na mobile sa nezobrazuje. Možnosti typu nehnuteľnosti majú ikony (byt, dom, chata, apartmán, pozemok), možnosti sa pri hoveri jemne nadvihnú.
 - Riadok postupu motivuje: „Otázka 2 z 5 · ešte 3 otázky do ceny“, posledná „… · potom hneď cena“. Na konci „Máme všetko“ a tlačidlo „Zobraziť cenu“.
 - Výsledok: pod cenou blok „Čo ďalej“ s vetou podľa odpovede na otázku 1 (predaj / dedičstvo / rozvod / investícia / len zisťujem) a dve biele karty s výhodami (zelené fajky).
   - **Predám do 3–6 mesiacov**: prvá karta „Cena od makléra“ (červené tlačidlo), druhá „Odhad v PDF“ (obrysové).
