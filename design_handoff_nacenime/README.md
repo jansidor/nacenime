@@ -16,7 +16,8 @@ Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, 
 - **Akcent mätová** `#7fe0c8` len na tmavom pozadí (čísla, grafy, logo „.sk“, štítky, zameranie), `#0e6b58` na svetlom (nadpisové štítky, pruh času vo FAQ). Doplnkový text na tmavom `#c9c8e6`.
 - **Pozadie úvodu**: fotka liptovskej obce pri západe slnka (`img/uvod-liptov.webp`, vygenerovaná v Gemini, ilustračná, nie konkrétne miesto) pod tmavým závojom zľava a zdola.
 - **Pozadie pásu Časté otázky**: fotka hôr a lúky (`img/hory-liptov.webp`, Gemini) pod závojom `#272361`.
-- **Pozadie tmavého pásu podstránok**: katastrálna mapa Ružomberka zo ZBGIS (`img/kataster.webp`), © ÚGKK SR, CC BY 4.0, uvedené v pätičke.
+- **Pozadie tmavého pásu podstránok** (FAQ, kontakt, právne, 404): rovnaká fotka hôr (`img/hory-liptov.webp`) pod závojom `#11122f`.
+- **Verzie súborov**: hosting posiela CSS a JS s `max-age` 8 dní, preto majú odkazy `?v=RRRRMMDD`; pri zmene `pravne.css` alebo `faq.js` treba číslo zvýšiť.
 - **Tmavá hlavička** `#11122f` na všetkých obrazovkách a podstránkach: logo „nacenime“ biele + „.sk“ mätové, vpravo odkazy 16 px (na úvode aj „Ako to funguje“ a „Mestá“).
 - **Úvod** (`.nm-uvod`, mimo `<main>`): tmavý hero s jemnou mriežkou a mätovou žiarou, formulár v bielej karte (polomer 20 px, tieň), vedľa „Ukážka výsledku“ (rozpätie, stupnica, stĺpcový graf; vždy označené ako vzorové údaje), pás čísel (5 otázok, 7 okresov, 213 obcí), „Ako to funguje“ (3 karty s ikonami), pás „Časté otázky“ na `#272361` s automatickou kartou, dlaždice miest s fotkami (Ružomberok veľká), tri sľuby s čiarou 3 px.
 - **Tiene** povolené na kartách: `0 1px 2px rgba(17,18,47,.06), 0 12px 32px -12px rgba(17,18,47,.18)`; na tmavom výraznejšie.
