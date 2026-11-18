@@ -25,6 +25,15 @@ Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, 
 - **Podstránky** (`pravne.css`): tmavý pás s hlavičkou, FAQ má tmavé záhlavie s vyhľadávaním (`faq.js`), bočný zoznam skupín a rozbaľovacie otázky (`<details>`, otázka je `<h3>`); `faq.html#kotva` otvorí danú otázku.
 - **Fotky miest**: `img/ruzomberok.jpg`, `img/liptovsky-mikulas.jpg`. Martin, Dolný Kubín a Námestovo zatiaľ bez fotky: tmavomodrá dlaždica s mriežkou (úvod) a s názvom mesta (stránka mesta). Pri doplnení fotky s licenciou CC BY/BY-SA treba uviesť autora a licenciu (napr. stránka `fotografie.html` s odkazom v pätičke).
 
+## Kalkulačka a výsledok – konverzia (18. 11. 2026, schválil majiteľ)
+- Pod každou otázkou je šedá veta `#50516a` „prečo sa pýtame / čo tým získate“ (`QS[].h`, pre cenu a obec v `hint`).
+- Riadok postupu motivuje: „Otázka 2 z 5 · ešte 3 otázky do ceny“, posledná „… · potom hneď cena“. Na konci „Máme všetko“ a tlačidlo „Zobraziť cenu“.
+- Výsledok: pod cenou blok „Čo ďalej“ s vetou podľa odpovede na otázku 1 (predaj / dedičstvo / rozvod / investícia / len zisťujem) a dve biele karty s výhodami (zelené fajky).
+  - **Predám do 3–6 mesiacov**: prvá karta „Cena od makléra“ (červené tlačidlo), druhá „Odhad v PDF“ (obrysové).
+  - **Ostatné dôvody**: prvá karta „Odhad v PDF“ (červené tlačidlo), druhá „Cena od makléra“ (obrysové). Poradie v DOM = poradie Tabu, na obrazovke stále jediné červené tlačidlo.
+  - Bez ceny (maklér) ostáva len karta makléra.
+- Žiadne nepravdivé sľuby (čas spätného hovoru, vymyslené počty návštevníkov). Cena sa neskrýva za e-mail, súhlas s kontaktovaním je nepovinný a nezaškrtnutý.
+
 ## Dizajnové hodnoty (aktuálna vizuálna vrstva, nahrádza staršie hodnoty)
 
 **Farby** (bez ďalších, bez tieňov, bez tmavého režimu, bez prechodov farieb)
@@ -62,7 +71,7 @@ Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, 
 
 ## Zmeny oproti pôvodnému návrhu
 - Kalkulačka: tlačidlo „Pokračovať“ je červené (predtým tmavé); „Mimo regiónu“: „Dajte mi vedieť“ je červené (predtým obrysové).
-- Výsledok: blok „Cena od makléra“ je prvý (hlavný, červený), „Odhad v PDF“ druhý (vedľajší). Poradie v DOM zodpovedá poradiu Tabu.
+- Výsledok: poradie blokov závisí od odpovede na otázku 1, pozri „Kalkulačka a výsledok – konverzia“. Poradie v DOM zodpovedá poradiu Tabu.
 - Pätička: „Prevádzkuje NajBývanie, s.r.o.“
 - Úvod: tri otázky ostávajú ako tichý text bez kariet a ikon. Hlavička je len logo.
 - Úvod (17. 11. 2026, schválené majiteľom v chate): tri otázky nahradil blok „Časté otázky“, ktorý ukazuje vždy jednu otázku (šírka max 760 px, otázka 24–32 px, odpoveď 19–24 px) a každých 5 s sám prepne na ďalšiu zo 6, bez tlačidiel. Tenký pruh 4 px `#272361` hore v karte ukazuje čas do ďalšej otázky. Karta vedie na `faq.html#kotva`, pod ňou počítadlo „1 z 6“ a odkaz „Všetky otázky a odpovede“. Rotácia stojí, kým je v bloku zameranie z klávesnice, na skrytej karte a pri `prefers-reduced-motion`; `aria-live` je počas rotácie vypnuté. Odkaz „Časté otázky“ je aj v pätičke všetkých stránok. Podstránka `faq.html` má 37 otázok v 4 skupinách a JSON-LD `FAQPage`.
