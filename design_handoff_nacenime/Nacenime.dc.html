@@ -638,7 +638,7 @@ class Component extends DCLogic {
     const v = document.getElementById('nm-uvod-video');
     if (!v || v.dataset.ok) return;
     if (navigator.connection && navigator.connection.saveData) return;
-    v.dataset.ok = '1'; v.muted = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = 'img/hory-video.mp4';
+    v.dataset.ok = '1'; v.muted = true; v.loop = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('loop', ''); v.addEventListener('ended', () => { v.currentTime = 0; const q = v.play(); if (q && q.catch) q.catch(() => {}); }); v.src = 'img/hory-video.mp4';
     const p = v.play(); if (p && p.catch) p.catch(() => {});
   }
   componentDidMount() { this.faqPlan(); this.faqVideo(); document.addEventListener('visibilitychange', this.faqViditelnost); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
