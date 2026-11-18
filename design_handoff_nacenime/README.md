@@ -15,7 +15,7 @@ Prototyp sa otvára priamo v prehliadači (`support.js` musí ležať vedľa). O
 Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, `#f6f4ef`, jediné červené tlačidlo `#d32441` na obrazovke a text min. 16 px. Pribúda:
 - **Akcent mätová** `#7fe0c8` len na tmavom pozadí (čísla, grafy, logo „.sk“, štítky, zameranie), `#0e6b58` na svetlom (nadpisové štítky, pruh času vo FAQ). Doplnkový text na tmavom `#c9c8e6`.
 - **Pozadie úvodu**: fotka liptovskej obce pri západe slnka (`img/uvod-liptov.webp`, vygenerovaná v Gemini, ilustračná, nie konkrétne miesto) pod tmavým závojom zľava a zdola.
-- **Pozadie pásu Časté otázky**: fotka hôr a lúky (`img/hory-liptov.webp`, Gemini) pod závojom `#272361`.
+- **Pozadie pásu Časté otázky**: video nočných oblakov nad horami (`img/hory-video.mp4`, 1920 × 1080, 22 s, bez zvuku, 4,3 MB, v slučke) pod závojom `#272361`. Načíta sa až skriptom a len na šírke nad 900 px, bez `prefers-reduced-motion` a šetrenia dát; inak a pred načítaním je statický obrázok `img/hory-video.jpg`.
 - **Pozadie tmavého pásu podstránok** (FAQ, kontakt, právne, 404): rovnaká fotka hôr (`img/hory-liptov.webp`) pod závojom `#11122f`.
 - **Verzie súborov**: hosting posiela CSS a JS s `max-age` 8 dní, preto majú odkazy `?v=RRRRMMDD`; pri zmene `pravne.css` alebo `faq.js` treba číslo zvýšiť.
 - **Tmavá hlavička** `#11122f` na všetkých obrazovkách a podstránkach: logo „nacenime“ biele + „.sk“ mätové, vpravo odkazy 16 px (na úvode aj „Ako to funguje“ a „Mestá“).
