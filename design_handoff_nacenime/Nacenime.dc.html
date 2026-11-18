@@ -95,7 +95,7 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-hlavicka a:focus-visible,.nm-hero a:focus-visible,.nm-faq-pas a:focus-visible{outline-color:#7fe0c8}
 .nm-hero{position:relative;overflow:hidden;isolation:isolate;background:url(img/hory-video.jpg) center/cover #11122f;color:#ffffff}
 .nm-uvod-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
-@media (max-width:900px){.nm-uvod-video{display:none}.nm-hero{background:url(img/hory-video.jpg) 50% 0/auto 600px no-repeat #11122f}.nm-mriezka{background:linear-gradient(180deg,rgba(17,18,47,.55) 0%,rgba(17,18,47,.8) 40%,rgba(17,18,47,.95) 70%)}}
+@media (max-width:900px){.nm-hero{background:url(img/hory-video.jpg) 50% 0/auto 600px no-repeat #11122f}.nm-mriezka{background:linear-gradient(180deg,rgba(17,18,47,.55) 0%,rgba(17,18,47,.8) 40%,rgba(17,18,47,.95) 70%)}}
 .nm-hero::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:120%;background:radial-gradient(closest-side,rgba(127,224,200,.16),transparent);pointer-events:none}
 .nm-mriezka{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(17,18,47,.9) 0%,rgba(17,18,47,.72) 42%,rgba(17,18,47,.3) 100%),linear-gradient(0deg,rgba(17,18,47,.9),transparent 30%)}
 .nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:start;padding-top:clamp(24px,4vw,48px);padding-bottom:clamp(40px,6vw,72px)}
@@ -633,13 +633,12 @@ class Component extends DCLogic {
     this.faqCasovac = setTimeout(() => this.setState(p => ({ faqIdx: (p.faqIdx + 1) % this.FAQS.length })), 5000);
   }
   faqViditelnost = () => this.faqPlan();
-  // Video v pozadí úvodu: len na širokej obrazovke, bez „zníženého pohybu“ a šetrenia dát; inak ostane statický obrázok.
+  // Video v pozadí úvodu: prehrá sa vždy (rozhodnutie majiteľa 18. 11. 2026), okrem zapnutého šetrenia dát.
   faqVideo() {
     const v = document.getElementById('nm-uvod-video');
     if (!v || v.dataset.ok) return;
-    const mm = q => window.matchMedia && window.matchMedia(q).matches;
-    if (!mm('(min-width: 901px)') || mm('(prefers-reduced-motion: reduce)') || (navigator.connection && navigator.connection.saveData)) return;
-    v.dataset.ok = '1'; v.muted = true; v.src = 'img/hory-video.mp4';
+    if (navigator.connection && navigator.connection.saveData) return;
+    v.dataset.ok = '1'; v.muted = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = 'img/hory-video.mp4';
     const p = v.play(); if (p && p.catch) p.catch(() => {});
   }
   componentDidMount() { this.faqPlan(); this.faqVideo(); document.addEventListener('visibilitychange', this.faqViditelnost); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
