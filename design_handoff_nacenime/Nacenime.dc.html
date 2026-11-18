@@ -276,6 +276,30 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-kalk{position:relative}
 @media (min-width:901px){.nm-kalk-panel{margin-top:-8px}}
 .nm-main-kalk::before{top:280px}
+.nm-main-vysl::before{top:420px}
+.nm-vysl-hlava{position:relative;isolation:isolate;color:#ffffff;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:clamp(24px,4vw,56px);align-items:end;padding:clamp(32px,5vw,56px) 0 clamp(40px,5vw,64px)}
+@media (max-width:900px){.nm-vysl-hlava{grid-template-columns:1fr}}
+.nm-vysl-hlava::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:linear-gradient(90deg,rgba(17,18,47,.97) 0%,rgba(17,18,47,.9) 55%,rgba(17,18,47,.62) 100%),url(img/hory-liptov.webp) center 35%/cover #11122f}
+.nm-vysl-sum{display:inline-flex;align-items:center;gap:10px;margin:0;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
+.nm-vysl-nacitava{margin:24px 0 0;font:800 clamp(28px,4vw,40px)/1.1 'Archivo',sans-serif;color:#ffffff}
+.nm-vysl-hlava [role=alert]{color:#ffffff}
+.nm-vysl-hlava [role=alert] svg *{stroke:#7fe0c8}
+.nm-vysl-hlava a{color:#7fe0c8}
+.nm-vysl-cena{margin:0;font:800 clamp(min(44px,13vw),8vw,104px)/1.02 'Archivo',sans-serif;letter-spacing:-0.025em;font-variant-numeric:tabular-nums;color:#ffffff;text-wrap:balance}
+.nm-vysl-nadpis{margin:20px 0 0;font:800 clamp(36px,5vw,56px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance}
+.nm-vysl-skala-wrap{margin-top:28px;max-width:640px}
+.nm-vysl-skala{position:relative;height:14px;border-radius:999px;background:rgba(201,200,230,.2)}
+.nm-vysl-skala-pas{position:absolute;top:0;bottom:0;left:33.333%;width:33.333%;border-radius:999px;background:#7fe0c8;box-shadow:0 0 24px rgba(127,224,200,.45)}
+.nm-vysl-skala-pin{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#ffffff;border:4px solid #7fe0c8}
+.nm-vysl-skala-lbl{position:relative;height:32px;margin-top:10px;font-weight:700;color:#ffffff;font-variant-numeric:tabular-nums}
+.nm-vysl-veta{margin:12px 0 0;max-width:62ch;color:#c9c8e6}
+.nm-vysl-zdroj{font-size:16px}
+.nm-vysl-m2{padding:24px;border:1px solid rgba(201,200,230,.2);border-radius:20px;background:rgba(39,35,97,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.nm-vysl-m2-c{margin:8px 0 0;font:800 clamp(24px,2.6vw,30px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;font-variant-numeric:tabular-nums}
+.nm-vysl-m2-p{margin:6px 0 0;font-size:16px;color:#c9c8e6}
+.nm-vysl-m2-riadok{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(201,200,230,.2);font-size:16px;color:#c9c8e6}
+.nm-vysl-m2-riadok b{color:#7fe0c8;white-space:nowrap}
+.nm-main-vysl .nm-dalej{margin-top:clamp(40px,5vw,56px);border-top:0;padding-top:0}
 .nm-dalej{margin-top:clamp(48px,6vw,72px);padding-top:32px;border-top:1.5px solid #272361}
 .nm-dalej .nm-kicker{margin-bottom:8px}
 .nm-dalej-veta{margin:0;max-width:52ch;font:600 clamp(19px,2.2vw,22px)/1.4 'Archivo',sans-serif;color:#272361}
@@ -593,29 +617,42 @@ main>section{animation:nc-in 150ms linear}
 
     <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
       <section data-screen-label="03 Výsledok">
-        <p style="margin:0;font-size:16px;max-width:62ch">{{ summary }}</p>
-        <sc-if value="{{ resLoading }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:16px 0 0;font-weight:600">Počítame odhad.</p></sc-if>
+      <div class="nm-vysl-hlava">
+        <div class="nm-vysl-hlava-in">
+        <p class="nm-vysl-sum"><span class="nm-bod" aria-hidden="true"></span>{{ summary }}</p>
+        <sc-if value="{{ resLoading }}" hint-placeholder-val="{{ false }}"><p role="status" class="nm-vysl-nacitava">Počítame odhad…</p></sc-if>
         <sc-if value="{{ resError }}" hint-placeholder-val="{{ false }}">
           <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ resErrorText }}</span></p>
           <p style="margin:12px 0 0"><a href="#" onClick="{{ retry }}" style="font-weight:600">Skúsiť znova</a></p>
         </sc-if>
         <sc-if value="{{ resOk }}" hint-placeholder-val="{{ false }}">
-          <h1 style="margin:16px 0 0;font:800 clamp(min(48px,17vw),10vw,120px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:#272361;text-wrap:balance">{{ priceText }}</h1>
-          <div role="img" aria-label="{{ scaleLabel }}" style="margin-top:32px;max-width:720px">
-            <div style="position:relative;height:28px;border-radius:12px;background:#dcd9d0;overflow:hidden"><div style="position:absolute;top:0;bottom:0;left:33.333%;width:33.333%;background:#272361"></div></div>
-            <div style="position:relative;height:32px;margin-top:8px;font-weight:600;color:#272361">
+          <p class="nm-kicker nm-svetly" style="margin:20px 0 4px">Orientačná cena</p>
+          <h1 class="nm-vysl-cena">{{ priceText }}</h1>
+          <div role="img" aria-label="{{ scaleLabel }}" class="nm-vysl-skala-wrap">
+            <div class="nm-vysl-skala"><div class="nm-vysl-skala-pas"></div><div class="nm-vysl-skala-pin" style="left:33.333%"></div><div class="nm-vysl-skala-pin" style="left:66.667%"></div></div>
+            <div class="nm-vysl-skala-lbl">
               <span style="position:absolute;left:33.333%;transform:translateX(-50%)">{{ scaleFrom }}</span>
               <span style="position:absolute;left:66.667%;transform:translateX(-50%)">{{ scaleTo }}</span>
             </div>
           </div>
-          <sc-if value="{{ hasScaleNote }}" hint-placeholder-val="{{ true }}"><p style="margin:16px 0 0;max-width:62ch">{{ scaleNote }}</p></sc-if>
-          <p style="margin:12px 0 0;max-width:62ch">{{ veta }}</p>
+          <sc-if value="{{ hasScaleNote }}" hint-placeholder-val="{{ true }}"><p class="nm-vysl-veta">{{ scaleNote }}</p></sc-if>
+          <p class="nm-vysl-veta nm-vysl-zdroj">{{ veta }}</p>
         </sc-if>
         <sc-if value="{{ resNoPrice }}" hint-placeholder-val="{{ false }}">
-          <sc-if value="{{ hasNadpis }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;font:800 clamp(32px,6vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;margin:16px 0 0">{{ nadpis }}</h1></sc-if>
-          <sc-if value="{{ hasVeta }}" hint-placeholder-val="{{ false }}"><p style="margin:16px 0 0;max-width:62ch">{{ veta }}</p></sc-if>
+          <sc-if value="{{ hasNadpis }}" hint-placeholder-val="{{ false }}"><h1 class="nm-vysl-nadpis">{{ nadpis }}</h1></sc-if>
+          <sc-if value="{{ hasVeta }}" hint-placeholder-val="{{ false }}"><p class="nm-vysl-veta">{{ veta }}</p></sc-if>
         </sc-if>
 
+        </div>
+        <sc-if value="{{ resOk }}" hint-placeholder-val="{{ false }}">
+        <aside class="nm-vysl-m2" aria-label="Cena za meter štvorcový">
+          <p class="nm-kicker nm-svetly" style="margin:0">Za meter štvorcový</p>
+          <p class="nm-vysl-m2-c">{{ m2Text }}</p>
+          <p class="nm-vysl-m2-p">{{ m2Note }}</p>
+          <sc-if value="{{ hasM2Mesto }}" hint-placeholder-val="{{ false }}"><div class="nm-vysl-m2-riadok"><span>{{ m2MestoLbl }}</span><b>{{ m2MestoText }}</b></div></sc-if>
+        </aside>
+        </sc-if>
+      </div>
         <sc-if value="{{ resDone }}" hint-placeholder-val="{{ false }}">
           <div class="nm-dalej"><p class="nm-kicker">Čo ďalej</p><p class="nm-dalej-veta">{{ dalejText }}</p></div>
           <sc-if value="{{ maklerFirst }}" hint-placeholder-val="{{ true }}">
@@ -909,7 +946,7 @@ class Component extends DCLogic {
       submitObec: e => { e.preventDefault(); const v = s.obec.trim(); if (!v) return this.setState({ obecError: true }); this.go({ answers: { ...s.answers, 6: v }, step: 7 }); },
       submitPrice: e => { e.preventDefault(); this.go({ answers: { ...s.answers, 5: s.price.trim() }, step: needObec ? 6 : 7 }); },
       skipPrice: e => { e.preventDefault(); this.go({ price: '', step: needObec ? 6 : 7 }); },
-      isIntro: s.screen === 'Úvod', mainClass: s.screen === 'Úvod' ? 'nm-main-uvod' : s.screen === 'Kalkulačka' ? 'nm-main-kalk' : '', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
+      isIntro: s.screen === 'Úvod', mainClass: s.screen === 'Úvod' ? 'nm-main-uvod' : s.screen === 'Kalkulačka' ? 'nm-main-kalk' : s.screen === 'Výsledok' ? 'nm-main-kalk nm-main-vysl' : '', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
       address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: this.jeChyba(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: this.jeChyba(s.callMsg),
       setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'), setCallName: set('callName'), callName: s.callName,
       setArea: e => this.setState({ area: e.target.value, areaError: false }),
@@ -954,6 +991,13 @@ class Component extends DCLogic {
         this.go({ answers: { ...s.answers, 2: n }, step: pozemok ? 5 : 3 }); // pozemok preskakuje stav aj balkón
       },
       resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resErrorText: s.odhadChyba || this.TEXT_SERVER, resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
+      ...(() => {
+        const vym = Number(String(s.answers[2] || 0).replace(',', '.')), typ = s.answers[1] || 'Byt', m = this.CITIES.find(c => (obecVal || '').indexOf(c.name) === 0 || (s.address || '').indexOf(c.name) !== -1);
+        const lo = resOk && vym ? Math.round(od.od / vym / 10) * 10 : 0, hi = resOk && vym ? Math.round(od.do / vym / 10) * 10 : 0, e = n => fmt(n) + '\u00a0€';
+        const mc = m && m.ceny ? (typ === 'Dom' || typ === 'Chata' ? m.ceny.dom : typ === 'Byt' || typ === 'Apartmán' ? m.ceny.byt : 0) : 0;
+        return { m2Text: lo ? e(lo) + ' – ' + e(hi) : '', m2Note: typ === 'Pozemok' ? 'za m² pozemku pri ' + fmt(vym) + ' m²' : 'pri výmere ' + String(vym).replace('.', ',') + ' m²',
+          hasM2Mesto: !!(lo && mc), m2MestoLbl: m ? 'Medián ' + (typ === 'Dom' || typ === 'Chata' ? 'domov' : 'bytov') + ' ' + m.loc : '', m2MestoText: mc ? e(mc) + '/m²' : '' };
+      })(),
       maklerFirst: !resOk || zamer === 'predaj', pdfFirst: resOk && zamer !== 'predaj',
       dalejText: zamer === 'predaj' ? 'Predávate do pol roka? Maklér si nehnuteľnosť pozrie, povie jednu cenu a poradí, ako predať čo najvýhodnejšie.'
         : zamer === 'dedicstvo' ? 'Pri dedičstve sa hodí mať odhad písomne. Pošleme vám ho v PDF. Na konanie môže byť potrebný znalecký posudok.'
