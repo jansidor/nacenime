@@ -23,7 +23,8 @@ Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, 
 - **Tiene** povolené na kartách: `0 1px 2px rgba(17,18,47,.06), 0 12px 32px -12px rgba(17,18,47,.18)`; na tmavom výraznejšie.
 - **Pohyb**: okrem fade 150 ms aj nadvihnutie kariet a tlačidla (1–3 px), rast stĺpcov grafu, otočenie „+“ vo FAQ. Pri `prefers-reduced-motion` nič.
 - **Podstránky** (`pravne.css`): tmavý pás s hlavičkou, FAQ má tmavé záhlavie s vyhľadávaním (`faq.js`), bočný zoznam skupín a rozbaľovacie otázky (`<details>`, otázka je `<h3>`); `faq.html#kotva` otvorí danú otázku.
-- **Fotky miest**: `img/ruzomberok.jpg`, `img/liptovsky-mikulas.jpg`. Martin, Dolný Kubín a Námestovo zatiaľ bez fotky: tmavomodrá dlaždica s mriežkou (úvod) a s názvom mesta (stránka mesta). Pri doplnení fotky s licenciou CC BY/BY-SA treba uviesť autora a licenciu (napr. stránka `fotografie.html` s odkazom v pätičke).
+- **Ceny na stránkach miest** (`CITIES[].ceny`): medián ceny za m² bytu a domu z `data/nacenime-cennik.json` k 16. 11. 2026, rovnaké prahy ako kalkulačka (predaje ≥ 4, ponuky ≥ 8; obec, inak okres; Námestovo podľa okresu Dolný Kubín). Popis uvádza, či ide o predajnú alebo ponúkanú cenu a či o okres. Pri aktualizácii cenníka treba čísla prepočítať. Riadok „Naposledy predané“ je odstránený (chýbajú dáta).
+- **Fotky miest**: `img/ruzomberok.jpg`, `img/liptovsky-mikulas.jpg` (z handoffu), `img/martin.webp`, `img/dolny-kubin.webp`, `img/namestovo.webp` (Wikimedia Commons, CC BY-SA, 1600 px). Autori a licencie na `fotografie.html` (noindex), odkaz „Zdroje fotografií“ v pätičke všetkých stránok. Originály a ďalšie varianty v súkromnom repe nacenime-marketing (`fotky-miest/`).
 
 ## Kalkulačka a výsledok – konverzia (18. 11. 2026, schválil majiteľ)
 - Pod každou otázkou je šedá veta `#50516a` „prečo sa pýtame / čo tým získate“ (`QS[].h`, pre cenu a obec v `hint`).
