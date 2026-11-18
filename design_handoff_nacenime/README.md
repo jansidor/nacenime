@@ -14,7 +14,7 @@ Prototyp sa otvára priamo v prehliadači (`support.js` musí ležať vedľa). O
 ## Rozšírený dizajn (17. 11. 2026, schválil majiteľ, má prednosť pred obmedzeniami nižšie)
 Smer „moderný a technický“. Ostáva písmo Archivo, `#272361`, `#11122f`, `#f6f4ef`, jediné červené tlačidlo `#d32441` na obrazovke a text min. 16 px. Pribúda:
 - **Akcent mätová** `#7fe0c8` len na tmavom pozadí (čísla, grafy, logo „.sk“, štítky, zameranie), `#0e6b58` na svetlom (nadpisové štítky, pruh času vo FAQ). Doplnkový text na tmavom `#c9c8e6`.
-- **Pozadie úvodu**: video nočných oblakov nad horami (`img/hory-video.mp4`, 1920 × 1080, 22 s, bez zvuku, 4,3 MB, v slučke) pod tmavým závojom zľava a zdola (`.nm-mriezka`). Načíta sa až skriptom a len na šírke nad 900 px, bez `prefers-reduced-motion` a šetrenia dát; inak a pred načítaním je statický obrázok `img/hory-video.jpg`.
+- **Pozadie úvodu**: video nočných oblakov nad horami (`img/hory-video.mp4`, 1920 × 1080, 22 s, bez zvuku, 4,3 MB, v slučke) pod tmavým závojom zľava a zdola (`.nm-mriezka`). Prehrá sa vždy, na počítači aj mobile a aj pri `prefers-reduced-motion` (rozhodnutie majiteľa 18. 11. 2026); nie len pri zapnutom šetrení dát. Pred načítaním je statický obrázok `img/hory-video.jpg`.
 - **Pozadie pásu Časté otázky**: fotka hôr a lúky (`img/hory-liptov.webp`, Gemini) pod závojom `#272361`.
 - **Pozadie tmavého pásu podstránok** (FAQ, kontakt, právne, 404): rovnaká fotka hôr (`img/hory-liptov.webp`) pod závojom `#11122f`.
 - **Verzie súborov**: hosting posiela CSS a JS s `max-age` 8 dní, preto majú odkazy `?v=RRRRMMDD`; pri zmene `pravne.css` alebo `faq.js` treba číslo zvýšiť.
