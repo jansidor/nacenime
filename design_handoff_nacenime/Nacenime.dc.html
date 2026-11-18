@@ -54,6 +54,9 @@
 }
 </script>
 <!-- React sa sťahuje súbežne so support.js (inak až po ňom). Hashe musia sedieť s REACT_SRI a REACT_DOM_SRI v support.js. -->
+<!-- Pozadie úvodu je LCP: prehliadač ho bez preloadu objaví až po vykreslení šablóny skriptom. -->
+<link rel="preload" as="image" href="./img/hory-video-m.jpg" media="(max-width: 900px)" fetchpriority="high">
+<link rel="preload" as="image" href="./img/hory-video.jpg" media="(min-width: 901px)" fetchpriority="high">
 <link rel="preload" as="script" href="./vendor/react-18.3.1.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous">
 <link rel="preload" as="script" href="./vendor/react-dom-18.3.1.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous">
 <script src="./support.js"></script>
@@ -95,7 +98,7 @@ footer a:focus-visible{outline-color:#f6f4ef}
 .nm-hlavicka a:focus-visible,.nm-hero a:focus-visible,.nm-faq-pas a:focus-visible{outline-color:#7fe0c8}
 .nm-hero{position:relative;overflow:hidden;isolation:isolate;background:url(img/hory-video.jpg) center/cover #11122f;color:#ffffff}
 .nm-uvod-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
-@media (max-width:900px){.nm-hero{background:url(img/hory-video.jpg) 50% 0/auto 600px no-repeat #11122f}.nm-mriezka{background:linear-gradient(180deg,rgba(17,18,47,.55) 0%,rgba(17,18,47,.8) 40%,rgba(17,18,47,.95) 70%)}}
+@media (max-width:900px){.nm-hero{background:url(img/hory-video-m.jpg) 50% 0/auto 600px no-repeat #11122f}.nm-mriezka{background:linear-gradient(180deg,rgba(17,18,47,.55) 0%,rgba(17,18,47,.8) 40%,rgba(17,18,47,.95) 70%)}}
 .nm-hero::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:120%;background:radial-gradient(closest-side,rgba(127,224,200,.16),transparent);pointer-events:none}
 .nm-mriezka{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(17,18,47,.9) 0%,rgba(17,18,47,.72) 42%,rgba(17,18,47,.3) 100%),linear-gradient(0deg,rgba(17,18,47,.9),transparent 30%)}
 .nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:start;padding-top:clamp(24px,4vw,48px);padding-bottom:clamp(40px,6vw,72px)}
@@ -207,7 +210,7 @@ main>section{animation:nc-in 150ms linear}
   <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
   <div data-screen-label="01 Úvod" class="nm-uvod">
     <section class="nm-hero">
-      <video id="nm-uvod-video" class="nm-uvod-video" aria-hidden="true" tabindex="-1" loop playsInline preload="none" poster="img/hory-video.jpg"></video>
+      <video id="nm-uvod-video" class="nm-uvod-video" aria-hidden="true" tabindex="-1" loop playsInline preload="none"></video>
       <div class="nm-mriezka" aria-hidden="true"></div>
       <div class="nm-wrap nm-hero-in">
         <div>
@@ -677,10 +680,15 @@ class Component extends DCLogic {
     const v = document.getElementById('nm-uvod-video');
     if (!v || v.dataset.ok) return;
     if (navigator.connection && navigator.connection.saveData) return;
-    v.dataset.ok = '1'; v.muted = true; v.loop = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('loop', ''); v.addEventListener('ended', () => { v.currentTime = 0; const q = v.play(); if (q && q.catch) q.catch(() => {}); }); v.src = 'img/hory-video.mp4';
+    v.dataset.ok = '1'; v.muted = true; v.loop = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('loop', ''); v.addEventListener('ended', () => { v.currentTime = 0; const q = v.play(); if (q && q.catch) q.catch(() => {}); }); v.src = window.matchMedia && window.matchMedia('(max-width: 900px)').matches ? 'img/hory-video-m.mp4' : 'img/hory-video.mp4';
     const p = v.play(); if (p && p.catch) p.catch(() => {});
   }
-  componentDidMount() { this.faqPlan(); this.faqVideo(); document.addEventListener('visibilitychange', this.faqViditelnost); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
+  // Video až po načítaní stránky a v čase nečinnosti, aby nebrzdilo prvé vykreslenie (výkon na mobile).
+  faqVideoNeskor() {
+    const spusti = () => (window.requestIdleCallback ? requestIdleCallback(() => this.faqVideo(), { timeout: 3000 }) : setTimeout(() => this.faqVideo(), 1500));
+    if (document.readyState === 'complete') spusti(); else window.addEventListener('load', spusti, { once: true });
+  }
+  componentDidMount() { this.faqPlan(); this.faqVideoNeskor(); document.addEventListener('visibilitychange', this.faqViditelnost); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
   componentWillUnmount() { clearTimeout(this.faqCasovac); document.removeEventListener('visibilitychange', this.faqViditelnost); this.zrusMapu(); }
   // Mapa (Leaflet + OpenStreetMap, modul mapa/) sa načíta až na obrazovke Potvrdenie adresy. React jej obsah nespravuje.
   zrusMapu() { if (this._mapa) this._mapa.zrus(); this._mapa = null; this._mapaEl = null; }
