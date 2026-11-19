@@ -67,6 +67,7 @@ const SLEDOVANIE = /googletagmanager\.com|google-analytics\.com|clarity\.ms/;
     await otvor(page);
     over('prvá návšteva: lišta je zobrazená', await lista(page).isVisible());
     over('prvá návšteva: žiadne sledovanie v sieti', st.sledovanie.length === 0, st.sledovanie.join(', '));
+    over('tlačidlo Nastavenia má plochu na ťuknutie aspoň 44 px', (await lista(page).locator('.nm-ck-odkaz').first().boundingBox()).height >= 44);
     over('prvá návšteva: nie je dataLayer ani clarity', await page.evaluate(() => !window.dataLayer && !window.clarity));
     over('prvá návšteva: nie je uložená žiadna voľba', !(await cookieNm(ctx)));
     const m = await page.evaluate(() => {
