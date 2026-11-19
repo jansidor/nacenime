@@ -49,7 +49,19 @@ $check('Tvrdošín: približne podľa Dolného Kubína', ['ok', 'susedný okres'
 $dk = $o->odhad(['typ' => 'Byt', 'obec' => 'Dolný Kubín', 'stav' => 'Pôvodný', 'vymera' => 60]);
 $check('rovnaké rozpätie ako okres Dolný Kubín (ak tam nie je skupina obce)', true, $r['od'] > 0 && $r['do'] >= $r['od']);
 $r = $o->odhad(['typ' => 'Byt', 'obec' => 'Turčianske Teplice', 'stav' => 'Pôvodný', 'vymera' => 60]);
-$check('Turčianske Teplice: približne podľa Martina', ['ok', true], [$r['stav'], str_contains($r['veta'], 'okrese Martin')]);
+$check('Turčianske Teplice: byt sa neodhaduje podľa Martina (mestá sa líšia)', 'málo dát', $r['stav']);
+$r = $o->odhad(['typ' => 'Pozemok', 'obec' => 'Turčianske Teplice', 'stav' => null, 'vymera' => 800]);
+$check('Turčianske Teplice: pozemok približne podľa Martina', ['ok', true], [$r['stav'], str_contains($r['veta'], 'okrese Martin')]);
+// typy, pre ktoré sa susedný okres NEsmie použiť (rekreačné a vzorkovo tenké segmenty): vždy málo dát
+foreach ([['Dom', 'Trstená'], ['Dom', 'Turčianske Teplice'], ['Chata', 'Námestovo'], ['Chata', 'Trstená'], ['Apartmán', 'Zuberec'], ['Apartmán', 'Turčianske Teplice'], ['Chata', 'Turčianske Teplice']] as [$t, $ob]) {
+    $x = $o->odhad(['typ' => $t, 'obec' => $ob, 'stav' => 'Pôvodný', 'vymera' => 70]);
+    $check("$t, $ob: bez rozpätia (málo dát)", ['málo dát', null], [$x['stav'], $x['od']]);
+}
+// typy, pre ktoré je susedný okres prijateľná náhrada
+foreach ([['Byt', 'Námestovo', 'Dolný Kubín'], ['Byt', 'Trstená', 'Dolný Kubín'], ['Dom', 'Námestovo', 'Dolný Kubín'], ['Pozemok', 'Námestovo', 'Dolný Kubín'], ['Pozemok', 'Trstená', 'Dolný Kubín']] as [$t, $ob, $sus]) {
+    $x = $o->odhad(['typ' => $t, 'obec' => $ob, 'stav' => $t === 'Pozemok' ? null : 'Pôvodný', 'vymera' => $t === 'Pozemok' ? 800 : 70]);
+    $check("$t, $ob: približne podľa $sus", ['ok', true], [$x['stav'], str_contains($x['veta'] ?? '', "okrese $sus")]);
+}
 $r = $o->odhad(['typ' => 'Apartmán', 'obec' => 'Námestovo', 'stav' => 'Novostavba', 'vymera' => 50]);
 $check('ani susedný okres nemá dáta: málo dát', 'málo dát', $r['stav']);
 $check('okres s vlastnými dátami sa nemení', ['ok', 'obec'], [($x = $o->odhad(['typ' => 'Byt', 'obec' => 'Ružomberok', 'stav' => 'Pôvodný', 'vymera' => 60]))['stav'], $x['uroven']]);

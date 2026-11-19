@@ -52,7 +52,17 @@ Berie sa prvá skupina, ktorá spĺňa počet:
 7. Predaje, okres, všetky
 8. Ponuky, okres, všetky
 
-Ak nevyhovuje žiadna a okres má v cenníku náhradný okres (`nahradne_okresy`), rovnaké hľadanie na úrovni okresu prebehne v susednom okrese a výsledok sa označí ako približný (veta „Približný odhad podľa … v susednom okrese …“). Dnes: Tvrdošín a Námestovo podľa Dolného Kubína, Turčianske Teplice podľa Martina. Vlastné dáta okresu majú vždy prednosť.
+Ak nevyhovuje žiadna a okres má v cenníku náhradný okres (`nahradne_okresy`) **pre daný typ**, rovnaké hľadanie na úrovni okresu prebehne v susednom okrese a výsledok sa označí ako približný (veta „Približný odhad podľa … v susednom okrese …“). Vlastné dáta okresu majú vždy prednosť.
+
+Náhrada sa nastavuje po okresoch a typoch (stav 17. 11. 2026, podľa prieskumu v `docs/CENNIK-PODKLADY.md`):
+
+| Okres | Podľa okresu | Typy |
+|---|---|---|
+| Tvrdošín | Dolný Kubín | byt, pozemok |
+| Námestovo | Dolný Kubín | byt, dom, pozemok |
+| Turčianske Teplice | Martin | pozemok |
+
+Ostatné typy (dom v Tvrdošíne a v Turčianskych Tepliciach, chata, apartmán, byt v Turčianskych Tepliciach) **nemajú približný odhad** a ukážu „málo dát“ s ponukou makléra. Dôvod: ceny rekreačných nehnuteľností (pri Oravskej priehrade, v Zuberci) a v kúpeľnom meste sa od susedného okresu líšia o desiatky percent a na korekciu zatiaľ nie sú overené dáta. Zrážky a príplatky sa zámerne nepoužívajú.
 
 Ak nevyhovuje nič, web ukáže „Na odhad tu máme málo predajov" a ponúkne makléra.
 

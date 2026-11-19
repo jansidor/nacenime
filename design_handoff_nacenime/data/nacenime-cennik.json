@@ -28,9 +28,27 @@
   ]
  },
  "nahradne_okresy": {
-  "Tvrdošín": "Dolný Kubín",
-  "Námestovo": "Dolný Kubín",
-  "Turčianske Teplice": "Martin"
+  "Tvrdošín": {
+   "okres": "Dolný Kubín",
+   "typy": [
+    "Byt",
+    "Pozemok"
+   ]
+  },
+  "Námestovo": {
+   "okres": "Dolný Kubín",
+   "typy": [
+    "Byt",
+    "Dom",
+    "Pozemok"
+   ]
+  },
+  "Turčianske Teplice": {
+   "okres": "Martin",
+   "typy": [
+    "Pozemok"
+   ]
+  }
  },
  "lokality": {
   "Bešeňová": "Ružomberok",
