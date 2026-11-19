@@ -43,7 +43,8 @@ export function odhad(c, { typ, obec, stav, vymera }, { typyBezRozpatia = [] } =
     };
   }
   // Okres bez vlastných dát: približný odhad podľa susedného okresu (cenník: nahradne_okresy). Vlastné dáta majú prednosť.
-  const nahradny = c.nahradne[lok.okres];
+  const nahrada = c.nahradne[lok.okres];
+  const nahradny = nahrada && nahrada.typy.includes(typ) ? nahrada.okres : null; // len typy, pre ktoré je susedný okres prijateľná náhrada
   if (nahradny) {
     for (const [zdroj, uroven, s] of poradie(stav)) {
       if (uroven !== 'okres') continue;

@@ -1,6 +1,6 @@
 # Cenové dáta pre nové okresy: čo pripraviť
 
-Pre okresy **Tvrdošín, Turčianske Teplice a Námestovo** kalkulačka zatiaľ nemá vlastné ceny. Dočasne počíta približne podľa susedného okresu (Tvrdošín a Námestovo podľa Dolného Kubína, Turčianske Teplice podľa Martina, nastavenie `nahradne_okresy` v cenníku) a vo výsledku to povie. Keď prídu skutočné dáta, majú automaticky prednosť. Stačí pripraviť jednu tabuľku (Excel alebo CSV) podľa tohto návodu.
+Pre okresy **Tvrdošín, Turčianske Teplice a Námestovo** kalkulačka zatiaľ nemá vlastné ceny. Dočasne počíta približne podľa susedného okresu, **ale len pre typy, kde je to rozumné**: byt a pozemok v Tvrdošíne, byt, dom a pozemok v Námestove, pozemok v Turčianskych Tepliciach (podľa Dolného Kubína, resp. Martina). Dom v Tvrdošíne a Teplicích, chata, apartmán a byt v Teplicích ukážu „málo dát“. Nastavenie je v cenníku (`nahradne_okresy`, po okresoch a typoch) a vo výsledku sa to povie. Keď prídu skutočné dáta, majú automaticky prednosť.
 
 Vzor: [`sablona-cennik.csv`](sablona-cennik.csv) (tri ukážkové riadky, pred odoslaním ich zmažte).
 

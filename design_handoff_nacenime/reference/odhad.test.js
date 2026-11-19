@@ -41,6 +41,11 @@ test('typ vypnutý prepínačom → maklér', () => {
   assert.equal(r.nadpis, 'Cenu vám povie maklér');
 });
 
+test('Dom v Tvrdošíne a v Turčianskych Tepliciach, chata a apartmán: bez približného odhadu', () => {
+  for (const [typ, obec] of [['Dom', 'Trstená'], ['Dom', 'Turčianske Teplice'], ['Chata', 'Námestovo'], ['Apartmán', 'Zuberec']])
+    assert.equal(odhad(c, { typ, obec, stav: 'Pôvodný', vymera: 70 }).stav, 'málo dát', typ + ' ' + obec);
+});
+
 test('Tvrdošín bez vlastných dát: približne podľa Dolného Kubína', () => {
   const r = odhad(c, { typ: 'Byt', obec: 'Trstená', stav: 'Pôvodný', vymera: 60 });
   assert.equal(r.stav, 'ok'); assert.equal(r.uroven, 'susedný okres');

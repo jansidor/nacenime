@@ -34,14 +34,18 @@ foreach ($typy as $t) {
     if ($min > $max) { $chyby[] = "zľavy $t: min > max"; }
 }
 $nahradne = $d['nahradne_okresy'] ?? [];
-foreach ($nahradne as $o => $n) {
+foreach ($nahradne as $o => $cfg) {
+    $n = is_array($cfg) ? (string) ($cfg['okres'] ?? '') : '';
+    $typyN = is_array($cfg) && is_array($cfg['typy'] ?? null) ? $cfg['typy'] : [];
     if (!in_array($o, $okresy, true) || !in_array($n, $okresy, true) || $o === $n) { $chyby[] = "nahradne_okresy: $o => $n nie sú dva rôzne známe okresy"; }
     if (isset($nahradne[$n])) { $chyby[] = "nahradne_okresy: $n má sám náhradný okres (reťazenie nie je podporované)"; }
+    if (!$typyN) { $chyby[] = "nahradne_okresy: $o nemá zoznam typov"; }
+    foreach ($typyN as $t) { if (!in_array($t, $typy, true)) { $chyby[] = "nahradne_okresy: $o má neznámy typ '$t'"; } }
 }
 foreach ($okresy as $o) { // každý okres by mal mať aspoň jednu skupinu na zálohu „všetky“
     $ma = false;
     foreach ($d['cennik'] as $g) { $ma = $ma || ($g['uroven'] === 'okres' && $g['lokalita'] === "okres $o" && $g['stav'] === 'všetky'); }
-    if (!$ma) { $varovania[] = "okres $o: žiadna skupina na úrovni okresu so stavom „všetky“" . (isset($nahradne[$o]) ? " (približne podľa okresu {$nahradne[$o]})" : ''); }
+    if (!$ma) { $varovania[] = "okres $o: žiadna skupina na úrovni okresu so stavom „všetky“" . (isset($nahradne[$o]['okres']) ? " (približne podľa okresu {$nahradne[$o]['okres']} pre " . implode(', ', $nahradne[$o]['typy']) . ')' : ''); }
 }
 foreach ($d['lokality'] as $obec => $okres) {
     if (!in_array($okres, ['Ružomberok', 'Liptovský Mikuláš', 'Martin', 'Turčianske Teplice', 'Dolný Kubín', 'Námestovo', 'Tvrdošín'], true)) {

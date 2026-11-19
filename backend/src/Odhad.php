@@ -17,7 +17,7 @@ final class Odhad
     private array $prahy;
     /** @var array<string, array{0: int|float, 1: int|float}> */
     private array $zlavy;
-    /** @var array<string, string> okres bez vlastných dát => susedný okres, podľa ktorého sa počíta približný odhad */
+    /** @var array<string, array{okres: string, typy: list<string>}> okres bez vlastných dát => susedný okres a typy, pre ktoré sa približný odhad smie počítať */
     private array $nahradne;
 
     /** @param array<string, mixed> $data obsah nacenime-cennik.json */
@@ -132,7 +132,8 @@ final class Odhad
             ];
         }
         // Okres bez vlastných dát: približný odhad podľa susedného okresu (cenník: nahradne_okresy). Vlastné dáta majú prednosť.
-        $nahradny = $this->nahradne[$lok['okres']] ?? null;
+        $nahrada = $this->nahradne[$lok['okres']] ?? null;
+        $nahradny = $nahrada !== null && in_array($typ, $nahrada['typy'], true) ? $nahrada['okres'] : null; // len typy, pre ktoré je susedný okres prijateľná náhrada
         if ($nahradny !== null) {
             foreach ($this->poradie($stav) as [$zdroj, $uroven, $s]) {
                 if ($uroven !== 'okres') {
