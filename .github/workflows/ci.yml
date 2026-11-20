@@ -43,6 +43,8 @@ jobs:
         run: php backend/tests/nasadenie.php
       - name: HTTP integračné testy
         run: php backend/tests/http.php
+      - name: Dom (podlažia, pozemok, stavby)
+        run: php backend/tests/dom.php
       - name: Súbežné zápisy
         run: php backend/tests/subeznost.php
       - name: Fuzz test

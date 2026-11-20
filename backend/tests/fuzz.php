@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 // Fuzz: žiadny vstup nesmie spôsobiť výnimku, PHP varovanie ani 5xx. Seed sa dá nastaviť: php fuzz.php 123
-foreach (['Config', 'Odhad', 'Validator', 'Storage', 'Adresy', 'Api', 'Leady'] as $c) { require __DIR__ . "/../src/$c.php"; }
+foreach (['Config', 'Odhad', 'Validator', 'Dom', 'Storage', 'Adresy', 'Api', 'Leady'] as $c) { require __DIR__ . "/../src/$c.php"; }
 
 use Nacenime\{Adresy, Api, Config, Odhad, Storage};
 

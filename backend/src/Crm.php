@@ -157,7 +157,7 @@ final class Crm
         $kontakt = $l['telefon'] ?: ($l['email'] ?: '');
         $menoKlienta = $l['meno'] ?: ($l['meno_web'] ?? null); // meno z CRM má prednosť pred menom z kalkulačky
         $adresa = $l['bez_adresy'] ? 'bez adresy' : trim(implode(', ', array_filter([$l['adresa'], $l['psc']])));
-        $dalsie = array_filter([$l['dovod'] ? 'Dôvod: ' . $l['dovod'] : null, $l['predstava_ceny'] ? 'Predstava ceny: ' . number_format((float) $l['predstava_ceny'], 0, ',', ' ') . ' €' : null, $l['balkon'] ? 'Balkón: ' . $l['balkon'] : null]);
+        $dalsie = array_filter([$l['dovod'] ? 'Dôvod: ' . $l['dovod'] : null, $l['predstava_ceny'] ? 'Predstava ceny: ' . number_format((float) $l['predstava_ceny'], 0, ',', ' ') . ' €' : null, $l['balkon'] ? 'Balkón: ' . $l['balkon'] : null, !empty($l['dom_popis']) ? $l['dom_popis'] : null]);
         return [
             'id' => 'l' . $l['kid'], 'cislo' => $l['cislo'],
             'meno' => $menoKlienta ?: ($kontakt !== '' ? $kontakt : 'Klient ' . $l['cislo']), 'menoKlienta' => $l['vymazany'] ? '' : (string) ($menoKlienta ?? ''),

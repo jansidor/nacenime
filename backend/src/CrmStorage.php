@@ -152,7 +152,7 @@ SQL);
     public function leady(?int $len_pre = null, ?int $kontaktId = null): array
     {
         $sql = 'SELECT k.id AS kid, k.vytvorene, k.druh, k.telefon, k.email, k.meno AS meno_web, k.suhlas, k.odoslane,
-                o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav AS stav_neh, o.dovod, o.predstava_ceny, o.balkon, o.cena_od, o.cena_do, o.vysledok, o.bez_adresy, c.*
+                o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav AS stav_neh, o.dovod, o.predstava_ceny, o.balkon, o.dom_popis, o.cena_od, o.cena_do, o.vysledok, o.bez_adresy, c.*
             FROM kontakty k JOIN crm_leady c ON c.kontakt_id = k.id LEFT JOIN odhady o ON o.id = k.odhad_id WHERE ' . self::LEAD_PODMIENKA;
         $p = [];
         if ($len_pre !== null) { $sql .= ' AND c.pridelene = ?'; $p[] = $len_pre; }

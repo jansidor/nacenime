@@ -64,6 +64,7 @@ CREATE INDEX IF NOT EXISTS kontakty_vytvorene ON kontakty (vytvorene);
 CREATE INDEX IF NOT EXISTS odhady_vytvorene ON odhady (vytvorene);
 SQL);
         $this->doplnStlpec('odhady', 'veta', 'TEXT');
+        $this->doplnStlpec('odhady', 'dom_popis', 'TEXT'); // podlažia, pozemok a stavby pri dome
         $this->doplnStlpec('kontakty', 'meno', 'TEXT'); // nepovinné meno pri žiadosti o telefonát
         $this->doplnStlpec('kontakty', 'pokusy', 'INTEGER NOT NULL DEFAULT 0');
         if ($this->doplnStlpec('kontakty', 'oznamene', 'INTEGER NOT NULL DEFAULT 0')) {
@@ -102,8 +103,8 @@ SQL);
     /** @param array<string, mixed> $d */
     public function ulozOdhad(array $d): int
     {
-        $s = $this->pdo->prepare('INSERT INTO odhady (vytvorene, adresa, psc, obec, lat, lng, bez_adresy, zo_zalohy, dovod, typ, vymera, stav, balkon, predstava_ceny, vysledok, cena_od, cena_do, pocet, veta)
-            VALUES (:vytvorene, :adresa, :psc, :obec, :lat, :lng, :bez_adresy, :zo_zalohy, :dovod, :typ, :vymera, :stav, :balkon, :predstava_ceny, :vysledok, :cena_od, :cena_do, :pocet, :veta)');
+        $s = $this->pdo->prepare('INSERT INTO odhady (vytvorene, adresa, psc, obec, lat, lng, bez_adresy, zo_zalohy, dovod, typ, vymera, stav, balkon, predstava_ceny, vysledok, cena_od, cena_do, pocet, veta, dom_popis)
+            VALUES (:vytvorene, :adresa, :psc, :obec, :lat, :lng, :bez_adresy, :zo_zalohy, :dovod, :typ, :vymera, :stav, :balkon, :predstava_ceny, :vysledok, :cena_od, :cena_do, :pocet, :veta, :dom_popis)');
         $s->execute($d + ['vytvorene' => gmdate('c')]);
         return (int) $this->pdo->lastInsertId();
     }
@@ -201,7 +202,7 @@ SQL);
     /** Leady (telefonát, PDF so súhlasom), o ktorých ešte nepadlo oznámenie maklérovi. @return list<array<string, mixed>> */
     public function cakajuceOznamenia(int $maxPokusov, int $limit = 20): array
     {
-        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, k.meno, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.vysledok, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny, o.bez_adresy
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, k.meno, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.vysledok, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny, o.bez_adresy, o.dom_popis
             FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
             WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.oznamene = 0 AND k.oznam_pokusy < ? ORDER BY k.id LIMIT ?");
         $s->execute([$maxPokusov, $limit]);

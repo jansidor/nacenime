@@ -32,6 +32,9 @@ final class Pdf
         $adresa = trim(implode(', ', array_filter([$o['adresa'] ?? '', trim(($o['psc'] ?? '') . ' ' . ($o['obec'] ?? ''))])));
         $ok = ($o['vysledok'] ?? '') === 'ok' && $o['cena_od'] !== null;
         $zhrnutie = $h($adresa) . '. ' . $h($o['typ'] ?? '') . ' ' . $h(rtrim(rtrim(number_format((float) $o['vymera'], 1, ',', ''), '0'), ',')) . ' m²';
+        if (!empty($o['dom_popis'])) {
+            $zhrnutie .= '<br>' . $h($o['dom_popis']);
+        }
         $poznamka = $ok ? (Api::POZNAMKA[$o['typ'] ?? ''] ?? '') : '';
         $hlavne = $ok
             ? '<div class="cena">' . $h($eur((int) $o['cena_od'])) . ' až ' . $h($eur((int) $o['cena_do'])) . '</div><p>' . $h($o['veta'] ?? '') . '</p>'

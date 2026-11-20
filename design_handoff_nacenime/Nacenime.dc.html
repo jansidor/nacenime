@@ -570,6 +570,54 @@ main>section{animation:nc-in 150ms linear}
           </form>
         </sc-if>
 
+        <sc-if value="{{ isDom0 }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitDom }}" noValidate="{{ true }}">
+            <p style="margin:0 0 14px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Výmera podlaží v m². Prázdne pole = dané podlažie nemáte.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+              <sc-for list="{{ domPolia }}" as="f" hint-placeholder-count="6">
+                <div>
+                  <label for="{{ f.id }}" style="display:block;margin:0 0 6px;font:600 19px/1.4 'Archivo',sans-serif;color:#272361">{{ f.label }}</label>
+                  <div style="position:relative"><input id="{{ f.id }}" type="text" inputMode="decimal" placeholder="{{ f.ph }}" value="{{ f.value }}" onChange="{{ f.set }}" style="width:100%;height:60px;padding:0 42px 0 14px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:600 19px 'Archivo',sans-serif;min-width:0"><span aria-hidden="true" style="position:absolute;right:12px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">m²</span></div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ domError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ domError }}</span></p></sc-if>
+            <div style="display:flex;margin-top:20px"><button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button></div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDom1 }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitDom }}" noValidate="{{ true }}">
+            <p id="dom-vl" style="margin:0 0 10px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Dom stojí na pozemku, ktorý vlastníte?</p>
+            <div role="group" aria-labelledby="dom-vl" style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ domVlast }}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="min-height:52px;padding:10px 18px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ t.bg }};color:{{ t.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
+            </div>
+            <label for="dom-pozemok" style="display:block;margin:22px 0 6px;font:600 19px/1.4 'Archivo',sans-serif;color:#272361">Výmera pozemku (nepovinné)</label>
+            <div style="position:relative;max-width:360px"><input id="dom-pozemok" type="text" inputMode="decimal" placeholder="600" value="{{ domPozemok }}" onChange="{{ setDomPozemok }}" style="width:100%;height:60px;padding:0 42px 0 14px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:600 19px 'Archivo',sans-serif;min-width:0"><span aria-hidden="true" style="position:absolute;right:12px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">m²</span></div>
+            <sc-if value="{{ domError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ domError }}</span></p></sc-if>
+            <div style="display:flex;margin-top:20px"><button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button></div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDom2 }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitDom }}" noValidate="{{ true }}">
+            <p id="dom-st" style="margin:0 0 10px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Čo ešte stojí na pozemku? Vyberte všetko, čo sedí.</p>
+            <div role="group" aria-labelledby="dom-st" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+              <sc-for list="{{ domStavby }}" as="t" hint-placeholder-count="5"><button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="min-height:52px;padding:10px 18px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ t.bg }};color:{{ t.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ domIneOn }}" hint-placeholder-val="{{ false }}">
+              <label for="dom-ine" style="display:block;margin:16px 0 6px;font:600 19px/1.4 'Archivo',sans-serif;color:#272361">Aká stavba?</label>
+              <input id="dom-ine" type="text" maxLength="100" placeholder="napríklad altánok" value="{{ domIne }}" onChange="{{ setDomIne }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            </sc-if>
+            <p id="dom-bz" style="margin:22px 0 10px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Je tam bazén?</p>
+            <div role="group" aria-labelledby="dom-bz" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+              <sc-for list="{{ domBazen }}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="min-height:52px;padding:10px 18px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ t.bg }};color:{{ t.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ domError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ domError }}</span></p></sc-if>
+            <div style="display:flex;margin-top:20px"><button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button></div>
+          </form>
+        </sc-if>
+
         <sc-if value="{{ isPrice }}" hint-placeholder-val="{{ false }}">
           <form onSubmit="{{ submitPrice }}" noValidate="{{ true }}">
             <label for="cena" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Predstava o cene</label>
@@ -637,6 +685,8 @@ main>section{animation:nc-in 150ms linear}
             </div>
           </div>
           <sc-if value="{{ hasScaleNote }}" hint-placeholder-val="{{ true }}"><p class="nm-vysl-veta">{{ scaleNote }}</p></sc-if>
+          <sc-if value="{{ hasPriplatok }}" hint-placeholder-val="{{ false }}"><p class="nm-vysl-veta">{{ priplatokText }}</p></sc-if>
+          <sc-if value="{{ hasUpozornenie }}" hint-placeholder-val="{{ false }}"><p class="nm-vysl-veta">{{ upozornenie }}</p></sc-if>
           <p class="nm-vysl-veta nm-vysl-zdroj">{{ veta }}</p>
         </sc-if>
         <sc-if value="{{ resNoPrice }}" hint-placeholder-val="{{ false }}">
@@ -819,7 +869,7 @@ class Component extends DCLogic {
     if (this.demo || !town) return true;
     try { const r = await this.api('obec?obec=' + encodeURIComponent(town)); return r.ok && r.data ? !!r.data.v_regione : true; } catch (err) { return true; }
   };
-  state = { faqIdx: 0, faqHold: false, callName: '', odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  state = { faqIdx: 0, faqHold: false, callName: '', odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, dom: { p: {}, vlast: '', pozemok: '', stavby: [], bazen: '', ine: '' }, domPart: 0, domError: '', email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
   componentDidUpdate(prev) {
     const faqKluc = this.state.faqIdx + '|' + this.state.faqHold + '|' + this.state.screen;
     if (faqKluc !== this.faqKluc) { this.faqKluc = faqKluc; this.faqPlan(); this.faqVideo(); }
@@ -863,6 +913,13 @@ class Component extends DCLogic {
       naZmenu: c => this.setState(st => ({ picked: st.picked ? { ...st.picked, lat: c.lat, lng: c.lng } : st.picked }))
     })).then(m => { if (this._mapaEl === el && el.isConnected) this._mapa = m; else m.zrus(); }).catch(() => {}); // pri chybe ostane sivá plocha
   }
+  // Dom: podlahová plocha = prízemie + poschodia + podkrovie + 30 % pivnice (rovnako ako na serveri, backend/src/Dom.php).
+  DOM_POLIA = [['prizemie', 'Prízemie', '80'], ['poschodie1', '1. poschodie', '60'], ['poschodie2', '2. poschodie', ''], ['poschodie3', '3. poschodie', ''], ['podkrovie', 'Podkrovie', ''], ['pivnica', 'Pivnica', '']];
+  DOM_VLAST = [['ano', 'Áno, dom aj pozemok'], ['bez', 'Nie, dom stojí na cudzom pozemku'], ['neviem', 'Neviem']];
+  DOM_STAVBY = [['garaz', 'Garáž alebo prístrešok'], ['domcek', 'Záhradný domček alebo chatka'], ['humno', 'Humno alebo hospodárska stavba'], ['studna', 'Studňa alebo čistička'], ['ine', 'Iná stavba']];
+  DOM_BAZEN = [['', 'Nie'], ['maly', 'Do 15 m²'], ['stredny', '15 až 30 m²'], ['velky', 'Nad 30 m²']];
+  cislo = v => { const t = String(v == null ? '' : v).replace(/[\s\u00a0]/g, '').replace(',', '.'); return /^\d+(\.\d+)?$/.test(t) ? Number(t) : null; };
+  domPlocha = p => { const n = k => this.cislo(p[k]) || 0; return Math.round((n('prizemie') + n('poschodie1') + n('poschodie2') + n('poschodie3') + n('podkrovie') + 0.3 * n('pivnica')) * 10) / 10; };
   // Výpočet beží na serveri (POST /api/odhad). V ukážkovom režime sa vráti pevný vzorový výsledok.
   runOdhad = async () => {
     const s = this.state, a = s.answers, id = this.rid = (this.rid || 0) + 1;
@@ -875,6 +932,7 @@ class Component extends DCLogic {
     }
     const body = { typ, obec, vymera };
     if (!pozemok) body.stav = a[3] || 'Kompletná rekonštrukcia';
+    if (typ === 'Dom' && s.dom.done) body.dom = { podlazia: s.dom.p, vlastnictvo: s.dom.vlast || 'neviem', ...(s.dom.pozemok.trim() ? { pozemok: s.dom.pozemok.trim() } : {}), stavby: s.dom.stavby, ...(s.dom.stavby.includes('ine') && s.dom.ine.trim() ? { ine: s.dom.ine.trim() } : {}), bazen: s.dom.bazen || 'nie' };
     if (a[0]) body.dovod = a[0];
     if (!pozemok && a[4]) body.balkon = a[4];
     if (String(a[5] || '').trim()) body.predstava_ceny = String(a[5]).trim();
@@ -969,11 +1027,36 @@ class Component extends DCLogic {
         .map(([label, v], i) => ({ label, value: v || '–', cls: v ? 'nm-hotovo' : (i === Math.min(step, 4) ? 'nm-teraz' : '') })),
       panelNote: done ? 'Všetko máme. Cena je pripravená.' : 'Cena sa ukáže hneď po poslednej otázke. Bez registrácie.',
       stepLabel: done ? 'Hotovo' : isPrice ? 'Nepovinná otázka · potom hneď cena' : isObec ? 'Posledná otázka' : step === 4 ? 'Otázka 5 z 5 · potom hneď cena' : 'Otázka ' + (step + 1) + ' z 5 · ešte ' + (4 - step) + (4 - step === 1 ? ' otázka' : ' otázky') + ' do ceny',
-      hint: done ? 'Cena je pripravená. Ukážeme rozpätie podľa predajov vo vašom okolí.' : isPrice ? 'Porovnáme ju s odhadom. Môžete ju preskočiť.' : isObec ? 'Podľa obce vyberieme predaje na porovnanie.' : (cur.h || ''),
+      hint: done ? 'Cena je pripravená. Ukážeme rozpätie podľa predajov vo vašom okolí.' : isPrice ? 'Porovnáme ju s odhadom. Môžete ju preskočiť.' : isObec ? 'Podľa obce vyberieme predaje na porovnanie.' : step === 2 && a[1] === 'Dom' ? ['Pivnicu počítame ako 30 % plochy, ostatné podlažia celé.', 'Ak pozemok nevlastníte, cena sa môže líšiť.', 'Bazén a vedľajšie stavby môžu cenu zvýšiť.'][s.domPart] : (cur.h || ''),
       hasHint: true,
-      question: done ? 'Máme všetko' : isPrice ? 'Akú máte predstavu o cene?' : isObec ? 'V ktorej obci je nehnuteľnosť?' : cur.q,
+      question: done ? 'Máme všetko' : isPrice ? 'Akú máte predstavu o cene?' : isObec ? 'V ktorej obci je nehnuteľnosť?' : step === 2 && a[1] === 'Dom' ? ['Aká je výmera podlaží?', 'Pozemok pod domom', 'Čo je na pozemku?'][s.domPart] : cur.q,
       areaChips: (pozemok ? [400, 600, 800, 1000, 1500] : a[1] === 'Dom' || a[1] === 'Chata' ? [80, 100, 120, 150, 200] : [40, 55, 65, 75, 90]).map(n => ({ label: n + ' m²', pick: () => this.setState({ area: String(n), areaError: false }) })),
-      isChoice: !done && !isPrice && !isObec && !!cur.o, isArea: step === 2, isDone: done,
+      isChoice: !done && !isPrice && !isObec && !!cur.o, isArea: step === 2 && a[1] !== 'Dom', isDone: done,
+      isDom0: step === 2 && a[1] === 'Dom' && s.domPart === 0, isDom1: step === 2 && a[1] === 'Dom' && s.domPart === 1, isDom2: step === 2 && a[1] === 'Dom' && s.domPart === 2, domError: s.domError,
+      domPolia: this.DOM_POLIA.map(([k, label, ph]) => ({ id: 'dom-' + k, label: label + (k === 'prizemie' ? ' *' : ''), ph, value: s.dom.p[k] || '', set: e => { const v = e.target.value; this.setState(st => ({ dom: { ...st.dom, p: { ...st.dom.p, [k]: v } }, domError: '' })); } })),
+      domPozemok: s.dom.pozemok, setDomPozemok: e => { const v = e.target.value; this.setState(st => ({ dom: { ...st.dom, pozemok: v }, domError: '' })); },
+      domVlast: this.DOM_VLAST.map(([k, label]) => ({ label, on: s.dom.vlast === k ? 'true' : 'false', bg: s.dom.vlast === k ? '#272361' : '#ffffff', fg: s.dom.vlast === k ? '#ffffff' : '#272361', pick: () => this.setState(st => ({ dom: { ...st.dom, vlast: k }, domError: '' })) })),
+      domStavby: this.DOM_STAVBY.map(([k, label]) => { const on = s.dom.stavby.includes(k); return { label, on: on ? 'true' : 'false', bg: on ? '#272361' : '#ffffff', fg: on ? '#ffffff' : '#272361', pick: () => this.setState(st => ({ dom: { ...st.dom, stavby: on ? st.dom.stavby.filter(x => x !== k) : [...st.dom.stavby, k] } })) }; }),
+      domIneOn: s.dom.stavby.includes('ine'), domIne: s.dom.ine, setDomIne: e => { const v = e.target.value; this.setState(st => ({ dom: { ...st.dom, ine: v } })); },
+      domBazen: this.DOM_BAZEN.map(([k, label]) => ({ label, on: s.dom.bazen === k ? 'true' : 'false', bg: s.dom.bazen === k ? '#272361' : '#ffffff', fg: s.dom.bazen === k ? '#ffffff' : '#272361', pick: () => this.setState(st => ({ dom: { ...st.dom, bazen: k } })) })),
+      submitDom: e => {
+        e.preventDefault();
+        const d = s.dom, part = s.domPart;
+        if (part === 0) {
+          const bad = this.DOM_POLIA.find(([k]) => { const t = String(d.p[k] || '').trim(); const n = this.cislo(t); return t !== '' && (n == null || n > 2000); });
+          if (bad) return this.setState({ domError: 'Pri poli ' + bad[1] + ' zadajte výmeru v m², najviac 2000.' });
+          const pr = this.cislo(d.p.prizemie);
+          if (pr == null || pr < 10) return this.setState({ domError: 'Zadajte výmeru prízemia, aspoň 10 m².' });
+          if (this.domPlocha(d.p) > 2000) return this.setState({ domError: 'Súčet výmer je príliš veľký, najviac 2000 m².' });
+          return this.setState({ domPart: 1, domError: '' });
+        }
+        if (part === 1) {
+          if (!d.vlast) return this.setState({ domError: 'Vyberte, či dom stojí na vašom pozemku.' });
+          if (d.pozemok.trim() && (this.cislo(d.pozemok) == null || this.cislo(d.pozemok) < 1)) return this.setState({ domError: 'Výmeru pozemku zadajte v m², alebo políčko nechajte prázdne.' });
+          return this.setState({ domPart: 2, domError: '' });
+        }
+        this.go({ answers: { ...s.answers, 2: this.domPlocha(d.p) }, dom: { ...d, done: true }, domPart: 0, domError: '', step: 3 });
+      },
       options: done || !cur.o ? [] : cur.o.map(label => {
         const on = s.answers[step] === label;
         const ico = ({ 'Len zisťujem': 'lupa', 'Predám do 3–6 mesiacov': 'predaj', 'Dedičstvo': 'dedic', 'Rozvod': 'rozvod', 'Investícia': 'invest',
@@ -984,7 +1067,7 @@ class Component extends DCLogic {
         return { label, sub, hasSub: !!sub, subId: sub ? 'opt-popis-' + step + '-' + cur.o.indexOf(label) : null, bg: on ? '#272361' : '#ffffff', fg: on ? '#ffffff' : '#272361', cls: 'nm-opt' + (on ? ' nm-opt-on' : '') + (ico ? ' nm-ico nm-ico-' + ico : ''),
           pick: () => this.go({ answers: { ...s.answers, [step]: label }, step: auto ? step + 1 : step }) };
       }),
-      back: () => step === 0 ? this.go({ screen: s.from }) : this.go({ step: step === 7 && !needObec ? 5 : step === 5 && pozemok ? 2 : step - 1 }),
+      back: () => step === 2 && a[1] === 'Dom' && s.domPart > 0 ? this.setState({ domPart: s.domPart - 1, domError: '' }) : step === 3 && a[1] === 'Dom' ? this.go({ step: 2, domPart: 2 }) : step === 0 ? this.go({ screen: s.from }) : this.go({ step: step === 7 && !needObec ? 5 : step === 5 && pozemok ? 2 : step - 1 }),
       submitArea: e => {
         e.preventDefault();
         const n = Number(String(s.area).replace(',', '.').trim());
@@ -994,9 +1077,10 @@ class Component extends DCLogic {
       resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resErrorText: s.odhadChyba || this.TEXT_SERVER, resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
       ...(() => {
         const vym = Number(String(s.answers[2] || 0).replace(',', '.')), typ = s.answers[1] || 'Byt', m = this.CITIES.find(c => (obecVal || '').indexOf(c.name) === 0 || (s.address || '').indexOf(c.name) !== -1);
-        const lo = resOk && vym ? Math.round(od.od / vym / 10) * 10 : 0, hi = resOk && vym ? Math.round(od.do / vym / 10) * 10 : 0, e = n => fmt(n) + '\u00a0€';
+        const pr = (resOk && od.priplatok) || 0, lo = resOk && vym ? Math.round((od.od - pr) / vym / 10) * 10 : 0, hi = resOk && vym ? Math.round((od.do - pr) / vym / 10) * 10 : 0, e = n => fmt(n) + '\u00a0€';
         const mc = m && m.ceny ? (typ === 'Dom' || typ === 'Chata' ? m.ceny.dom : typ === 'Byt' || typ === 'Apartmán' ? m.ceny.byt : 0) : 0;
-        return { m2Text: lo ? e(lo) + ' – ' + e(hi) : '', m2Note: typ === 'Pozemok' ? 'za m² pozemku pri ' + fmt(vym) + ' m²' : 'pri výmere ' + String(vym).replace('.', ',') + ' m²',
+        return { m2Text: lo ? e(lo) + ' – ' + e(hi) : '', m2Note: typ === 'Pozemok' ? 'za m² pozemku pri ' + fmt(vym) + ' m²' : (resOk && od.plocha ? 'pri rátanej ploche ' : 'pri výmere ') + String(vym).replace('.', ',') + ' m²',
+          hasPriplatok: pr > 0, priplatokText: pr > 0 ? 'Cena zahŕňa príplatky +' + fmt(pr) + '\u00a0€: ' + (od.priplatky || []).map(x => x.nazov.toLowerCase()).join(', ') + '.' : '', hasUpozornenie: !!(resOk && od.upozornenie), upozornenie: (resOk && od.upozornenie) || '',
           hasM2Mesto: !!(lo && mc), m2MestoLbl: m ? 'Medián ' + (typ === 'Dom' || typ === 'Chata' ? 'domov' : 'bytov') + ' ' + m.loc : '', m2MestoText: mc ? e(mc) + '/m²' : '' };
       })(),
       maklerFirst: !resOk || zamer === 'predaj', pdfFirst: resOk && zamer !== 'predaj',

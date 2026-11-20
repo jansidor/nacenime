@@ -42,7 +42,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const klik = (page, text) => page.getByRole('button', { name: text, exact: true }).click();
   async function kalkulacka(page, { typ = 'Byt', stav = 'Pôvodný', obec } = {}) {
     await klik(page, 'Len zisťujem'); await klik(page, typ);
-    await page.fill('#vymera', '66,5'); await page.locator('form:has(#vymera) button[type=submit]').click();
+    if (typ === 'Dom') {
+      const dalej = () => page.locator('form button[type=submit]').click();
+      await page.fill('#dom-prizemie', '66,5'); await dalej();
+      await klik(page, 'Áno, dom aj pozemok'); await dalej(); await dalej();
+    } else { await page.fill('#vymera', '66,5'); await page.locator('form:has(#vymera) button[type=submit]').click(); }
     if (typ !== 'Pozemok') { await klik(page, stav); await klik(page, 'Nie'); }
     await page.getByRole('link', { name: 'Preskočiť' }).click();
     if (obec) { await page.fill('#obec-kalk', obec); await page.locator('form:has(#obec-kalk) button[type=submit]').click(); }
@@ -127,7 +131,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await sleep(900);
     await klik(page, 'Áno, pokračovať');
     await kalkulacka(page, { typ: 'Dom', stav: 'Novostavba' });
-    await page.waitForSelector('h1:has-text("až")', { timeout: 8000 });
+    await page.waitForSelector('h1:has-text("až")', { timeout: 8000 }).catch(async (e) => { console.log('DBG', JSON.stringify(st.req.slice(-2)), (await page.locator('main').innerText()).slice(0, 300)); throw e; });
     const o = JSON.parse(st.req.find((r) => r.url === '/api/odhad').telo);
     ok('odhad: súradnice po posune špendlíka mapy (lat z detailu, lng posunuté)', o.adresa && Math.abs(o.adresa.lat - 49.0816) < 0.001 && o.adresa.lng > 19.3048 && o.adresa.lng < 19.31 && o.adresa.psc === '034 01' && !o.adresa.zo_zalohy && o.obec === 'Ružomberok', o);
     ok('odhad: uložený so súradnicami', Math.abs(dbRows('select lat,lng from odhady order by id desc limit 1')[0].lng - 19.305124) < 0.0005);
@@ -238,6 +242,44 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await page.goto(base + '/Nacenime.dc.html?screen=' + encodeURIComponent('Kalkulačka')); await page.waitForSelector('main');
     await page.getByRole('button', { name: 'Len zisťujem', exact: true }).click(); await page.getByRole('button', { name: 'Byt', exact: true }).click();
     ok('výmera: klávesnica s desatinnou čiarkou (inputmode decimal)', await page.locator('#vymera').getAttribute('inputmode') === 'decimal');
+    await page.context().close();
+  }
+
+  // 5b. Dom: podlažia, pozemok, stavby a bazén (tri obrazovky v kroku Výmera), príplatky z servera
+  for (const [meno, w] of [['mobil', 390], ['počítač', 1280]]) {
+    const { page, st } = await nova();
+    await page.setViewportSize({ width: w, height: 900 });
+    await page.fill('#adresa-uvod', 'Bystrická cesta 12'); await page.waitForSelector('#ulica-uvod', { timeout: 5000 });
+    await page.fill('#obec-uvod', 'ruzomberok'); await page.locator('form:has(#ulica-uvod) button[type=submit]').click();
+    await klik(page, 'Len zisťujem'); await klik(page, 'Dom');
+    const dalej = () => page.locator('form button[type=submit]').click();
+    await page.waitForSelector('#dom-prizemie');
+    ok('dom ' + meno + ': prvá obrazovka má 6 polí podlaží', (await page.locator('input[id^=dom-]').count()) === 6);
+    await dalej();
+    ok('dom ' + meno + ': bez prízemia nepustí ďalej a povie prečo', (await page.locator('[role=alert]').innerText()).includes('prízemia'));
+    await page.fill('#dom-prizemie', '80'); await page.fill('#dom-poschodie1', '60'); await page.fill('#dom-pivnica', '40'); await dalej();
+    await page.waitForSelector('#dom-pozemok');
+    await dalej();
+    ok('dom ' + meno + ': vlastníctvo pozemku treba vybrať', (await page.locator('[role=alert]').innerText()).includes('pozemku'));
+    await klik(page, 'Nie, dom stojí na cudzom pozemku'); await page.fill('#dom-pozemok', '600'); await dalej();
+    await klik(page, 'Garáž alebo prístrešok'); await klik(page, 'Iná stavba'); await page.fill('#dom-ine', 'altánok'); await klik(page, '15 až 30 m²');
+    const pretok = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    ok('dom ' + meno + ': bez bočného pretečenia', pretok <= 0, pretok);
+    await dalej();
+    await klik(page, 'Pôvodný'); await klik(page, 'Nie');
+    await page.getByRole('link', { name: 'Preskočiť' }).click();
+    await page.locator('button:has-text("Zobraziť")').first().click();
+    await page.waitForSelector('h1:has-text("až")', { timeout: 8000 });
+    const o = JSON.parse(st.req.find((r) => r.url === '/api/odhad').telo);
+    ok('dom ' + meno + ': telo odhadu nesie podlažia, pozemok, stavby a bazén', o.typ === 'Dom' && o.dom && o.dom.podlazia.prizemie === '80' && o.dom.podlazia.pivnica === '40' && o.dom.vlastnictvo === 'bez' && o.dom.pozemok === '600' && o.dom.stavby.join() === 'garaz,ine' && o.dom.ine === 'altánok' && o.dom.bazen === 'stredny', o);
+    const text = (await page.locator('main').innerText()).replace(/\u00a0/g, ' ');
+    ok('dom ' + meno + ': výsledok ukazuje príplatky aj upozornenie na pozemok', /príplatky \+8 000 €/.test(text) && text.includes('pozemok nie je v cene'), text.slice(0, 400));
+    ok('dom ' + meno + ': výsledok na jednom riadku', await page.evaluate(() => { const h = document.querySelector('.nm-vysl-cena'); return h.getBoundingClientRect().height < parseFloat(getComputedStyle(h).fontSize) * 1.6; }));
+    if (meno === 'počítač') {
+      const r = dbRows("select dom_popis from odhady where typ='Dom' order by id desc limit 1")[0];
+      ok('dom: popis sa uložil k odhadu', r && r.dom_popis.includes('1. poschodie 60 m²') && r.dom_popis.includes('rátaná plocha 152 m²') && r.dom_popis.includes('bazén 15 až 30 m²'), r);
+    }
+    ok('dom ' + meno + ': bez chýb v konzole', st.chyby.length === 0, st.chyby);
     await page.context().close();
   }
 

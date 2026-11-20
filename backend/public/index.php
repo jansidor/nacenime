@@ -5,6 +5,7 @@ require __DIR__ . '/../src/Config.php';
 require __DIR__ . '/../src/Cesty.php';
 require __DIR__ . '/../src/Odhad.php';
 require __DIR__ . '/../src/Validator.php';
+require __DIR__ . '/../src/Dom.php';
 require __DIR__ . '/../src/Adresy.php';
 require __DIR__ . '/../src/Storage.php';
 require __DIR__ . '/../src/Api.php';
