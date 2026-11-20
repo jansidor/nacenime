@@ -62,6 +62,7 @@ final class Oznamovac
             '',
             'Nehnuteľnosť: ' . $nehnutelnost . ($l['stav'] ? ', ' . $l['stav'] : ''),
             'Adresa: ' . ($adresa !== '' ? $adresa : '–'),
+            !empty($l['dom_popis']) ? 'Dom: ' . $l['dom_popis'] : null,
             'Odhad: ' . $odhad,
             $l['dovod'] ? 'Dôvod: ' . $l['dovod'] : null,
             $l['predstava_ceny'] !== null ? 'Predstava ceny: ' . self::cislo((float) $l['predstava_ceny']) . ' €' : null,
@@ -85,7 +86,7 @@ final class Oznamovac
             'typ' => $l['typ'], 'vymera' => $num($l['vymera']), 'stav' => $l['stav'],
             'adresa' => $l['adresa'], 'psc' => $l['psc'], 'obec' => $l['obec'],
             'cena_od' => $num($l['cena_od']), 'cena_do' => $num($l['cena_do']), 'vysledok' => $l['vysledok'],
-            'dovod' => $l['dovod'], 'predstava_ceny' => $num($l['predstava_ceny']),
+            'dovod' => $l['dovod'], 'predstava_ceny' => $num($l['predstava_ceny']), 'dom_popis' => $l['dom_popis'] ?? null,
         ];
     }
 

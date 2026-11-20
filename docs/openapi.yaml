@@ -99,6 +99,25 @@ components:
         vymera: { oneOf: [{ type: number }, { type: string }], description: 10 až 2000, povolená desatinná čiarka. }
         dovod: { type: string, maxLength: 60 }
         balkon: { type: string, maxLength: 10 }
+        dom:
+          type: object
+          description: Len pri type Dom. Ak je zadané, výmera sa spočíta z podlaží (prízemie + poschodia + podkrovie + 30 % pivnice) a pole vymera sa ignoruje. Výsledok obsahuje plocha, priplatok, priplatky a prípadne upozornenie.
+          properties:
+            podlazia:
+              type: object
+              description: Výmery v m² (prizemie povinné, aspoň 10).
+              properties:
+                prizemie: { type: number }
+                poschodie1: { type: number }
+                poschodie2: { type: number }
+                poschodie3: { type: number }
+                podkrovie: { type: number }
+                pivnica: { type: number }
+            vlastnictvo: { type: string, enum: [ano, bez, neviem] }
+            pozemok: { type: number, description: Výmera pozemku v m², nepovinná. }
+            stavby: { type: array, items: { type: string, enum: [garaz, domcek, humno, studna, ine] } }
+            ine: { type: string, maxLength: 100, description: Popis inej stavby. }
+            bazen: { type: string, enum: [nie, maly, stredny, velky] }
         predstava_ceny: { oneOf: [{ type: number }, { type: string }], description: Nepovinná, bez validácie. }
         adresa:
           type: object

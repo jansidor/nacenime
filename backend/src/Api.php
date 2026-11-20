@@ -56,6 +56,15 @@ final class Api
     /** @param array<string, mixed> $body @return array{0: int, 1: array<string, mixed>} */
     private function odhad(array $body): array
     {
+        // Pri dome s podrobnosťami (podlažia, pozemok, stavby) sa výmera spočíta z podlaží.
+        $dom = null;
+        if (($body['typ'] ?? null) === 'Dom' && is_array($body['dom'] ?? null)) {
+            [$dom, $domChyby] = Dom::spracuj($body['dom']);
+            if ($domChyby) {
+                return [422, ['chyby' => $domChyby]];
+            }
+            $body['vymera'] = $dom['vymera'];
+        }
         [$v, $chyby] = Validator::odhad($body, $this->typy, $this->stavy);
         if ($chyby) {
             return [422, ['chyby' => $chyby]];
@@ -63,17 +72,31 @@ final class Api
         $r = $this->odhad->odhad($v, $this->config->zoznam('TYPY_BEZ_ROZPATIA'));
         if ($r['stav'] === 'ok') {
             $r['poznamka'] = self::POZNAMKA[$v['typ']];
+            if ($dom !== null) {
+                $r['plocha'] = $dom['vymera'];
+                $r['priplatok'] = 0;
+                $r['priplatky'] = [];
+                if ($dom['priplatok'] > 0 && $r['od'] !== null) {
+                    $r['od'] = (int) (round(($r['od'] + $dom['priplatok']) / 1000) * 1000);
+                    $r['do'] = (int) (round(($r['do'] + $dom['priplatok']) / 1000) * 1000);
+                    $r['priplatok'] = $dom['priplatok'];
+                    $r['priplatky'] = $dom['priplatky'];
+                }
+                if ($dom['vlastnictvo'] === 'bez') {
+                    $r['upozornenie'] = 'Dom bez pozemku: cena sa môže líšiť, pozemok nie je v cene.';
+                }
+            }
         }
         // Meno makléra je jedna hodnota z konfigurácie.
         $r['makler'] = $this->config->get('MAKLER_NAME', '[MENO MAKLÉRA]');
         if ($r['stav'] !== 'mimo regiónu') {
-            $r['odhad_id'] = $this->uloz($body, $v, $r);
+            $r['odhad_id'] = $this->uloz($body, $v, $r, $dom);
         }
         return [200, $r];
     }
 
     /** @param array<string, mixed> $body @param array<string, mixed> $v @param array<string, mixed> $r */
-    private function uloz(array $body, array $v, array $r): int
+    private function uloz(array $body, array $v, array $r, ?array $dom = null): int
     {
         $a = is_array($body['adresa'] ?? null) ? $body['adresa'] : [];
         $txt = fn(mixed $x, int $max): ?string => is_string($x) && trim($x) !== '' ? mb_substr(trim($x), 0, $max) : null;
@@ -86,6 +109,7 @@ final class Api
             'dovod' => $txt($body['dovod'] ?? null, 60), 'typ' => $v['typ'], 'vymera' => $v['vymera'], 'stav' => $v['stav'],
             'balkon' => $txt($body['balkon'] ?? null, 10), 'predstava_ceny' => $predstava === null ? null : (int) $predstava,
             'vysledok' => $r['stav'], 'cena_od' => $r['od'], 'cena_do' => $r['do'], 'pocet' => $r['pocet'], 'veta' => $r['veta'],
+            'dom_popis' => $dom['popis'] ?? null,
         ]);
     }
 
