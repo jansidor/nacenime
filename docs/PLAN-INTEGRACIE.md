@@ -27,7 +27,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 | R2 | Čo s CRM na `crm.nacenime.sk`? | Beží ďalej **paralelne**, kým nové CRM nie je overené. Potom len čítanie, nakoniec vypnúť. | F3 |
 | R3 | Kto je prevádzkovateľ osobných údajov? nacenime = NajBývanie Ružomberok, s. r. o.; rozia = ? | Ak ide o **inú firmu**, prenos leadov potrebuje právny základ (zmluva o spracúvaní / spoločné prevádzkovanie, úprava textu súhlasu a zásad ochrany OÚ). **Bez toho neposielať osobné údaje do rozia.** | čo najskôr [T] |
 | R4 | Čo je presne „Databáza ponúk (domy/byty/pozemky)“ v nacenime? | Upresniť: (a) vlastné ponuky kancelárie, (b) podklady pre cenník (predaje + inzeráty), (c) dopyty majiteľov z kalkulačky. Pri (b) pozor na licencie a zber z portálov. | F3 [T] |
-| R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | pondelok [T] |
+| R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | **potvrdené 21. 11.** |
 | R6 | Admin prehľad: jedna firma, alebo viac organizácií (pobočky, franšíza)? | Navrhnúť dátový model s `org_id` už teraz (rozia ho má pripravený), role: maklér / admin organizácie / superadmin. | F3 |
 | R7 | Rozpočet a hosting: Supabase plán (zálohy, PITR), Vercel plán. | Supabase Pro kvôli denným zálohám a PITR pred ostrými dátami CRM. | F4 [T] |
 
@@ -93,7 +93,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-036** [C] ADR-004: role a oprávnenia – `makler` (vidí len svoje), `admin` (vidí všetko v organizácii), `superadmin` (technická správa). Vynucuje **RLS v databáze**, nie len UI.
 - [ ] **I-037** [C] Dátový model CRM jadra: `organizations`, `profiles` (maklér ↔ auth user), `clients`, `properties`, `deals`, `activities`, `tasks`.
 - [ ] **I-038** [C] Dátový model **Postup**: záznam patrí maklérovi (`owner_id`), nehnuteľnosť, kroky/fázy náboru, stav, termíny, poznámky; RLS „len vlastník + admin“.
-- [ ] **I-039** [C] Dátový model **Dokumenty**: šablóny (zmluvy, nájmy, dohody o spolupráci), vygenerované dokumenty, verzie, väzba na klienta/nehnuteľnosť, súbory v Supabase Storage (privátny bucket).
+- [ ] **I-039** [C] Dátový model **Dokumenty**: knižnica prázdnych šablón (kategória, názov, popis, verzia, súbor v privátnom Supabase Storage). Bez vypĺňania a bez väzby na klienta – len stiahnutie (pozri F8).
 - [ ] **I-040** [C] Dátový model **Databáza ponúk** podľa R4.
 - [ ] **I-041** [C] Spoločné číselníky: obce/lokality, typy, stavy nehnuteľností, stavy leadu (z I-014–I-016).
 - [ ] **I-042** [C] Audit log: kto, kedy, čo zmenil (najmä pri osobných údajoch a dokumentoch).
@@ -157,12 +157,13 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-087** [C] Import existujúcich záznamov, ak makléri vedú Postup dnes v Exceli (šablóna + dry-run).
 - [ ] **I-088** [S] Pilot s 1 maklérom, úpravy, potom všetci.
 
-### F8 · Modul Dokumenty
-- [ ] **I-089** [T] Dodať šablóny (zmluvy, nájomné zmluvy, dohody o spolupráci) – schválené advokátom.
-- [ ] **I-090** [C] Generovanie dokumentu zo šablóny a dát CRM (PDF), verzia šablóny sa uloží k dokumentu.
-- [ ] **I-091** [C] Privátny Storage, podpísané odkazy s krátkou platnosťou, nikdy verejné URL.
-- [ ] **I-092** [C] História verzií a audit (kto vygeneroval, kto stiahol).
-- [ ] **I-093** [C] Neskôr: elektronický podpis (samostatné rozhodnutie a poskytovateľ).
+### F8 · Modul Dokumenty (knižnica prázdnych šablón)
+*Rozhodnutie majiteľa (21. 11.): Dokumenty sú **knižnica prázdnych, nevyplnených šablón**. Maklér si šablónu len **stiahne** a vypĺňa ju mimo systému. V systéme sa do šablón **nezapisuje**, nevypĺňajú sa dátami z CRM a nevznikajú v ňom vyplnené dokumenty. Šablóna zostáva stále rovnaká.*
+- [ ] **I-089** [T] Dodať šablóny (zmluvy, nájomné zmluvy, dohody o spolupráci a iné) – schválené advokátom, vo formáte na stiahnutie (napr. DOCX a PDF).
+- [ ] **I-090** [C] Knižnica: zoznam šablón s kategóriami, názvom, popisom, dátumom poslednej verzie a vyhľadávaním. Akcia pre makléra je **len „Stiahnuť“**.
+- [ ] **I-091** [C] Ochrana proti zápisu: súbory v privátnom Storage, makléri majú **len čítanie** (RLS/Storage politiky), stiahnutie cez podpísaný odkaz s krátkou platnosťou, nikdy verejná URL. Nahrať, nahradiť alebo vyradiť šablónu môže **len admin**.
+- [ ] **I-092** [C] Verzie šablón: nová verzia od admina nahradí aktuálnu na stiahnutie, staré verzie zostanú v archíve (vidí admin). Audit: kto nahral a kto stiahol.
+- [ ] **I-093** [C] Test: maklér nemôže nahrať, prepísať ani zmazať šablónu ani cez API (nielen skrytým tlačidlom).
 
 ### F9 · Databáza ponúk (nacenime) podľa R4
 - [ ] **I-094** [C] Podľa R4: buď ponuky z CRM → cenník nacenime (export predajov ako `podklady.csv`, `zostav-cennik.php --doplnit`), alebo samostatná evidencia ponúk.
