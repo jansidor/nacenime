@@ -13,19 +13,21 @@ Značky: **[C]** urobí Claude · **[T]** urobíš ty (majiteľ, prístupy, rozh
 | `jansidor/nacenime` | PHP 8.1, SQLite, Hostcreators (Git → vetva `deploy`) | **živé**, leady prichádzajú | Tabuľky `odhady`, `kontakty`; vlastné CRM fáza 1 (`crm_*`, role Správca/Maklér, `crm.nacenime.sk`). **Webhook pre nové leady už existuje** (`NACENIME_LEAD_WEBHOOK`, `Oznamovac::data()`), s opakovaním (max 5 pokusov), ale **bez podpisu**. GDPR retencia 24 mesiacov. |
 | `jansidor/rozia.sk` | Next.js 16, Supabase (Postgres, Frankfurt), Vercel | 1 commit, **len verejný web** | Tabuľky `agents`, `listings`, `sales`, `leads`… s RLS a pripraveným `org_id`. **Moduly CRM, Dokumenty a Postup zatiaľ neexistujú.** Vlastný formulár ocenenia (iný výpočet než nacenime). |
 | `jansidor/nacenime-marketing` | – | prázdne (len README) | Zatiaľ nič na integráciu. |
-| Duplikát CRM NajBývanie | **neznáma** | k dispozícii od pondelka 🔒 | Technológia, databáza a hosting rozhodnú, kde bude „CRM jadro“. |
+| Duplikát CRM NajBývanie | **neznáma** | k dispozícii od pondelka 🔒 | **Zdroj dát** pre CRM rozia (nie samotné CRM rozia). Technológia a databáza rozhodnú, ako sa naň napojíme. |
 
-Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (živé) a verejný web rozia. CRM jadro, Dokumenty a Postup sa budú stavať alebo preberať.
+Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (živé) a verejný web rozia.
+
+**Upresnenie (21. 11.):** rozia.sk **má vlastné CRM** (stavia sa v rozia.sk, Supabase). Duplikát CRM NajBývania **nie je** CRM rozia, je to **zdroj dát**, na ktorý je CRM rozia napojené. Prerušovaná čiara na obrázku = originál NajBývania → duplikát (tam sa nič nemení); plná väzba = dáta z duplikátu → CRM rozia. Dokumenty a Postup sú moduly CRM rozia.
 
 ## 2. Rozhodnutia, ktoré treba urobiť (nie technické, ale blokujú ďalšie kroky)
 
 | # | Otázka | Môj návrh | Kedy |
 |---|---|---|---|
-| R1 | Kde bude žiť CRM jadro: v Supabase rozia.sk, alebo zostane technológia duplikátu? | Rozhodnúť **až po audite duplikátu** (F2). Ak je duplikát rozumne udržiavateľný, nemigrovať naslepo. | po F2 🔒 |
+| R1 | ~~Kde bude žiť CRM jadro?~~ **Rozhodnuté:** vlastné CRM rozia (Supabase). Duplikát NajBývania je zdroj dát. | Ostáva rozhodnúť **spôsob napojenia** (priamy prístup do DB duplikátu len na čítanie / API / pravidelný export) – po audite F2. | po F2 🔒 |
 | R2 | Čo s CRM na `crm.nacenime.sk`? | Beží ďalej **paralelne**, kým nové CRM nie je overené. Potom len čítanie, nakoniec vypnúť. | F3 |
 | R3 | Kto je prevádzkovateľ osobných údajov? nacenime = NajBývanie Ružomberok, s. r. o.; rozia = ? | Ak ide o **inú firmu**, prenos leadov potrebuje právny základ (zmluva o spracúvaní / spoločné prevádzkovanie, úprava textu súhlasu a zásad ochrany OÚ). **Bez toho neposielať osobné údaje do rozia.** | čo najskôr [T] |
 | R4 | Čo je presne „Databáza ponúk (domy/byty/pozemky)“ v nacenime? | Upresniť: (a) vlastné ponuky kancelárie, (b) podklady pre cenník (predaje + inzeráty), (c) dopyty majiteľov z kalkulačky. Pri (b) pozor na licencie a zber z portálov. | F3 [T] |
-| R5 | Duplikát CRM je **jednorazová kópia** (prerušovaná čiara) alebo sa má s originálom synchronizovať? | Jednorazová kópia, originál firmy sa **nikdy nezapisuje** ani nečíta automaticky. | pondelok [T] |
+| R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | pondelok [T] |
 | R6 | Admin prehľad: jedna firma, alebo viac organizácií (pobočky, franšíza)? | Navrhnúť dátový model s `org_id` už teraz (rozia ho má pripravený), role: maklér / admin organizácie / superadmin. | F3 |
 | R7 | Rozpočet a hosting: Supabase plán (zálohy, PITR), Vercel plán. | Supabase Pro kvôli denným zálohám a PITR pred ostrými dátami CRM. | F4 [T] |
 
@@ -81,8 +83,8 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-028** 🔒 [C] Kvalita dát: duplicity klientov, prázdne polia, formáty telefónov, kódovanie diakritiky.
 - [ ] **I-029** 🔒 [C] Bezpečnostný audit duplikátu (zjavné diery, závislosti so známymi zraniteľnosťami).
 - [ ] **I-030** 🔒 [C] Licencia a vlastníctvo kódu duplikátu – môžeme ho upravovať? [T] potvrdiť.
-- [ ] **I-031** 🔒 [C] Správa z auditu + odporúčanie pre **R1** (ponechať technológiu duplikátu vs. preniesť dáta do Supabase rozia).
-- [ ] **I-032** 🔒 [T] Rozhodnúť R1 a R2.
+- [ ] **I-031** 🔒 [C] Správa z auditu + odporúčanie **spôsobu napojenia** (DB len na čítanie / API / export) a frekvencie synchronizácie.
+- [ ] **I-032** 🔒 [T] Rozhodnúť spôsob napojenia, R5 a R2.
 
 ### F3 · Cieľová architektúra a dátový model
 - [ ] **I-033** [C] ADR-001: kde je „zdroj pravdy“ pre každú entitu (lead, klient, nehnuteľnosť, maklér, dokument, záznam Postupu).
@@ -112,8 +114,10 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-055** [T] Nasadiť na staging, vyskúšať ako maklér a ako admin.
 - [ ] **I-056** [C] Monitoring chýb (napr. Sentry alebo Vercel logy) bez osobných údajov v logoch.
 
-### F5 · CRM jadro: prevzatie dát z duplikátu 🔒
-*(Varianta podľa R1. Ak duplikát zostáva vo svojej technológii, kroky I-057–I-068 sa menia na „napojenie API duplikátu“.)*
+### F5 · Napojenie CRM rozia na dáta z duplikátu NajBývania 🔒
+*CRM rozia je vlastné; duplikát je zdroj. Tok je jednosmerný (duplikát → rozia), duplikát len čítame. Každý prenesený záznam nesie `zdroj = 'najbyvanie'` + `externe_id`, aby opakovaná synchronizácia neprepisovala ani nezdvojovala dáta a aby bolo jasné, čo prišlo z duplikátu a čo vzniklo v rozia.*
+- [ ] **I-056a** 🔒 [C] Pravidlo konfliktov: ak maklér upraví v CRM rozia záznam, ktorý prišiel z duplikátu, čo vyhrá pri ďalšej synchronizácii? Návrh: polia z duplikátu sa aktualizujú, vlastné polia rozia (poznámky, Postup, dokumenty) sa nikdy neprepisujú.
+- [ ] **I-056b** 🔒 [C] Konektor len na čítanie (samostatný DB používateľ / API kľúč s minimom práv), tajomstvá vo Verceli/Supabase, nie v repe.
 - [ ] **I-057** 🔒 [C] Mapovanie polí duplikát → nový model (tabuľka, stĺpec po stĺpci, transformácie).
 - [ ] **I-058** 🔒 [C] Importný skript s **dry-run** režimom (nič nezapíše, len vypíše, čo by spravil, a štatistiky).
 - [ ] **I-059** 🔒 [C] Anonymizovaný výrez duplikátu na testovanie importu.
@@ -123,7 +127,8 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-063** 🔒 [C] Deduplikácia klientov (pravidlá: telefón, e-mail; sporné prípady na ručné rozhodnutie, nie automaticky).
 - [ ] **I-064** 🔒 [S] Kontrola na stagingu maklérmi (1–2 ľudia, reálny pocit, či dáta sedia).
 - [ ] **I-065** 🔒 [T] Záloha produkčnej DB rozia pred ostrým importom ⚠️
-- [ ] **I-066** 🔒 [C] Ostrý import (idempotentný, dá sa spustiť znova bez duplikátov) ⚠️
+- [ ] **I-066** 🔒 [C] Ostrý prvý import (idempotentný, dá sa spustiť znova bez duplikátov) ⚠️
+- [ ] **I-066a** 🔒 [C] Priebežná synchronizácia (ak R5 = priebežne): naplánovaná úloha, len zmeny od poslednej synchronizácie, záznam o každom behu, upozornenie pri chybe.
 - [ ] **I-067** 🔒 [C] Kontrolná správa po importe (rovnaké porovnania ako I-060).
 - [ ] **I-068** 🔒 [C] Rollback plán: ako import úplne odstrániť podľa `import_batch_id`.
 
