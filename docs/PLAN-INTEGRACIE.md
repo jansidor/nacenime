@@ -28,7 +28,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 | R3 | ~~Kto je prevádzkovateľ osobných údajov?~~ **Rozhodnuté 21. 11.:** nacenime.sk, rozia.sk a NajBývanie sú **jedna firma** (NajBývanie Ružomberok, s. r. o.), rozia je rozšírenie možností. | Prenos leadov medzi systémami je **interný** (nie odovzdanie inej firme). Treba ešte: zásady ochrany OÚ na nacenime aj rozia musia uvádzať rovnakého prevádzkovateľa a účel „spracovanie dopytu v našom CRM“ (I-018, I-077). | **potvrdené** |
 | R4 | ~~Čo je „Databáza ponúk“?~~ **Rozhodnuté 21. 11.:** sú to **dopyty z kalkulačky** (ocenenia domov, bytov, pozemkov), ktoré klient odoslal. | Tok je popísaný v kapitole 2a. | **potvrdené** |
 | R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | **potvrdené 21. 11.** |
-| R6 | Admin prehľad: jedna firma, alebo viac organizácií (pobočky, franšíza)? | Navrhnúť dátový model s `org_id` už teraz (rozia ho má pripravený), role: maklér / admin organizácie / superadmin. | F3 |
+| R6 | ~~Pobočky?~~ **Rozhodnuté 21. 11.:** jedna firma, **4 pobočky**: Liptovský Mikuláš, Ružomberok, Dolný Kubín, Martin/Vrútky. | Pobočka = `branches` v rámci jednej organizácie. Každá pobočka má svoje okresy (kap. 2b), makléri patria pobočke. Role: maklér (svoje) / vedúci pobočky (pobočka, voliteľne) / admin (všetko). | **potvrdené** (priradenie okresov potvrdiť) |
 | R7 | Rozpočet a hosting: Supabase plán (zálohy, PITR), Vercel plán. | Supabase Pro kvôli denným zálohám a PITR pred ostrými dátami CRM. | F4 [T] |
 
 ## 2a. Hlavný obchodný tok (potvrdený majiteľom 21. 11.)
@@ -40,7 +40,7 @@ Klient na nacenime.sk          CRM rozia (priestor makléra)
 2. zadá e-mail → príde mu
    hrubé ocenenie (PDF)
 3. ocenenie so súhlasom   ──►  4. automatické pridelenie maklérovi podľa lokality
-   s kontaktovaním                (Martin + okolie → maklér pre Martin)
+   s kontaktovaním                (obec → okres → pobočka → maklér; napr. Vrútky → pobočka Martin/Vrútky)
                                5. maklér vidí ocenenie len vo svojom CRM, kontaktuje klienta
                                6. vytvorí NÁBOR – predvyplnené: meno, kontakt,
                                   popis nehnuteľnosti od klienta, odhad
@@ -56,6 +56,19 @@ Pravidlá toku:
 - Maklérovi sa posiela len ocenenie, pri ktorom klient **dal súhlas s kontaktovaním** (žiadosť o telefonát alebo PDF so súhlasom). Ocenenie bez súhlasu ostáva len v štatistike nacenime.
 - Vymazanie náboru (8b) zmaže nábor a jeho vyplnené dokumenty, ale samotné ocenenie (lead) ostane v CRM so stavom **Stratené + dôvod** (kvôli štatistikám a aby sa ten istý klient nepridelil omylom znova). Osobné údaje sa riadia retenciou GDPR.
 - Ak pre lokalitu nie je určený maklér, ocenenie ide **adminovi na ručné pridelenie** (nikdy sa nestratí).
+
+## 2b. Pobočky a územia (návrh priradenia okresov – potvrdiť)
+
+Kalkulačka nacenime pokrýva 7 okresov. Návrh, ktorá pobočka dostáva ocenenia odkiaľ:
+
+| Pobočka | Okresy (ocenenia z týchto obcí) |
+|---|---|
+| **Liptovský Mikuláš** | Liptovský Mikuláš |
+| **Ružomberok** | Ružomberok |
+| **Dolný Kubín** | Dolný Kubín, Tvrdošín, Námestovo (celá Orava) |
+| **Martin / Vrútky** | Martin, Turčianske Teplice (celý Turiec) |
+
+Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pobočke sa ocenenie pridelí maklérovi podľa jeho užšieho územia (konkrétne obce), inak striedavo medzi maklérmi pobočky, alebo ide vedúcemu/adminovi na ručné pridelenie. Výnimky po obciach (napr. obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
 
 ## 3. Bezpečnostné zásady (platia pre každý krok)
 
@@ -120,7 +133,7 @@ Pravidlá toku:
 - [ ] **I-037** [C] Dátový model CRM jadra: `organizations`, `profiles` (maklér ↔ auth user), `clients`, `properties`, `deals`, `activities`, `tasks`.
 - [ ] **I-038** [C] Dátový model **Postup** = databáza náborov makléra (`nabory`, `owner_id`), nehnuteľnosť, kroky/fázy, stav, termíny, poznámky; RLS „len vlastník + admin“.
 - [ ] **I-039** [C] Dátový model **Dokumenty**: `document_templates` (zdroj = duplikát, externe_id, verzia, kontrolný súčet, súbor len na čítanie), `template_fields` (mapovanie polí na CRM), `client_documents` (vyplnená kópia: klient, nehnuteľnosť, maklér, verzia šablóny, stav Návrh/Skontrolované, súbory). Pozri F8.
-- [ ] **I-040** [C] Dátový model toku (kap. 2a): `leads` (ocenenie z nacenime), `agent_territories` (maklér ↔ obce/okresy), `nabory` (maklér, klient, nehnuteľnosť, väzba na lead, stav Rozpracovaný/Uložený), `document_rules` (podmienka → šablóna, povinná/odporúčaná), `nabor_documents` (navrhnuté/vybrané/vyplnené dokumenty náboru).
+- [ ] **I-040** [C] Dátový model toku (kap. 2a): `leads` (ocenenie z nacenime), `branches` (4 pobočky), `branch_districts` (pobočka ↔ okresy, výnimky po obciach), `agent_territories` (maklér ↔ obce v rámci pobočky), `nabory` (maklér, klient, nehnuteľnosť, väzba na lead, stav Rozpracovaný/Uložený), `document_rules` (podmienka → šablóna, povinná/odporúčaná), `nabor_documents` (navrhnuté/vybrané/vyplnené dokumenty náboru).
 - [ ] **I-041** [C] Spoločné číselníky: obce/lokality, typy, stavy nehnuteľností, stavy leadu (z I-014–I-016).
 - [ ] **I-042** [C] Audit log: kto, kedy, čo zmenil (najmä pri osobných údajoch a dokumentoch).
 - [ ] **I-043** [C] GDPR návrh: retencia, export a výmaz naprieč systémami (výmaz v nacenime musí dobehnúť aj do CRM).
@@ -165,7 +178,7 @@ Pravidlá toku:
 - [ ] **I-071** [C] nacenime: stabilné `udalost_id` (`nacenime:kontakt:<id>`) pre idempotenciu na strane príjemcu.
 - [ ] **I-072** [C] rozia: endpoint `POST /api/inbound/nacenime` – overí podpis, vek správy, uloží **surovú udalosť** do `inbound_events` a vráti 2xx.
 - [ ] **I-073** [C] rozia: spracovanie `inbound_events` → `leads`/`clients` cez `upsert` podľa (`zdroj`, `externe_id`); chybné udalosti zostanú v tabuľke na ručné riešenie.
-- [ ] **I-074** [T] Zoznam maklérov a ich území (obce/okresy, napr. maklér X = Martin + okolie). Pri prekrytí určiť pravidlo (striedanie / hlavný maklér).
+- [ ] **I-074** [T] Potvrdiť priradenie okresov k pobočkám (kap. 2b) a zoznam maklérov po pobočkách; v rámci pobočky pravidlo (užšie územie makléra / striedanie / ručne vedúci).
 - [ ] **I-074a** [C] Pridelenie podľa lokality: obec z ocenenia → územie → maklér; bez makléra → admin na ručné pridelenie. Admin môže pridelenie zmeniť (zapíše sa do histórie).
 - [ ] **I-074b** [C] Oznámenie maklérovi o novom ocenení (e-mail s odkazom do CRM rozia, bez osobných údajov v predmete).
 - [ ] **I-074c** [C] Testy: každá obec 7 okresov má makléra alebo ide adminovi; maklér nevidí ocenenia iného územia (RLS).
