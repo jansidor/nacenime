@@ -52,10 +52,14 @@ Klient na nacenime.sk          CRM rozia (priestor makléra)
                                8b. nedohodnú sa → nábor vymazaný
 ```
 
-Pravidlá toku:
-- Maklérovi sa posiela len ocenenie, pri ktorom klient **dal súhlas s kontaktovaním** (žiadosť o telefonát alebo PDF so súhlasom). Ocenenie bez súhlasu ostáva len v štatistike nacenime.
-- Vymazanie náboru (8b) zmaže nábor a jeho vyplnené dokumenty, ale samotné ocenenie (lead) ostane v CRM so stavom **Stratené + dôvod** (kvôli štatistikám a aby sa ten istý klient nepridelil omylom znova). Osobné údaje sa riadia retenciou GDPR.
-- Ak pre lokalitu nie je určený maklér, ocenenie ide **adminovi na ručné pridelenie** (nikdy sa nestratí).
+Pravidlá toku (potvrdené majiteľom 21. 11.):
+- **Kontaktovanie:** klient, ktorý zadá **telefónne číslo** („Zavolajte mi“), tým žiada o kontakt – ocenenie ide maklérovi. Kto nechce byť volaný, číslo nezadá. Ocenenie len s e-mailom ide maklérovi iba vtedy, keď klient zaškrtol súhlas s kontaktovaním (tak to funguje dnes). Ocenenie bez telefónu aj bez súhlasu ostáva len v štatistike nacenime.
+- **Nedohodnutý nábor sa nevymazáva úplne – ide do archívu.** Vymažú sa rozpracované dokumenty náboru, ale v CRM ostane **meno a priezvisko, telefón, e-mail a stručný popis nehnuteľnosti** (typ, lokalita, výmera, odhad) + dôvod a dátum. Klient je tak na dosah, keby sa vrátil; nábor sa dá z archívu **obnoviť**. Ocenenie dostane stav **Stratené + dôvod**.
+  - GDPR: uchovanie kontaktu po nedohode = oprávnený záujem s obmedzenou dobou (návrh 24 mesiacov ako v nacenime, potom automatická anonymizácia). Musí to byť uvedené v zásadách ochrany OÚ a klient môže kedykoľvek požiadať o výmaz (I-018, I-043).
+- **Ocenenie bez makléra** (lokalita bez určeného makléra/pobočky) sa nikdy nestratí – ide do kategórie **„Nepridelené“**:
+  - admin ho môže prideliť ručne, **alebo**
+  - **ktorýkoľvek maklér si ho môže zobrať** (po dohode s ostatnými). Kto si ho vezme prvý, toho je – ostatným zmizne zo zoznamu (ochrana proti tomu, aby si ho vzali dvaja naraz). Zapíše sa do histórie, kto a kedy si ho vzal.
+  - Ak si ho nikto nevezme do 24 h, admin dostane pripomienku.
 
 ## 2b. Pobočky a územia (návrh priradenia okresov – potvrdiť)
 
@@ -179,7 +183,8 @@ Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pob
 - [ ] **I-072** [C] rozia: endpoint `POST /api/inbound/nacenime` – overí podpis, vek správy, uloží **surovú udalosť** do `inbound_events` a vráti 2xx.
 - [ ] **I-073** [C] rozia: spracovanie `inbound_events` → `leads`/`clients` cez `upsert` podľa (`zdroj`, `externe_id`); chybné udalosti zostanú v tabuľke na ručné riešenie.
 - [ ] **I-074** [T] Potvrdiť priradenie okresov k pobočkám (kap. 2b) a zoznam maklérov po pobočkách; v rámci pobočky pravidlo (užšie územie makléra / striedanie / ručne vedúci).
-- [ ] **I-074a** [C] Pridelenie podľa lokality: obec z ocenenia → územie → maklér; bez makléra → admin na ručné pridelenie. Admin môže pridelenie zmeniť (zapíše sa do histórie).
+- [ ] **I-074a** [C] Pridelenie podľa lokality: obec z ocenenia → okres → pobočka → maklér; bez makléra → kategória **Nepridelené**. Admin môže pridelenie kedykoľvek zmeniť (zapíše sa do histórie).
+- [ ] **I-074d** [C] Kategória **Nepridelené**: vidia ju všetci makléri a admin; tlačidlo **„Vziať si“** (atomicky – prvý vyhráva, druhý dostane hlásenie „už si ho vzal X“); admin môže prideliť ručne; pripomienka adminovi po 24 h bez prevzatia.
 - [ ] **I-074b** [C] Oznámenie maklérovi o novom ocenení (e-mail s odkazom do CRM rozia, bez osobných údajov v predmete).
 - [ ] **I-074c** [C] Testy: každá obec 7 okresov má makléra alebo ide adminovi; maklér nevidí ocenenia iného územia (RLS).
 - [ ] **I-075** [C] Testy: duplicitné doručenie, zlý podpis, starý timestamp, neplatné JSON, výpadok DB.
@@ -194,7 +199,9 @@ Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pob
 ### F7 · Modul Postup (nábory makléra)
 - [ ] **I-083** [C] Migrácia tabuliek `nabory` + RLS (vlastník + admin) + testy RLS.
 - [ ] **I-084** [C] Detail ocenenia v CRM → tlačidlo **„Vytvoriť nábor“**: predvyplní meno, kontakt, adresu, typ, výmeru, stav, popis domu (podlažia, pozemok, stavby) a odhad od–do z nacenime. Maklér doplní zvyšok.
-- [ ] **I-084a** [C] Nábor má stav **Rozpracovaný** (rokuje s klientom) → **Uložený** (dohodli sa) alebo **Vymazať** (nedohodli sa; pýta potvrdenie a dôvod, lead prejde na Stratené).
+- [ ] **I-084a** [C] Nábor má stav **Rozpracovaný** (rokuje s klientom) → **Uložený** (dohodli sa) alebo **Nedohodnutý** (pýta potvrdenie a dôvod; ocenenie prejde na Stratené).
+- [ ] **I-084c** [C] **Archív nedohodnutých**: ostáva meno a priezvisko, telefón, e-mail, stručný popis nehnuteľnosti, dôvod a dátum; rozpracované dokumenty sa zmažú. Vyhľadávanie v archíve a tlačidlo **„Obnoviť nábor“** (klient sa vrátil). Po uplynutí retencie automatická anonymizácia.
+- [ ] **I-084d** [C] Upozornenie pri novom ocenení: ak klient s rovnakým telefónom/e-mailom už je v archíve, maklér to uvidí („klient sa vrátil, predtým nábor z dd.mm.rrrr“).
 - [ ] **I-084b** [C] Obrazovky: zoznam náborov makléra, detail, kroky, termíny, poznámky.
 - [ ] **I-085** [C] Admin prehľad naprieč maklérmi (len čítanie, filtre po maklérovi, konverzia ocenenie → nábor).
 - [ ] **I-086** [C] Väzba nábor ↔ klient/nehnuteľnosť v CRM (aj dáta z duplikátu NajBývania), nie duplicitné kópie.
