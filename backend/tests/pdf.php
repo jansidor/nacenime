@@ -44,7 +44,7 @@ $check('PDF: kontakt na makléra (meno, telefón, e-mail)', [true, true, true], 
 $check('PDF: dátum v slovenskom tvare', 1, preg_match('/Vygenerované \d{1,2}\. \d{1,2}\. \d{4}\./u', $html));
 $check('PDF: zástupné meno makléra sa nezobrazí', [false, true], [str_contains($p = (new Pdf())->html($o, '[MENO MAKLÉRA]'), '[MENO'), str_contains($p, 'Maklér NajBývanie')]);
 $poz = (new Pdf())->html(['adresa' => null, 'psc' => null, 'obec' => 'Liptovský Mikuláš', 'typ' => 'Pozemok', 'vymera' => 800, 'vysledok' => 'málo dát', 'cena_od' => null, 'cena_do' => null, 'veta' => null]);
-$check('PDF pozemok bez adresy: zhrnutie nezačína bodkou, bez rozpätia', [false, true, true], [str_contains($poz, '<p>. '), str_contains($poz, '<p>Liptovský Mikuláš. Pozemok 800 m²</p>'), str_contains($poz, 'Cenu vám povie maklér')]);
+$check('PDF pozemok bez adresy: zhrnutie nezačína bodkou, bez rozpätia', [false, true, true], [str_contains($poz, '<td class="v">. '), str_contains($poz, '<td class="k">Výmera pozemku</td><td class="v">800'), str_contains($poz, 'Cenu vám povie maklér')]);
 $check('PDF: HTML z adresy je escapované', false, str_contains((new Pdf())->html(['adresa' => '<b>x</b>'] + $o), '<b>x</b>'));
 
 exit($fail > 0 ? 1 : 0);
