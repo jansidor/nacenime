@@ -76,6 +76,8 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - **Fáza 1 – štart:** všetky ocenenia (pridelené podľa pobočky aj nepridelené) **rozdeľujú ručne dvaja admini** (mená sú v nastaveniach CRM, nie vo verejnom repe). Systém im ukáže navrhnutú pobočku podľa okresu.
 - **Fáza 2 – po zabehnutí:** automaticky **obec → okres → pobočka → striedavo medzi maklérmi pobočky** (rovnomerne, aby dostal každý). Admini môžu pridelenie kedykoľvek zmeniť. Prepnutie fázy 1 → 2 je nastavenie, nie nové nasadenie.
 - **Odovzdanie kolegovi:** maklér, ktorému bolo ocenenie/nábor pridelené, ho môže **sám odovzdať inému maklérovi tej istej pobočky** (dovolenka, PN, nevie to vyriešiť) a sám si vyberie komu. Kolega dostane oznámenie, zapíše sa do histórie kto, komu, kedy a prečo. Spolu s náborom prechádzajú poznámky a dokumenty.
+- **Obsadenie pobočiek (21. 11., mená sú len v CRM, nie v repe):** Ružomberok 7 ľudí (vrátane oboch adminov), Liptovský Mikuláš 2, Dolný Kubín / Orava 1, Martin / Vrútky 1; 2 ľudia zatiaľ bez pobočky. Spolu 14 v skupine.
+- **Pobočky s jedným maklérom (Dolný Kubín, Martin/Vrútky):** striedanie nemá s kým, a pri neprítomnosti nie je komu odovzdať v rámci pobočky. Preto: ak je jediný maklér pobočky neprítomný, ocenenie ide do fronty adminov; odovzdanie kolegovi z **inej** pobočky povolí admin (alebo nastavíme „susedné pobočky“: DK ↔ RK, MT ↔ RK).
 - Výnimky po obciach (obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
 
 ## 3. Bezpečnostné zásady (platia pre každý krok)
@@ -186,7 +188,7 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - [ ] **I-071** [C] nacenime: stabilné `udalost_id` (`nacenime:kontakt:<id>`) pre idempotenciu na strane príjemcu.
 - [ ] **I-072** [C] rozia: endpoint `POST /api/inbound/nacenime` – overí podpis, vek správy, uloží **surovú udalosť** do `inbound_events` a vráti 2xx.
 - [ ] **I-073** [C] rozia: spracovanie `inbound_events` → `leads`/`clients` cez `upsert` podľa (`zdroj`, `externe_id`); chybné udalosti zostanú v tabuľke na ručné riešenie.
-- [x] **I-074** [T] Priradenie okresov k pobočkám potvrdené; pravidlo: štart ručne admini, potom striedanie v pobočke. Zostáva [T]: zoznam maklérov po pobočkách.
+- [x] **I-074** [T] Priradenie okresov k pobočkám potvrdené; pravidlo: štart ručne admini, potom striedanie v pobočke. Zoznam maklérov po pobočkách dodaný 21. 11. (mimo repa); zostáva doplniť 2 ľudí bez pobočky a vyjasniť duplicitný účet.
 - [ ] **I-074e** [C] Fáza 1: fronta „Na pridelenie“ pre adminov (všetky nové ocenenia, s navrhnutou pobočkou), pridelenie jedným klikom. Prepínač fáza 1 / fáza 2 v nastaveniach.
 - [ ] **I-074f** [C] Fáza 2: striedavé pridelenie v pobočke (round-robin, preskočí makléra označeného ako neprítomný – dovolenka/PN).
 - [ ] **I-074g** [C] **Odovzdať kolegovi**: maklér vyberie kolegu z tej istej pobočky + dôvod; prejde ocenenie aj nábor s poznámkami a dokumentmi; oznámenie kolegovi; záznam v histórii. Test: nedá sa odovzdať mimo pobočky (iba admin).
