@@ -117,7 +117,7 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - [ ] **I-015** [C] Porovnať lokality: nacenime (obce 7 okresov z CSV) vs. rozia (`localities.ts`, slugy) → jednotný číselník obcí.
 - [ ] **I-016** [C] Popísať stavy leadu CRM nacenime (Nový → … → Predané/Stratené) ako kandidáta na spoločný štandard.
 - [ ] **I-017** [C] Zmapovať všetky miesta, kde vznikajú osobné údaje (formuláre nacenime, formuláre rozia, CRM) a ich retenciu.
-- [ ] **I-018** [C] Zmapovať texty súhlasov a zásady ochrany OÚ (nacenime aj rozia): rovnaký prevádzkovateľ (NajBývanie Ružomberok, s. r. o.), účel aj „spracovanie v CRM“, rovnaká doba uchovávania. Doplniť zákonnú identifikáciu do `rozia.sk/lib/site.ts` (dnes `null`).
+- [ ] **I-018** [C] Zmapovať texty súhlasov a zásady ochrany OÚ (nacenime aj rozia): rovnaký prevádzkovateľ (NajBývanie Ružomberok, s. r. o.), účely „spracovanie v CRM“, „archív nedohodnutých náborov (24 mes.)“ a „sprostredkovanie financovania“, rovnaká doba uchovávania. Doplniť zákonnú identifikáciu do `rozia.sk/lib/site.ts` (dnes `null`).
 - [ ] **I-019** [C] Analýza rizík: čo sa pokazí, ak webhook zlyhá / príde dvakrát / príde podvrhnutý.
 - [ ] **I-020** [S] Prejsť výstupy F1 spolu (30 min), opraviť nepresnosti.
 
@@ -225,7 +225,7 @@ Pravidlo pridelenia (potvrdené 21. 11.):
   - Zoznam pre Financie: všetky začaté nábory s filtrom podľa stavu financovania, pobočky a makléra; nové nábory zvýraznené.
   - Poznámky k financovaniu sú oddelené od poznámok makléra; maklér ich vidí na svojom nábore spolu so stavom financovania.
   - Každá zmena stavu ide do histórie (kto, kedy, z čoho na čo).
-  - Prístup ku kontaktu klienta (telefón/e-mail) len ak je potrebný na riešenie financovania – [T] potvrdiť; GDPR: účel „sprostredkovanie financovania“ doplniť do zásad ochrany OÚ (I-018).
+  - **Financie vidí meno, telefón a e-mail klienta** (potvrdené 21. 11.) a môže ho kontaktovať kvôli financovaniu. GDPR: účel „sprostredkovanie financovania“ doplniť do zásad ochrany OÚ na nacenime aj rozia (I-018); prístupy Financie k osobným údajom sa zapisujú do auditu.
   - Testy RLS: Financie nemôže meniť údaje náboru ani dokumenty, len stav financovania a svoje poznámky.
 - [ ] **I-088** [S] Pilot s 1 maklérom (napr. Martin), úpravy, potom všetci.
 
