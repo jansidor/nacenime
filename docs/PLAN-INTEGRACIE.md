@@ -24,11 +24,11 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 | # | Otázka | Môj návrh | Kedy |
 |---|---|---|---|
 | R1 | ~~Kde bude žiť CRM jadro?~~ **Rozhodnuté:** vlastné CRM rozia (Supabase). Duplikát NajBývania je zdroj dát. | Ostáva rozhodnúť **spôsob napojenia** (priamy prístup do DB duplikátu len na čítanie / API / pravidelný export) – po audite F2. | po F2 🔒 |
-| R2 | ~~Čo s CRM na `crm.nacenime.sk`?~~ **Rozhodnuté 21. 11.:** ocenenia sa musia **automaticky rozdeliť maklérom podľa lokality**; maklér ich vidí **len v CRM rozia**, nie v nacenime. | Pridelenie podľa územia makléra (napr. Martin + okolie). Odporúčam, aby pravidlo bežalo **pri príjme v rozia** (tam sú účty a územia maklérov, jedno miesto na správu); nacenime len odošle ocenenie. `crm.nacenime.sk` beží paralelne do overenia, potom vypnúť. | **potvrdené** (miesto pravidla potvrdiť) |
+| R2 | ~~Čo s CRM na `crm.nacenime.sk`?~~ **Rozhodnuté 21. 11.:** ocenenia sa musia **automaticky rozdeliť maklérom podľa lokality**; maklér ich vidí **len v CRM rozia**, nie v nacenime. | Pridelenie podľa územia makléra (kap. 2b). Pravidlo beží **pri príjme v rozia** (tam sú účty a územia maklérov, jedno miesto na správu); nacenime len odošle ocenenie. `crm.nacenime.sk` beží paralelne do overenia, potom vypnúť. | **potvrdené** |
 | R3 | ~~Kto je prevádzkovateľ osobných údajov?~~ **Rozhodnuté 21. 11.:** nacenime.sk, rozia.sk a NajBývanie sú **jedna firma** (NajBývanie Ružomberok, s. r. o.), rozia je rozšírenie možností. | Prenos leadov medzi systémami je **interný** (nie odovzdanie inej firme). Treba ešte: zásady ochrany OÚ na nacenime aj rozia musia uvádzať rovnakého prevádzkovateľa a účel „spracovanie dopytu v našom CRM“ (I-018, I-077). | **potvrdené** |
 | R4 | ~~Čo je „Databáza ponúk“?~~ **Rozhodnuté 21. 11.:** sú to **dopyty z kalkulačky** (ocenenia domov, bytov, pozemkov), ktoré klient odoslal. | Tok je popísaný v kapitole 2a. | **potvrdené** |
 | R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | **potvrdené 21. 11.** |
-| R6 | ~~Pobočky?~~ **Rozhodnuté 21. 11.:** jedna firma, **4 pobočky**: Liptovský Mikuláš, Ružomberok, Dolný Kubín, Martin/Vrútky. | Pobočka = `branches` v rámci jednej organizácie. Každá pobočka má svoje okresy (kap. 2b), makléri patria pobočke. Role: maklér (svoje) / vedúci pobočky (pobočka, voliteľne) / admin (všetko). | **potvrdené** (priradenie okresov potvrdiť) |
+| R6 | ~~Pobočky?~~ **Rozhodnuté 21. 11.:** jedna firma, **4 pobočky**: Liptovský Mikuláš, Ružomberok, Dolný Kubín (celá Orava), Martin/Vrútky (celý Turiec). | Pobočka = `branches` v rámci jednej organizácie, makléri patria pobočke. Role: maklér (svoje) / admin (všetko). | **potvrdené** vrátane okresov |
 | R7 | Rozpočet a hosting: Supabase plán (zálohy, PITR), Vercel plán. | Supabase Pro kvôli denným zálohám a PITR pred ostrými dátami CRM. | F4 [T] |
 
 ## 2a. Hlavný obchodný tok (potvrdený majiteľom 21. 11.)
@@ -61,7 +61,7 @@ Pravidlá toku (potvrdené majiteľom 21. 11.):
   - **ktorýkoľvek maklér si ho môže zobrať** (po dohode s ostatnými). Kto si ho vezme prvý, toho je – ostatným zmizne zo zoznamu (ochrana proti tomu, aby si ho vzali dvaja naraz). Zapíše sa do histórie, kto a kedy si ho vzal.
   - Ak si ho nikto nevezme do 24 h, admin dostane pripomienku.
 
-## 2b. Pobočky a územia (návrh priradenia okresov – potvrdiť)
+## 2b. Pobočky a územia (potvrdené 21. 11.)
 
 Kalkulačka nacenime pokrýva 7 okresov. Návrh, ktorá pobočka dostáva ocenenia odkiaľ:
 
@@ -72,7 +72,11 @@ Kalkulačka nacenime pokrýva 7 okresov. Návrh, ktorá pobočka dostáva ocenen
 | **Dolný Kubín** | Dolný Kubín, Tvrdošín, Námestovo (celá Orava) |
 | **Martin / Vrútky** | Martin, Turčianske Teplice (celý Turiec) |
 
-Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pobočke sa ocenenie pridelí maklérovi podľa jeho užšieho územia (konkrétne obce), inak striedavo medzi maklérmi pobočky, alebo ide vedúcemu/adminovi na ručné pridelenie. Výnimky po obciach (napr. obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
+Pravidlo pridelenia (potvrdené 21. 11.):
+- **Fáza 1 – štart:** všetky ocenenia (pridelené podľa pobočky aj nepridelené) **rozdeľujú ručne dvaja admini** (mená sú v nastaveniach CRM, nie vo verejnom repe). Systém im ukáže navrhnutú pobočku podľa okresu.
+- **Fáza 2 – po zabehnutí:** automaticky **obec → okres → pobočka → striedavo medzi maklérmi pobočky** (rovnomerne, aby dostal každý). Admini môžu pridelenie kedykoľvek zmeniť. Prepnutie fázy 1 → 2 je nastavenie, nie nové nasadenie.
+- **Odovzdanie kolegovi:** maklér, ktorému bolo ocenenie/nábor pridelené, ho môže **sám odovzdať inému maklérovi tej istej pobočky** (dovolenka, PN, nevie to vyriešiť) a sám si vyberie komu. Kolega dostane oznámenie, zapíše sa do histórie kto, komu, kedy a prečo. Spolu s náborom prechádzajú poznámky a dokumenty.
+- Výnimky po obciach (obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
 
 ## 3. Bezpečnostné zásady (platia pre každý krok)
 
@@ -182,9 +186,12 @@ Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pob
 - [ ] **I-071** [C] nacenime: stabilné `udalost_id` (`nacenime:kontakt:<id>`) pre idempotenciu na strane príjemcu.
 - [ ] **I-072** [C] rozia: endpoint `POST /api/inbound/nacenime` – overí podpis, vek správy, uloží **surovú udalosť** do `inbound_events` a vráti 2xx.
 - [ ] **I-073** [C] rozia: spracovanie `inbound_events` → `leads`/`clients` cez `upsert` podľa (`zdroj`, `externe_id`); chybné udalosti zostanú v tabuľke na ručné riešenie.
-- [ ] **I-074** [T] Potvrdiť priradenie okresov k pobočkám (kap. 2b) a zoznam maklérov po pobočkách; v rámci pobočky pravidlo (užšie územie makléra / striedanie / ručne vedúci).
+- [x] **I-074** [T] Priradenie okresov k pobočkám potvrdené; pravidlo: štart ručne admini, potom striedanie v pobočke. Zostáva [T]: zoznam maklérov po pobočkách.
+- [ ] **I-074e** [C] Fáza 1: fronta „Na pridelenie“ pre adminov (všetky nové ocenenia, s navrhnutou pobočkou), pridelenie jedným klikom. Prepínač fáza 1 / fáza 2 v nastaveniach.
+- [ ] **I-074f** [C] Fáza 2: striedavé pridelenie v pobočke (round-robin, preskočí makléra označeného ako neprítomný – dovolenka/PN).
+- [ ] **I-074g** [C] **Odovzdať kolegovi**: maklér vyberie kolegu z tej istej pobočky + dôvod; prejde ocenenie aj nábor s poznámkami a dokumentmi; oznámenie kolegovi; záznam v histórii. Test: nedá sa odovzdať mimo pobočky (iba admin).
 - [ ] **I-074a** [C] Pridelenie podľa lokality: obec z ocenenia → okres → pobočka → maklér; bez makléra → kategória **Nepridelené**. Admin môže pridelenie kedykoľvek zmeniť (zapíše sa do histórie).
-- [ ] **I-074d** [C] Kategória **Nepridelené**: vidia ju všetci makléri a admin; tlačidlo **„Vziať si“** (atomicky – prvý vyhráva, druhý dostane hlásenie „už si ho vzal X“); admin môže prideliť ručne; pripomienka adminovi po 24 h bez prevzatia.
+- [ ] **I-074d** [C] Kategória **Nepridelené**: vidia ju všetci makléri a admini; tlačidlo **„Vziať si“** (atomicky – prvý vyhráva, druhý dostane hlásenie „už si ho vzal X“); admin môže prideliť ručne; pripomienka adminom po 24 h bez prevzatia. **Limit: maklér si môže vziať najviac 1 nepridelené ocenenie za 24 h** (hodnota nastaviteľná, napr. 48 h), aby si jeden nezobral všetky; limit sa kontroluje na serveri, admina sa netýka. Tlačidlo ukáže, kedy si maklér môže vziať ďalšie.
 - [ ] **I-074b** [C] Oznámenie maklérovi o novom ocenení (e-mail s odkazom do CRM rozia, bez osobných údajov v predmete).
 - [ ] **I-074c** [C] Testy: každá obec 7 okresov má makléra alebo ide adminovi; maklér nevidí ocenenia iného územia (RLS).
 - [ ] **I-075** [C] Testy: duplicitné doručenie, zlý podpis, starý timestamp, neplatné JSON, výpadok DB.
@@ -201,7 +208,11 @@ Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pob
 - [ ] **I-084** [C] Detail ocenenia v CRM → tlačidlo **„Vytvoriť nábor“**: predvyplní meno, kontakt, adresu, typ, výmeru, stav, popis domu (podlažia, pozemok, stavby) a odhad od–do z nacenime. Maklér doplní zvyšok.
 - [ ] **I-084a** [C] Nábor má stav **Rozpracovaný** (rokuje s klientom) → **Uložený** (dohodli sa) alebo **Nedohodnutý** (pýta potvrdenie a dôvod; ocenenie prejde na Stratené).
 - [ ] **I-084c** [C] **Archív nedohodnutých**: ostáva meno a priezvisko, telefón, e-mail, stručný popis nehnuteľnosti, dôvod a dátum; rozpracované dokumenty sa zmažú. Vyhľadávanie v archíve a tlačidlo **„Obnoviť nábor“** (klient sa vrátil). Po uplynutí retencie automatická anonymizácia.
-- [ ] **I-084d** [C] Upozornenie pri novom ocenení: ak klient s rovnakým telefónom/e-mailom už je v archíve, maklér to uvidí („klient sa vrátil, predtým nábor z dd.mm.rrrr“).
+- [ ] **I-084d** [C] **Vrátený klient:** pri novom ocenení systém hľadá v archíve aj medzi aktívnymi zhodu podľa telefónu/e-mailu (a mena). Ak ju nájde, **porovná nehnuteľnosť**: lokalita (obec, adresa), typ, výmera, stav, cena/odhad, podrobnosti domu (podlažia, pozemok, stavby).
+  - **Zhoda ≥ 80 %** (rovnaká alebo podobná nehnuteľnosť): obnoví pôvodný nábor s tou istou nehnuteľnosťou a **doplní/aktualizuje len zmenené časti** z nového ocenenia; zmeny ukáže maklérovi (pôvodne → teraz) na potvrdenie.
+  - **Zhoda < 80 %** (iná nehnuteľnosť): klienta predvyplní z existujúceho záznamu a vytvorí **nový nábor** pre novú nehnuteľnosť.
+  - Maklér vidí „klient sa vrátil, predtým nábor z dd.mm.rrrr“ a výsledok môže ručne zmeniť (spojiť / oddeliť). Nič sa neprepíše bez záznamu v histórii.
+- [ ] **I-084e** [C] Testy porovnania: rovnaká adresa a typ s inou cenou → obnova + aktualizácia ceny; iná obec alebo typ → nový nábor; váhy polí a hranica 80 % nastaviteľné.
 - [ ] **I-084b** [C] Obrazovky: zoznam náborov makléra, detail, kroky, termíny, poznámky.
 - [ ] **I-085** [C] Admin prehľad naprieč maklérmi (len čítanie, filtre po maklérovi, konverzia ocenenie → nábor).
 - [ ] **I-086** [C] Väzba nábor ↔ klient/nehnuteľnosť v CRM (aj dáta z duplikátu NajBývania), nie duplicitné kópie.
@@ -221,7 +232,7 @@ Pravidlo pridelenia: **obec → okres → pobočka → maklér pobočky**. V pob
 - [ ] **I-089c** [C] Obrazovka Knižnica: kategórie, vyhľadávanie, náhľad, „Stiahnuť prázdnu“ a „Vyplniť pre klienta“.
 
 **Návrh dokumentov k náboru**
-- [ ] **I-089d** [T] Zoznam: ktoré dokumenty patria ku ktorému prípadu. Základ: **Zmluva o sprostredkovaní predaja** pri každom nábore. Ďalej podľa typu a špecifík (byt → prepis vody, elektriny, plynu; dom, pozemok, spoluvlastníctvo, prenájom… → doplníš).
+- [ ] **I-089d** 🔒 [S] Zoznamy dokumentov ku každej možnosti (byt, dom, pozemok, chata, prenájom, spoluvlastníctvo, špeciálne prípady) spíšeme **spolu v pondelok** podľa aktuálnej dokumentácie v duplikáte NajBývania. Základ: **Zmluva o sprostredkovaní predaja** pri každom nábore; byt → prepis vody, elektriny, plynu.
 - [ ] **I-089e** [C] Pravidlá návrhu (`document_rules`): podmienka (typ, transakcia, vlastníctvo, pozemok, stavby…) → šablóna, **povinná** alebo **odporúčaná**. Spravuje admin bez programovania.
 - [ ] **I-089f** [C] V nábore sekcia „Dokumenty“: povinné navrhnuté hore (Zmluva o sprostredkovaní vždy prvá), odporúčané pod nimi; maklér ich zaškrtne, odoberie alebo pridá iné z knižnice. Vybrané sa vyplnia údajmi náboru (I-090b).
 - [ ] **I-089g** [C] Testy pravidiel: byt → zmluva + energie; každý nábor má zmluvu o sprostredkovaní; neznámy typ → aspoň zmluva o sprostredkovaní.
