@@ -1,0 +1,33 @@
+# .htaccess v koreni webu (design_handoff_nacenime/), len v nasadzovanom strome (vetva deploy). Apache.
+# Ak sa .htaccess ignoruje, pozri deploy/NASADENIE-GIT.md.
+
+# Na https://nacenime.sk/ rovno zobraz aplikáciu (bez presmerovania cez index.html), aby sedela kanonická adresa "/".
+# Ak by DirectoryIndex nefungoval, ostáva záloha: index.html presmeruje na Nacenime.dc.html.
+DirectoryIndex Nacenime.dc.html index.html
+
+# Vlastná stránka pre neexistujúcu adresu (namiesto anglickej chyby hostingu). Platí aj pre skrytý cenník.
+ErrorDocument 404 /404.html
+
+# Bezpečnostné hlavičky (HSTS už nastavuje hosting). Bez Content-Security-Policy: prototypový runtime potrebuje eval a inline štýly.
+<IfModule mod_headers.c>
+    # Stránku nemožno vložiť do rámu cudzieho webu (clickjacking). Vlastný Prehľad v rámci tej istej domény ostáva.
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+</IfModule>
+
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # www.nacenime.sk -> nacenime.sk (jedna adresa pre vyhľadávače)
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+    # Cenník a referenčný výpočet nepatria na verejný web (výpočet beží na serveri). Pre návštevníka 404.
+    RewriteRule ^(data|reference)(/|$) - [R=404,L]
+    RewriteRule (^|/)test\.cjs$ - [R=404,L]
+    # API
+    RewriteRule ^api(/|$) api.php [L,QSA]
+</IfModule>

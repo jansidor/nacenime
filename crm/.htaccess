@@ -1,0 +1,20 @@
+# .htaccess pre CRM (crm.nacenime.sk -> priečinok crm/ v nasadzovanom strome). Apache.
+DirectoryIndex CRM.dc.html
+
+<IfModule mod_headers.c>
+    # Vnútorný systém: nikdy do vyhľadávačov, nikdy do rámu cudzej stránky.
+    Header always set X-Robots-Tag "noindex, nofollow"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Len cez HTTPS (prihlasovacia cookie je Secure).
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+    # API
+    RewriteRule ^api(/|$) api.php [L,QSA]
+</IfModule>
