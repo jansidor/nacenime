@@ -76,7 +76,7 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - **Fáza 1 – štart:** všetky ocenenia (pridelené podľa pobočky aj nepridelené) **rozdeľujú ručne dvaja admini** (mená sú v nastaveniach CRM, nie vo verejnom repe). Systém im ukáže navrhnutú pobočku podľa okresu.
 - **Fáza 2 – po zabehnutí:** automaticky **obec → okres → pobočka → striedavo medzi maklérmi pobočky** (rovnomerne, aby dostal každý). Admini môžu pridelenie kedykoľvek zmeniť. Prepnutie fázy 1 → 2 je nastavenie, nie nové nasadenie.
 - **Odovzdanie kolegovi:** maklér, ktorému bolo ocenenie/nábor pridelené, ho môže **sám odovzdať inému maklérovi tej istej pobočky** (dovolenka, PN, nevie to vyriešiť) a sám si vyberie komu. Kolega dostane oznámenie, zapíše sa do histórie kto, komu, kedy a prečo. Spolu s náborom prechádzajú poznámky a dokumenty.
-- **Obsadenie pobočiek (21. 11., mená sú len v CRM, nie v repe):** Ružomberok 7 (vrátane oboch adminov), Liptovský Mikuláš 2, Dolný Kubín / Orava 1, Martin / Vrútky 1 = **11 aktívnych**. Ďalej 1 účet **neaktívny** (dočasne mimo SK – nedostáva ocenenia, dá sa znova aktivovať) a 1 osoba z **finančného oddelenia** (nie je maklér, nedostáva ocenenia ani prístup k náborom). Duplicitný účet jednej osoby sa nezakladá.
+- **Obsadenie pobočiek (21. 11., mená sú len v CRM, nie v repe):** Ružomberok 7 (vrátane oboch adminov), Liptovský Mikuláš 2, Dolný Kubín / Orava 1, Martin / Vrútky 1 = **11 aktívnych**. Ďalej 1 účet **neaktívny** (dočasne mimo SK – nedostáva ocenenia, dá sa znova aktivovať) a 1 osoba z **finančného oddelenia** (rola Financie: nedostáva ocenenia, vidí všetky začaté nábory a vedie stav financovania – I-088a). Duplicitný účet jednej osoby sa nezakladá.
 - **Pobočky s jedným maklérom (Dolný Kubín, Martin/Vrútky) – potvrdené 21. 11.:** keď je maklér neprítomný (PN, dovolenka, neaktívny), nové ocenenia z jeho pobočky idú **automaticky do Ružomberka** (záložná pobočka, tam sa striedajú); admin ich môže presunúť aj inam. Maklér môže pred neprítomnosťou svoje rozpracované nábory odovzdať kolegovi v Ružomberku alebo inej pobočke. Záložná pobočka je nastavenie (pri každej pobočke), nie pevne v kóde.
 - Výnimky po obciach (obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
 
@@ -191,7 +191,7 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - [x] **I-074** [T] Priradenie okresov k pobočkám potvrdené; pravidlo: štart ručne admini, potom striedanie v pobočke. Zoznam maklérov po pobočkách dodaný a doplnený 21. 11. (mimo repa).
 - [ ] **I-074e** [C] Fáza 1: fronta „Na pridelenie“ pre adminov (všetky nové ocenenia, s navrhnutou pobočkou), pridelenie jedným klikom. Prepínač fáza 1 / fáza 2 v nastaveniach.
 - [ ] **I-074f** [C] Fáza 2: striedavé pridelenie v pobočke (round-robin, preskočí neprítomného/neaktívneho makléra); keď v pobočke nie je nikto dostupný → **záložná pobočka** (DK, MT → RK). Stav makléra: aktívny / neprítomný od–do / neaktívny.
-- [ ] **I-074h** [C] Role bez náborov: účet typu „financie“ (len prehľady/financie podľa potreby, žiadne osobné údaje klientov ani nábory). Rozsah prístupu potvrdí [T].
+- [ ] **I-074h** [C] Rola **Financie** (potvrdené 21. 11., 1 osoba z finančného oddelenia): vidí **všetky začaté nábory zo všetkých pobočiek** (len čítanie údajov náboru), nedostáva ocenenia, nemôže meniť nábor, prideľovať ani mazať. Môže len: (a) nastaviť **stav financovania** náboru, (b) písať **poznámky k financovaniu**. Podrobnosti v I-088a.
 - [ ] **I-074g** [C] **Odovzdať kolegovi**: maklér vyberie kolegu z tej istej pobočky + dôvod; prejde ocenenie aj nábor s poznámkami a dokumentmi; oznámenie kolegovi; záznam v histórii. Odovzdať možno aj do inej pobočky (potvrdené pre malé pobočky); zapíše sa do histórie.
 - [ ] **I-074a** [C] Pridelenie podľa lokality: obec z ocenenia → okres → pobočka → maklér; bez makléra → kategória **Nepridelené**. Admin môže pridelenie kedykoľvek zmeniť (zapíše sa do histórie).
 - [ ] **I-074d** [C] Kategória **Nepridelené**: vidia ju všetci makléri a admini; tlačidlo **„Vziať si“** (atomicky – prvý vyhráva, druhý dostane hlásenie „už si ho vzal X“); admin môže prideliť ručne; pripomienka adminom po 24 h bez prevzatia. **Limit: maklér si môže vziať najviac 1 nepridelené ocenenie za 24 h** (hodnota nastaviteľná, napr. 48 h), aby si jeden nezobral všetky; limit sa kontroluje na serveri, admina sa netýka. Tlačidlo ukáže, kedy si maklér môže vziať ďalšie.
@@ -220,6 +220,13 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - [ ] **I-085** [C] Admin prehľad naprieč maklérmi (len čítanie, filtre po maklérovi, konverzia ocenenie → nábor).
 - [ ] **I-086** [C] Väzba nábor ↔ klient/nehnuteľnosť v CRM (aj dáta z duplikátu NajBývania), nie duplicitné kópie.
 - [ ] **I-087** [C] Import existujúcich náborov, ak ich makléri vedú dnes v Exceli (šablóna + dry-run).
+- [ ] **I-088a** [C] **Financovanie v nábore** (pre rolu Financie):
+  - Stav financovania: **Nové** (nikto neriešil) → **Príprava** (ide sa riešiť) → **Rieši sa** → **Vyriešené**; bokom **Nerieši sa** (klient nechce / financie cez nás zrušené, s dôvodom).
+  - Zoznam pre Financie: všetky začaté nábory s filtrom podľa stavu financovania, pobočky a makléra; nové nábory zvýraznené.
+  - Poznámky k financovaniu sú oddelené od poznámok makléra; maklér ich vidí na svojom nábore spolu so stavom financovania.
+  - Každá zmena stavu ide do histórie (kto, kedy, z čoho na čo).
+  - Prístup ku kontaktu klienta (telefón/e-mail) len ak je potrebný na riešenie financovania – [T] potvrdiť; GDPR: účel „sprostredkovanie financovania“ doplniť do zásad ochrany OÚ (I-018).
+  - Testy RLS: Financie nemôže meniť údaje náboru ani dokumenty, len stav financovania a svoje poznámky.
 - [ ] **I-088** [S] Pilot s 1 maklérom (napr. Martin), úpravy, potom všetci.
 
 ### F8 · Modul Dokumenty (šablóny z duplikátu NajBývania → vyplnenie v CRM rozia)
