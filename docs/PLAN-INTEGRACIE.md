@@ -24,12 +24,38 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 | # | Otázka | Môj návrh | Kedy |
 |---|---|---|---|
 | R1 | ~~Kde bude žiť CRM jadro?~~ **Rozhodnuté:** vlastné CRM rozia (Supabase). Duplikát NajBývania je zdroj dát. | Ostáva rozhodnúť **spôsob napojenia** (priamy prístup do DB duplikátu len na čítanie / API / pravidelný export) – po audite F2. | po F2 🔒 |
-| R2 | Čo s CRM na `crm.nacenime.sk`? | Beží ďalej **paralelne**, kým nové CRM nie je overené. Potom len čítanie, nakoniec vypnúť. | F3 |
+| R2 | ~~Čo s CRM na `crm.nacenime.sk`?~~ **Rozhodnuté 21. 11.:** ocenenia sa musia **automaticky rozdeliť maklérom podľa lokality**; maklér ich vidí **len v CRM rozia**, nie v nacenime. | Pridelenie podľa územia makléra (napr. Martin + okolie). Odporúčam, aby pravidlo bežalo **pri príjme v rozia** (tam sú účty a územia maklérov, jedno miesto na správu); nacenime len odošle ocenenie. `crm.nacenime.sk` beží paralelne do overenia, potom vypnúť. | **potvrdené** (miesto pravidla potvrdiť) |
 | R3 | ~~Kto je prevádzkovateľ osobných údajov?~~ **Rozhodnuté 21. 11.:** nacenime.sk, rozia.sk a NajBývanie sú **jedna firma** (NajBývanie Ružomberok, s. r. o.), rozia je rozšírenie možností. | Prenos leadov medzi systémami je **interný** (nie odovzdanie inej firme). Treba ešte: zásady ochrany OÚ na nacenime aj rozia musia uvádzať rovnakého prevádzkovateľa a účel „spracovanie dopytu v našom CRM“ (I-018, I-077). | **potvrdené** |
-| R4 | Čo je presne „Databáza ponúk (domy/byty/pozemky)“ v nacenime? | Upresniť: (a) vlastné ponuky kancelárie, (b) podklady pre cenník (predaje + inzeráty), (c) dopyty majiteľov z kalkulačky. Pri (b) pozor na licencie a zber z portálov. | F3 [T] |
+| R4 | ~~Čo je „Databáza ponúk“?~~ **Rozhodnuté 21. 11.:** sú to **dopyty z kalkulačky** (ocenenia domov, bytov, pozemkov), ktoré klient odoslal. | Tok je popísaný v kapitole 2a. | **potvrdené** |
 | R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | **potvrdené 21. 11.** |
 | R6 | Admin prehľad: jedna firma, alebo viac organizácií (pobočky, franšíza)? | Navrhnúť dátový model s `org_id` už teraz (rozia ho má pripravený), role: maklér / admin organizácie / superadmin. | F3 |
 | R7 | Rozpočet a hosting: Supabase plán (zálohy, PITR), Vercel plán. | Supabase Pro kvôli denným zálohám a PITR pred ostrými dátami CRM. | F4 [T] |
+
+## 2a. Hlavný obchodný tok (potvrdený majiteľom 21. 11.)
+
+```
+Klient na nacenime.sk          CRM rozia (priestor makléra)
+─────────────────────          ─────────────────────────────────────────────
+1. ocení dom/byt/pozemok
+2. zadá e-mail → príde mu
+   hrubé ocenenie (PDF)
+3. ocenenie so súhlasom   ──►  4. automatické pridelenie maklérovi podľa lokality
+   s kontaktovaním                (Martin + okolie → maklér pre Martin)
+                               5. maklér vidí ocenenie len vo svojom CRM, kontaktuje klienta
+                               6. vytvorí NÁBOR – predvyplnené: meno, kontakt,
+                                  popis nehnuteľnosti od klienta, odhad
+                               7. systém NAVRHNE DOKUMENTY:
+                                  • vždy: Zmluva o sprostredkovaní predaja (prioritná)
+                                  • podľa typu/špecifík: napr. byt → prepis vody,
+                                    elektriny, plynu; ďalšie podľa nehnuteľnosti
+                               8a. dohodnú sa → nábor uložený v databáze makléra
+                               8b. nedohodnú sa → nábor vymazaný
+```
+
+Pravidlá toku:
+- Maklérovi sa posiela len ocenenie, pri ktorom klient **dal súhlas s kontaktovaním** (žiadosť o telefonát alebo PDF so súhlasom). Ocenenie bez súhlasu ostáva len v štatistike nacenime.
+- Vymazanie náboru (8b) zmaže nábor a jeho vyplnené dokumenty, ale samotné ocenenie (lead) ostane v CRM so stavom **Stratené + dôvod** (kvôli štatistikám a aby sa ten istý klient nepridelil omylom znova). Osobné údaje sa riadia retenciou GDPR.
+- Ak pre lokalitu nie je určený maklér, ocenenie ide **adminovi na ručné pridelenie** (nikdy sa nestratí).
 
 ## 3. Bezpečnostné zásady (platia pre každý krok)
 
@@ -92,9 +118,9 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-035** [C] ADR-003: autentifikácia – Supabase Auth (e-mail + magic link, neskôr 2FA pre adminov).
 - [ ] **I-036** [C] ADR-004: role a oprávnenia – `makler` (vidí len svoje), `admin` (vidí všetko v organizácii), `superadmin` (technická správa). Vynucuje **RLS v databáze**, nie len UI.
 - [ ] **I-037** [C] Dátový model CRM jadra: `organizations`, `profiles` (maklér ↔ auth user), `clients`, `properties`, `deals`, `activities`, `tasks`.
-- [ ] **I-038** [C] Dátový model **Postup**: záznam patrí maklérovi (`owner_id`), nehnuteľnosť, kroky/fázy náboru, stav, termíny, poznámky; RLS „len vlastník + admin“.
+- [ ] **I-038** [C] Dátový model **Postup** = databáza náborov makléra (`nabory`, `owner_id`), nehnuteľnosť, kroky/fázy, stav, termíny, poznámky; RLS „len vlastník + admin“.
 - [ ] **I-039** [C] Dátový model **Dokumenty**: `document_templates` (zdroj = duplikát, externe_id, verzia, kontrolný súčet, súbor len na čítanie), `template_fields` (mapovanie polí na CRM), `client_documents` (vyplnená kópia: klient, nehnuteľnosť, maklér, verzia šablóny, stav Návrh/Skontrolované, súbory). Pozri F8.
-- [ ] **I-040** [C] Dátový model **Databáza ponúk** podľa R4.
+- [ ] **I-040** [C] Dátový model toku (kap. 2a): `leads` (ocenenie z nacenime), `agent_territories` (maklér ↔ obce/okresy), `nabory` (maklér, klient, nehnuteľnosť, väzba na lead, stav Rozpracovaný/Uložený), `document_rules` (podmienka → šablóna, povinná/odporúčaná), `nabor_documents` (navrhnuté/vybrané/vyplnené dokumenty náboru).
 - [ ] **I-041** [C] Spoločné číselníky: obce/lokality, typy, stavy nehnuteľností, stavy leadu (z I-014–I-016).
 - [ ] **I-042** [C] Audit log: kto, kedy, čo zmenil (najmä pri osobných údajoch a dokumentoch).
 - [ ] **I-043** [C] GDPR návrh: retencia, export a výmaz naprieč systémami (výmaz v nacenime musí dobehnúť aj do CRM).
@@ -139,7 +165,10 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-071** [C] nacenime: stabilné `udalost_id` (`nacenime:kontakt:<id>`) pre idempotenciu na strane príjemcu.
 - [ ] **I-072** [C] rozia: endpoint `POST /api/inbound/nacenime` – overí podpis, vek správy, uloží **surovú udalosť** do `inbound_events` a vráti 2xx.
 - [ ] **I-073** [C] rozia: spracovanie `inbound_events` → `leads`/`clients` cez `upsert` podľa (`zdroj`, `externe_id`); chybné udalosti zostanú v tabuľke na ručné riešenie.
-- [ ] **I-074** [C] Pravidlo pridelenia leadu maklérovi (podľa lokality / rotácie / ručne adminom) – podľa rozhodnutia v F3.
+- [ ] **I-074** [T] Zoznam maklérov a ich území (obce/okresy, napr. maklér X = Martin + okolie). Pri prekrytí určiť pravidlo (striedanie / hlavný maklér).
+- [ ] **I-074a** [C] Pridelenie podľa lokality: obec z ocenenia → územie → maklér; bez makléra → admin na ručné pridelenie. Admin môže pridelenie zmeniť (zapíše sa do histórie).
+- [ ] **I-074b** [C] Oznámenie maklérovi o novom ocenení (e-mail s odkazom do CRM rozia, bez osobných údajov v predmete).
+- [ ] **I-074c** [C] Testy: každá obec 7 okresov má makléra alebo ide adminovi; maklér nevidí ocenenia iného územia (RLS).
 - [ ] **I-075** [C] Testy: duplicitné doručenie, zlý podpis, starý timestamp, neplatné JSON, výpadok DB.
 - [ ] **I-076** [C] Nastaviť na **staging**: nacenime (lokálne/staging) → rozia staging. Celý tok od kalkulačky po kartu v CRM.
 - [ ] **I-077** [T] Upravené zásady ochrany OÚ (I-018) sú zverejnené na nacenime aj rozia, ideálne po pohľade advokáta. Až potom ostrý prenos leadov.
@@ -149,13 +178,15 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-081** [C] Synchronizácia výmazu (GDPR): `gdpr.php zmaz` v nacenime pošle udalosť `lead.deleted`, CRM údaje anonymizuje.
 - [ ] **I-082** [S] Rozhodnúť o CRM na `crm.nacenime.sk` (R2): režim len na čítanie → vypnutie. Dáta z neho (stav, poznámky, pridelenie) preniesť jednorazovým importom, ak sa používali.
 
-### F7 · Modul Postup (databáza makléra)
-- [ ] **I-083** [C] Migrácia tabuliek Postupu + RLS (vlastník + admin) + testy RLS.
-- [ ] **I-084** [C] Obrazovky: zoznam nabratých nehnuteľností, detail, kroky, termíny, poznámky.
-- [ ] **I-085** [C] Admin prehľad naprieč maklérmi (len čítanie, filtre po maklérovi).
-- [ ] **I-086** [C] Väzba Postup ↔ CRM (nehnuteľnosť/klient z CRM, nie duplicitné kópie).
-- [ ] **I-087** [C] Import existujúcich záznamov, ak makléri vedú Postup dnes v Exceli (šablóna + dry-run).
-- [ ] **I-088** [S] Pilot s 1 maklérom, úpravy, potom všetci.
+### F7 · Modul Postup (nábory makléra)
+- [ ] **I-083** [C] Migrácia tabuliek `nabory` + RLS (vlastník + admin) + testy RLS.
+- [ ] **I-084** [C] Detail ocenenia v CRM → tlačidlo **„Vytvoriť nábor“**: predvyplní meno, kontakt, adresu, typ, výmeru, stav, popis domu (podlažia, pozemok, stavby) a odhad od–do z nacenime. Maklér doplní zvyšok.
+- [ ] **I-084a** [C] Nábor má stav **Rozpracovaný** (rokuje s klientom) → **Uložený** (dohodli sa) alebo **Vymazať** (nedohodli sa; pýta potvrdenie a dôvod, lead prejde na Stratené).
+- [ ] **I-084b** [C] Obrazovky: zoznam náborov makléra, detail, kroky, termíny, poznámky.
+- [ ] **I-085** [C] Admin prehľad naprieč maklérmi (len čítanie, filtre po maklérovi, konverzia ocenenie → nábor).
+- [ ] **I-086** [C] Väzba nábor ↔ klient/nehnuteľnosť v CRM (aj dáta z duplikátu NajBývania), nie duplicitné kópie.
+- [ ] **I-087** [C] Import existujúcich náborov, ak ich makléri vedú dnes v Exceli (šablóna + dry-run).
+- [ ] **I-088** [S] Pilot s 1 maklérom (napr. Martin), úpravy, potom všetci.
 
 ### F8 · Modul Dokumenty (šablóny z duplikátu NajBývania → vyplnenie v CRM rozia)
 *Rozhodnutie majiteľa (21. 11.):*
@@ -168,6 +199,12 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-089a** 🔒 [C] Synchronizácia šablón duplikát → privátny Storage rozia (len čítanie, kontrolný súčet, zmena v duplikáte = nová verzia v rozia, stará ostáva v archíve).
 - [ ] **I-089b** [C] Ochrana šablón: makléri majú k šablónam **len čítanie** (Storage politiky/RLS), nikto ich v rozia neprepíše ani nezmaže; overené testom aj cez API.
 - [ ] **I-089c** [C] Obrazovka Knižnica: kategórie, vyhľadávanie, náhľad, „Stiahnuť prázdnu“ a „Vyplniť pre klienta“.
+
+**Návrh dokumentov k náboru**
+- [ ] **I-089d** [T] Zoznam: ktoré dokumenty patria ku ktorému prípadu. Základ: **Zmluva o sprostredkovaní predaja** pri každom nábore. Ďalej podľa typu a špecifík (byt → prepis vody, elektriny, plynu; dom, pozemok, spoluvlastníctvo, prenájom… → doplníš).
+- [ ] **I-089e** [C] Pravidlá návrhu (`document_rules`): podmienka (typ, transakcia, vlastníctvo, pozemok, stavby…) → šablóna, **povinná** alebo **odporúčaná**. Spravuje admin bez programovania.
+- [ ] **I-089f** [C] V nábore sekcia „Dokumenty“: povinné navrhnuté hore (Zmluva o sprostredkovaní vždy prvá), odporúčané pod nimi; maklér ich zaškrtne, odoberie alebo pridá iné z knižnice. Vybrané sa vyplnia údajmi náboru (I-090b).
+- [ ] **I-089g** [C] Testy pravidiel: byt → zmluva + energie; každý nábor má zmluvu o sprostredkovaní; neznámy typ → aspoň zmluva o sprostredkovaní.
 
 **Vyplnenie pre klienta (nový dokument, šablóna sa nemení)**
 - [ ] **I-090** [S] Pre každú šablónu zoznam polí (meno, rodné číslo/dátum narodenia, adresa, LV, parcela, výmera, cena, provízia…) a ich mapovanie na polia CRM. [T] potvrdí, ktoré polia sa smú vypĺňať automaticky.
@@ -182,9 +219,9 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-093a** [T] Šablóny používané na vyplnenie nechať skontrolovať advokátom (najmä odvodené verzie s poľami).
 - [ ] **I-093b** [C] Neskôr: elektronický podpis vyplneného dokumentu (samostatné rozhodnutie).
 
-### F9 · Databáza ponúk (nacenime) podľa R4
-- [ ] **I-094** [C] Podľa R4: buď ponuky z CRM → cenník nacenime (export predajov ako `podklady.csv`, `zostav-cennik.php --doplnit`), alebo samostatná evidencia ponúk.
-- [ ] **I-095** [C] Spätná väzba: predané nehnuteľnosti z CRM (`sales.price_per_m2`) ako zdroj pre cenník nacenime aj pre odhad na rozia – **jeden zdroj čísel**, aby dva weby neukazovali rozdielne odhady.
+### F9 · Odhady a cenník (jeden zdroj čísel)
+- [ ] **I-094** [C] Uložené nábory a predaje z CRM ako podklad pre cenník nacenime (export do `podklady.csv`, `zostav-cennik.php --doplnit`) – len €/m², lokalita, typ, bez osobných údajov.
+- [ ] **I-095** [C] Predané nehnuteľnosti z CRM (`sales.price_per_m2`) ako spoločný zdroj pre cenník nacenime aj odhad na rozia – aby dva weby neukazovali rozdielne odhady.
 - [ ] **I-096** [S] Rozhodnúť, či rozia.sk ponechá vlastnú kalkulačku ocenenia, alebo bude odkazovať / volať nacenime `/api/odhad`.
 
 ### F10 · Marketing (`nacenime-marketing`)
