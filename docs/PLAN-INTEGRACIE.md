@@ -164,7 +164,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 3. *Maklér vyberie šablónu a klienta a **CRM rozia vytvorí novú vyplnenú kópiu** s údajmi klienta a nehnuteľnosti z CRM. Šablóna sa tým nemení; vzniká samostatný dokument uložený pri klientovi.*
 
 **Knižnica (zdroj = duplikát)**
-- [ ] **I-089** 🔒 [C] V audite duplikátu (F2) zistiť, kde a ako má dokumenty: formát (DOCX, PDF, ODT…), kategórie, verzie, či majú vyznačené polia na vyplnenie.
+- [ ] **I-089** 🔒 [C] V audite duplikátu (F2) zistiť, kde a ako má dokumenty: formát (podľa majiteľa prevažne **Word/DOCX**, niektoré možno PDF; staršie .doc treba previesť na DOCX), kategórie, verzie, či majú vyznačené polia na vyplnenie.
 - [ ] **I-089a** 🔒 [C] Synchronizácia šablón duplikát → privátny Storage rozia (len čítanie, kontrolný súčet, zmena v duplikáte = nová verzia v rozia, stará ostáva v archíve).
 - [ ] **I-089b** [C] Ochrana šablón: makléri majú k šablónam **len čítanie** (Storage politiky/RLS), nikto ich v rozia neprepíše ani nezmaže; overené testom aj cez API.
 - [ ] **I-089c** [C] Obrazovka Knižnica: kategórie, vyhľadávanie, náhľad, „Stiahnuť prázdnu“ a „Vyplniť pre klienta“.
@@ -172,9 +172,10 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 **Vyplnenie pre klienta (nový dokument, šablóna sa nemení)**
 - [ ] **I-090** [S] Pre každú šablónu zoznam polí (meno, rodné číslo/dátum narodenia, adresa, LV, parcela, výmera, cena, provízia…) a ich mapovanie na polia CRM. [T] potvrdí, ktoré polia sa smú vypĺňať automaticky.
 - [ ] **I-090a** [C] Ak šablóny z duplikátu nemajú vyznačené polia: pripraviť **odvodenú „vyplňovaciu“ verziu** so zástupnými poliami (napr. `{{klient.meno}}`). Originál z duplikátu zostáva nedotknutý; odvodená verzia sa viaže na verziu originálu a pri jeho zmene sa označí na kontrolu.
-- [ ] **I-090b** [C] Generovanie: vybraná šablóna + klient/nehnuteľnosť → **nový súbor** (DOCX na úpravu + PDF), uložený na karte klienta. Údaje berie z CRM rozia (vrátane dát prenesených z duplikátu).
+- [ ] **I-090b** [C] Generovanie: vybraná šablóna + klient/nehnuteľnosť → **nový súbor** (DOCX na úpravu + PDF na tlač). Šablóny len v PDF sa automaticky nevypĺňajú – ponúknu sa na stiahnutie prázdne, uložený na karte klienta. Údaje berie z CRM rozia (vrátane dát prenesených z duplikátu).
 - [ ] **I-090c** [C] Chýbajúce údaje sa **nevymýšľajú**: pole bez hodnoty zostane viditeľne prázdne a maklér dostane zoznam, čo treba doplniť (do CRM alebo ručne do dokumentu).
 - [ ] **I-090d** [C] Kontrola pred použitím: vyplnený dokument má stav „Návrh“, kým ho maklér neskontroluje; ku každému sa uloží verzia šablóny a čas vytvorenia.
+- [ ] **I-090e** [C] Ručné doplnenie (rozhodnutie 21. 11.): maklér si vyplnený dokument **stiahne ako DOCX**, doplní voľné miesta sám a **nahrá späť** ku klientovi. Nahratý súbor sa uloží ako **nová verzia** toho istého dokumentu (predošlé verzie ostanú, nič sa neprepíše). Povolené formáty pri nahrávaní: DOCX a PDF, limit veľkosti, kontrola typu súboru. Pôvodná šablóna sa tým nikdy nemení.
 - [ ] **I-091** [C] Prístupy: vyplnené dokumenty klienta vidí len jeho maklér a admin (RLS), sťahovanie cez podpísaný odkaz s krátkou platnosťou, nikdy verejná URL.
 - [ ] **I-092** [C] Audit: kto vyplnil, kto stiahol, kto zmazal; GDPR výmaz klienta zmaže aj jeho vyplnené dokumenty.
 - [ ] **I-093** [C] Testy: šablóna sa generovaním nezmení (kontrolný súčet pred/po), maklér nevidí dokumenty cudzích klientov, chýbajúce pole nespôsobí pád ani vymyslenú hodnotu.
