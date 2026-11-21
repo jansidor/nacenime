@@ -25,7 +25,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 |---|---|---|---|
 | R1 | ~~Kde bude žiť CRM jadro?~~ **Rozhodnuté:** vlastné CRM rozia (Supabase). Duplikát NajBývania je zdroj dát. | Ostáva rozhodnúť **spôsob napojenia** (priamy prístup do DB duplikátu len na čítanie / API / pravidelný export) – po audite F2. | po F2 🔒 |
 | R2 | Čo s CRM na `crm.nacenime.sk`? | Beží ďalej **paralelne**, kým nové CRM nie je overené. Potom len čítanie, nakoniec vypnúť. | F3 |
-| R3 | Kto je prevádzkovateľ osobných údajov? nacenime = NajBývanie Ružomberok, s. r. o.; rozia = ? | Ak ide o **inú firmu**, prenos leadov potrebuje právny základ (zmluva o spracúvaní / spoločné prevádzkovanie, úprava textu súhlasu a zásad ochrany OÚ). **Bez toho neposielať osobné údaje do rozia.** | čo najskôr [T] |
+| R3 | ~~Kto je prevádzkovateľ osobných údajov?~~ **Rozhodnuté 21. 11.:** nacenime.sk, rozia.sk a NajBývanie sú **jedna firma** (NajBývanie Ružomberok, s. r. o.), rozia je rozšírenie možností. | Prenos leadov medzi systémami je **interný** (nie odovzdanie inej firme). Treba ešte: zásady ochrany OÚ na nacenime aj rozia musia uvádzať rovnakého prevádzkovateľa a účel „spracovanie dopytu v našom CRM“ (I-018, I-077). | **potvrdené** |
 | R4 | Čo je presne „Databáza ponúk (domy/byty/pozemky)“ v nacenime? | Upresniť: (a) vlastné ponuky kancelárie, (b) podklady pre cenník (predaje + inzeráty), (c) dopyty majiteľov z kalkulačky. Pri (b) pozor na licencie a zber z portálov. | F3 [T] |
 | R5 | Napojenie CRM rozia na duplikát: **jednorazový import**, alebo **priebežné** (dáta pribúdajú v duplikáte a majú sa objavovať v CRM rozia)? A má CRM rozia niekedy **zapisovať späť** do duplikátu? | Priebežné, **jednosmerné, len čítanie** (duplikát → rozia). Zápis späť nie. Originál firmy sa nikdy nečíta ani nezapisuje automaticky. | **potvrdené 21. 11.** |
 | R6 | Admin prehľad: jedna firma, alebo viac organizácií (pobočky, franšíza)? | Navrhnúť dátový model s `org_id` už teraz (rozia ho má pripravený), role: maklér / admin organizácie / superadmin. | F3 |
@@ -49,7 +49,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 ## 4. Plán po fázach
 
 ### F0 · Poistky a príprava (víkend, dá sa hneď)
-- [ ] **I-001** [T] Potvrdiť R3 (prevádzkovateľ OÚ pre rozia.sk) a R5 (duplikát = jednorazová kópia).
+- [x] **I-001** [T] Potvrdiť R3 (jedna firma) a R5 (priebežne, jednosmerne, len čítanie) – potvrdené 21. 11.
 - [ ] **I-002** [C] Zapnúť ochranu vetvy `main` v `nacenime` (PR povinný, CI musí prejsť) – návod pre teba, nastavuješ ty v GitHube. [T]
 - [ ] **I-003** [C] Pridať CI do `rozia.sk` (`typecheck`, `test`, `build`, `check:contrast`) – zatiaľ tam CI chýba.
 - [ ] **I-004** [T] Overiť, že beží denná záloha nacenime (`zaloha-db.php` v crone) a stiahnuť jednu zálohu mimo hosting.
@@ -68,7 +68,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-015** [C] Porovnať lokality: nacenime (obce 7 okresov z CSV) vs. rozia (`localities.ts`, slugy) → jednotný číselník obcí.
 - [ ] **I-016** [C] Popísať stavy leadu CRM nacenime (Nový → … → Predané/Stratené) ako kandidáta na spoločný štandard.
 - [ ] **I-017** [C] Zmapovať všetky miesta, kde vznikajú osobné údaje (formuláre nacenime, formuláre rozia, CRM) a ich retenciu.
-- [ ] **I-018** [C] Zmapovať texty súhlasov (nacenime aj rozia) – podklad pre R3.
+- [ ] **I-018** [C] Zmapovať texty súhlasov a zásady ochrany OÚ (nacenime aj rozia): rovnaký prevádzkovateľ (NajBývanie Ružomberok, s. r. o.), účel aj „spracovanie v CRM“, rovnaká doba uchovávania. Doplniť zákonnú identifikáciu do `rozia.sk/lib/site.ts` (dnes `null`).
 - [ ] **I-019** [C] Analýza rizík: čo sa pokazí, ak webhook zlyhá / príde dvakrát / príde podvrhnutý.
 - [ ] **I-020** [S] Prejsť výstupy F1 spolu (30 min), opraviť nepresnosti.
 
@@ -142,7 +142,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-074** [C] Pravidlo pridelenia leadu maklérovi (podľa lokality / rotácie / ručne adminom) – podľa rozhodnutia v F3.
 - [ ] **I-075** [C] Testy: duplicitné doručenie, zlý podpis, starý timestamp, neplatné JSON, výpadok DB.
 - [ ] **I-076** [C] Nastaviť na **staging**: nacenime (lokálne/staging) → rozia staging. Celý tok od kalkulačky po kartu v CRM.
-- [ ] **I-077** [T] R3 vyriešené (právny základ prenosu). **Bez toho ďalej nejdeme.**
+- [ ] **I-077** [T] Upravené zásady ochrany OÚ (I-018) sú zverejnené na nacenime aj rozia, ideálne po pohľade advokáta. Až potom ostrý prenos leadov.
 - [ ] **I-078** [T] Do produkčného `shared/.env` nacenime nastaviť `NACENIME_LEAD_WEBHOOK` a tajomstvo. E-mailové oznámenia **ostávajú zapnuté** (paralelný beh). ⚠️
 - [ ] **I-079** [C] Overenie: `/api/health/fronta` v poriadku, prvé leady prišli do CRM.
 - [ ] **I-080** [C] Týždenné porovnanie: počet leadov v nacenime vs. v CRM (skript bez osobných údajov vo výstupe), 2 týždne.
@@ -204,7 +204,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 | **Sobota–nedeľa (21.–22. 11.)** | F0 a F1 (bez duplikátu), návrhy ADR v F3, ktoré nezávisia od duplikátu (I-034, I-035, I-036, I-038, I-039). |
 | **Pondelok (23. 11.)** | F2 – audit duplikátu, rozhodnutie R1/R2. |
 | **Týždeň 1** | F3 dokončenie, F4 základ rozia (staging). Paralelne F6 kroky I-069–I-076 (dajú sa na stagingu bez duplikátu). |
-| **Týždeň 2–3** | F5 import (staging → produkcia), F6 ostrý beh po vyriešení R3. |
+| **Týždeň 2–3** | F5 import (staging → produkcia), F6 ostrý beh po zverejnení upravených zásad ochrany OÚ (I-077). |
 | **Týždeň 3+** | F7 Postup, F8 Dokumenty, F9, F11. |
 
 ## 6. Čo môže začať hneď (bez duplikátu a bez rozhodnutí)
