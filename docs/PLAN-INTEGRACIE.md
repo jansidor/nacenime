@@ -93,7 +93,7 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-036** [C] ADR-004: role a oprávnenia – `makler` (vidí len svoje), `admin` (vidí všetko v organizácii), `superadmin` (technická správa). Vynucuje **RLS v databáze**, nie len UI.
 - [ ] **I-037** [C] Dátový model CRM jadra: `organizations`, `profiles` (maklér ↔ auth user), `clients`, `properties`, `deals`, `activities`, `tasks`.
 - [ ] **I-038** [C] Dátový model **Postup**: záznam patrí maklérovi (`owner_id`), nehnuteľnosť, kroky/fázy náboru, stav, termíny, poznámky; RLS „len vlastník + admin“.
-- [ ] **I-039** [C] Dátový model **Dokumenty**: knižnica prázdnych šablón (kategória, názov, popis, verzia, súbor v privátnom Supabase Storage). Bez vypĺňania a bez väzby na klienta – len stiahnutie (pozri F8).
+- [ ] **I-039** [C] Dátový model **Dokumenty**: `document_templates` (zdroj = duplikát, externe_id, verzia, kontrolný súčet, súbor len na čítanie), `template_fields` (mapovanie polí na CRM), `client_documents` (vyplnená kópia: klient, nehnuteľnosť, maklér, verzia šablóny, stav Návrh/Skontrolované, súbory). Pozri F8.
 - [ ] **I-040** [C] Dátový model **Databáza ponúk** podľa R4.
 - [ ] **I-041** [C] Spoločné číselníky: obce/lokality, typy, stavy nehnuteľností, stavy leadu (z I-014–I-016).
 - [ ] **I-042** [C] Audit log: kto, kedy, čo zmenil (najmä pri osobných údajoch a dokumentoch).
@@ -157,13 +157,29 @@ Dôsledok: schéma z obrázka je **cieľový stav**. Dnes existuje nacenime (ži
 - [ ] **I-087** [C] Import existujúcich záznamov, ak makléri vedú Postup dnes v Exceli (šablóna + dry-run).
 - [ ] **I-088** [S] Pilot s 1 maklérom, úpravy, potom všetci.
 
-### F8 · Modul Dokumenty (knižnica prázdnych šablón)
-*Rozhodnutie majiteľa (21. 11.): Dokumenty sú **knižnica prázdnych, nevyplnených šablón**. Maklér si šablónu len **stiahne** a vypĺňa ju mimo systému. V systéme sa do šablón **nezapisuje**, nevypĺňajú sa dátami z CRM a nevznikajú v ňom vyplnené dokumenty. Šablóna zostáva stále rovnaká.*
-- [ ] **I-089** [T] Dodať šablóny (zmluvy, nájomné zmluvy, dohody o spolupráci a iné) – schválené advokátom, vo formáte na stiahnutie (napr. DOCX a PDF).
-- [ ] **I-090** [C] Knižnica: zoznam šablón s kategóriami, názvom, popisom, dátumom poslednej verzie a vyhľadávaním. Akcia pre makléra je **len „Stiahnuť“**.
-- [ ] **I-091** [C] Ochrana proti zápisu: súbory v privátnom Storage, makléri majú **len čítanie** (RLS/Storage politiky), stiahnutie cez podpísaný odkaz s krátkou platnosťou, nikdy verejná URL. Nahrať, nahradiť alebo vyradiť šablónu môže **len admin**.
-- [ ] **I-092** [C] Verzie šablón: nová verzia od admina nahradí aktuálnu na stiahnutie, staré verzie zostanú v archíve (vidí admin). Audit: kto nahral a kto stiahol.
-- [ ] **I-093** [C] Test: maklér nemôže nahrať, prepísať ani zmazať šablónu ani cez API (nielen skrytým tlačidlom).
+### F8 · Modul Dokumenty (šablóny z duplikátu NajBývania → vyplnenie v CRM rozia)
+*Rozhodnutie majiteľa (21. 11.):*
+1. *Knižnica šablón (zmluvy, nájmy, dohody o spolupráci, formuláre) **pochádza z duplikátu CRM NajBývania**. CRM rozia ju odtiaľ preberá (len čítanie, rovnaký konektor ako F5).*
+2. *V rozia je knižnica **len na stiahnutie / výber**. Do pôvodných šablón **nikto nezapisuje**, zostávajú prázdne a nevypísané.*
+3. *Maklér vyberie šablónu a klienta a **CRM rozia vytvorí novú vyplnenú kópiu** s údajmi klienta a nehnuteľnosti z CRM. Šablóna sa tým nemení; vzniká samostatný dokument uložený pri klientovi.*
+
+**Knižnica (zdroj = duplikát)**
+- [ ] **I-089** 🔒 [C] V audite duplikátu (F2) zistiť, kde a ako má dokumenty: formát (DOCX, PDF, ODT…), kategórie, verzie, či majú vyznačené polia na vyplnenie.
+- [ ] **I-089a** 🔒 [C] Synchronizácia šablón duplikát → privátny Storage rozia (len čítanie, kontrolný súčet, zmena v duplikáte = nová verzia v rozia, stará ostáva v archíve).
+- [ ] **I-089b** [C] Ochrana šablón: makléri majú k šablónam **len čítanie** (Storage politiky/RLS), nikto ich v rozia neprepíše ani nezmaže; overené testom aj cez API.
+- [ ] **I-089c** [C] Obrazovka Knižnica: kategórie, vyhľadávanie, náhľad, „Stiahnuť prázdnu“ a „Vyplniť pre klienta“.
+
+**Vyplnenie pre klienta (nový dokument, šablóna sa nemení)**
+- [ ] **I-090** [S] Pre každú šablónu zoznam polí (meno, rodné číslo/dátum narodenia, adresa, LV, parcela, výmera, cena, provízia…) a ich mapovanie na polia CRM. [T] potvrdí, ktoré polia sa smú vypĺňať automaticky.
+- [ ] **I-090a** [C] Ak šablóny z duplikátu nemajú vyznačené polia: pripraviť **odvodenú „vyplňovaciu“ verziu** so zástupnými poliami (napr. `{{klient.meno}}`). Originál z duplikátu zostáva nedotknutý; odvodená verzia sa viaže na verziu originálu a pri jeho zmene sa označí na kontrolu.
+- [ ] **I-090b** [C] Generovanie: vybraná šablóna + klient/nehnuteľnosť → **nový súbor** (DOCX na úpravu + PDF), uložený na karte klienta. Údaje berie z CRM rozia (vrátane dát prenesených z duplikátu).
+- [ ] **I-090c** [C] Chýbajúce údaje sa **nevymýšľajú**: pole bez hodnoty zostane viditeľne prázdne a maklér dostane zoznam, čo treba doplniť (do CRM alebo ručne do dokumentu).
+- [ ] **I-090d** [C] Kontrola pred použitím: vyplnený dokument má stav „Návrh“, kým ho maklér neskontroluje; ku každému sa uloží verzia šablóny a čas vytvorenia.
+- [ ] **I-091** [C] Prístupy: vyplnené dokumenty klienta vidí len jeho maklér a admin (RLS), sťahovanie cez podpísaný odkaz s krátkou platnosťou, nikdy verejná URL.
+- [ ] **I-092** [C] Audit: kto vyplnil, kto stiahol, kto zmazal; GDPR výmaz klienta zmaže aj jeho vyplnené dokumenty.
+- [ ] **I-093** [C] Testy: šablóna sa generovaním nezmení (kontrolný súčet pred/po), maklér nevidí dokumenty cudzích klientov, chýbajúce pole nespôsobí pád ani vymyslenú hodnotu.
+- [ ] **I-093a** [T] Šablóny používané na vyplnenie nechať skontrolovať advokátom (najmä odvodené verzie s poľami).
+- [ ] **I-093b** [C] Neskôr: elektronický podpis vyplneného dokumentu (samostatné rozhodnutie).
 
 ### F9 · Databáza ponúk (nacenime) podľa R4
 - [ ] **I-094** [C] Podľa R4: buď ponuky z CRM → cenník nacenime (export predajov ako `podklady.csv`, `zostav-cennik.php --doplnit`), alebo samostatná evidencia ponúk.
