@@ -24,6 +24,7 @@ Integrácia troch projektov jednej firmy (NajBývanie Ružomberok, s. r. o.): **
 - rozia PR #1 (schéma CRM jadra `0002`, `0003`, testy oprávnení) je **otvorený**.
 - Vetva `claude/nifty-dijkstra-aqmzuc` v repe rozia obsahuje navyše: migráciu **`0004_hardening_handoff.sql`** (opravy z kontroly PR #1: `audit()` už nie je volateľný zvonka, ochrana stĺpcov ocenení, Nepridelené aj bez pobočky, kontakt Financií len pri nábore, odovzdanie kolegovi, dostupnosť makléra), testy `supabase/tests/rls_crm_2.sql`, simuláciu Supabase `supabase/tests/bootstrap_local.sql`, CI `.github/workflows/ci.yml` a `docs/PROSTREDIA.md`. Lokálne všetko prešlo (migrácie 0001 až 0004, obe sady testov, build, typecheck, kontrast), na skutočnom Supabase **nič nebolo spustené**.
 - Tabuľka `inbound_events` (jedinečné `(source, event_id)`) už existuje v `0002`. Príjem webhooku v rozia **ešte nie je napísaný**.
+- V rozia je od migrácie **`0005_lifecycle.sql`** (vetva `claude/nifty-dijkstra-aqmzuc`, zatiaľ nezlúčená, ak ju už majiteľ nezlúčil): číselník obcí `municipalities` (213 obcí 7 okresov) a funkcia `branch_for_municipality(obec, okres)`, nastavenia `app_settings`, funkcia `auto_assign_valuation(ocenenie)` (len server, robí niečo len pri `assignment_mode = 'round_robin'`), `anonymize_archived()` (len server), archív a obnova náborov, vrátený klient, `suggest_documents()`. Pobočky a okresy nasadzuje `supabase/seed/branches.sql`. Nepíš ich znova, použi ich.
 - Duplikát CRM NajBývania zatiaľ nikto nevidel. Prístup má byť **len na čítanie**.
 
 ## ZÁSADY (neporušiteľné, platia pre všetky tri nástroje)
@@ -60,7 +61,7 @@ Rola: senior inžinier. Máš prístup k `jansidor/nacenime` a `jansidor/rozia.s
 - Chybný, chýbajúci alebo starý podpis → 401, telo sa nespracuje. Nič neloguj z tela (osobné údaje).
 - Platná udalosť: zapíš do `inbound_events` (jedinečné `(source, event_id)` z `X-Nacenime-Event-Id`), duplicitu prijmi s 2xx a nespracuj znova. 2xx až po uložení. Zápis cez server so servisným kľúčom.
 - Spracovanie `inbound_events` → klient (`clients`) a ocenenie (`valuations`) cez upsert podľa `(source, source_id)`; chybná udalosť dostane `status = 'error'` a text chyby, nie pád.
-- Pridelenie podľa lokality: obec → okres → pobočka (Liptovský Mikuláš, Ružomberok, Dolný Kubín = celá Orava, Martin/Vrútky = celý Turiec; číselník obcí je v `backend/data/obce-siedmich-okresov.csv` v nacenime). Ocenenie bez pobočky ostane `nepridelene` s `branch_id = null` (v 0004 ho smie vziať každý maklér). Fáza 1 = pridelenie ručne admini; automatické striedanie je neskôr (I-074f), nerob ho teraz.
+- Pridelenie podľa lokality: `branch_for_municipality(obec)` vráti pobočku (Liptovský Mikuláš, Ružomberok, Dolný Kubín = celá Orava, Martin/Vrútky = celý Turiec) alebo null. Ocenenie bez pobočky ostane `nepridelene` s `branch_id = null` (smie ho vziať každý maklér). Po uložení ocenenia zavolaj `auto_assign_valuation(id)` servisným kľúčom: kým je `assignment_mode = 'manual'` (štart), nič neurobí a ocenenie ostane na ručné pridelenie adminmi. Adresu ukladaj do `payload` pod kľúčom `adresa`, inak sa pri vrátenom klientovi neporovnáva. Pri novom ocenení klienta, ktorý už v CRM je, zavolaj `returning_client_check()`; prepojenie robí maklér cez aplikáciu.
 - Do rozia ide len lead, kde je telefón (žiadosť o telefonát) alebo súhlas (PDF so súhlasom). Pravidlo je už v nacenime, v príjme ho len over.
 - Migrácie pre vstupné tabuľky, ak treba niečo nad `inbound_events` (napr. `import_batches`, `sync_runs`), píš ako nové súbory `0005_…`. Uprav `supabase/tests/rls_crm_2.sql` alebo pridaj nový test; pridaj do funkcií zoznam v teste N9, ak pridáš funkciu.
 - Testy (vitest): podpis platný, zlý, starý, bez hlavičky, duplicitné doručenie, neplatné JSON, veľké telo, výpadok DB.
@@ -221,6 +222,8 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 | I-003 CI pre rozia | **hotové** vo vetve `claude/nifty-dijkstra-aqmzuc` (rozia), čaká na zlúčenie |
 | I-037 až I-042, I-048, I-049, I-083, I-084a, I-088a (základ) | **migrácie 0002 až 0004 a testy oprávnení hotové** (rozia PR #1 + vetva s 0004), overené len na simulovanom Postgrese, **nie na skutočnom Supabase** |
 | I-074d, I-074g | **v databáze hotové** (Nepridelené, limit, odovzdanie); obrazovky ešte nie |
+| I-084a až I-084e, I-074a, I-074e, I-074f, I-089e až I-089g (databázová časť) | **hotové v migrácii 0005** (archív a obnova, anonymizácia po 24 mesiacoch, vrátený klient so zhodou 80 %, ručné pridelenie adminom, automatické striedanie pripravené a vypnuté, návrh dokumentov, číselník obcí), testy `rls_crm_3.sql`; **nie je zlúčené**, obrazovky ešte nie |
+| I-018 (podklad zásad OÚ) | **podklad pre advokáta hotový** (`docs/ZASADY-OU-NAVRH.md`), texty na weboch sa nemenili |
 | I-072, I-073 príjem webhooku v rozia | **nie je hotové** (kolega, prompt 1, blok A1) |
 | I-006, I-007 staging Supabase a Vercel | návod `docs/PROSTREDIA.md` hotový, projekt zakladá majiteľ |
 | F2 audit duplikátu, F5 import | čaká na prístup k duplikátu |
