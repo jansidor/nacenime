@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /reference/
+Disallow: /Nacenime%20Prehlad.dc.html
+
+Sitemap: https://nacenime.sk/sitemap.xml

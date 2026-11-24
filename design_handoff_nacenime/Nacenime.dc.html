@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nacenime.sk — Odhad ceny bytu alebo domu online | Liptov, Turiec, Orava</title>
+<meta name="description" content="Zistite orientačnú cenu svojho bytu alebo domu za pár sekúnd. Päť otázok, bez registrácie, bez telefónu. Odhad pre Ružomberok, Liptovský Mikuláš, Martin, Dolný Kubín a Námestovo.">
+<link rel="canonical" href="https://nacenime.sk/">
+<meta name="theme-color" content="#11122f">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon.ico" sizes="48x48">
+<link rel="icon" href="./icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="sk_SK">
+<meta property="og:site_name" content="Nacenime.sk">
+<meta property="og:url" content="https://nacenime.sk/">
+<meta property="og:title" content="Koľko stojí váš byt alebo dom? | Nacenime.sk">
+<meta property="og:description" content="Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu. Orientačný odhad pre Liptov, Turiec a Oravu.">
+<meta property="og:image" content="https://nacenime.sk/og-image.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Koľko stojí váš byt alebo dom? | Nacenime.sk">
+<meta name="twitter:description" content="Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu.">
+<meta name="twitter:image" content="https://nacenime.sk/og-image.png?v=2">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "@id": "https://nacenime.sk/#firma",
+  "name": "NajBývanie Ružomberok, s. r. o.",
+  "url": "https://nacenime.sk/",
+  "logo": "https://nacenime.sk/icon-512.png",
+  "email": "info@nacenime.sk",
+  "telephone": "+421951161561",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Podhora 1330/48",
+    "postalCode": "034 01",
+    "addressLocality": "Ružomberok",
+    "addressCountry": "SK"
+  },
+  "areaServed": ["Liptov", "Turiec", "Orava"],
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": "Orientačný odhad ceny nehnuteľnosti",
+      "description": "Online kalkulačka orientačnej ceny bytu alebo domu na základe adresy a stavu nehnuteľnosti."
+    }
+  }
+}
+</script>
+<!-- React sa sťahuje súbežne so support.js (inak až po ňom). Hashe musia sedieť s REACT_SRI a REACT_DOM_SRI v support.js. -->
+<!-- Pozadie úvodu je LCP: prehliadač ho bez preloadu objaví až po vykreslení šablóny skriptom. -->
+<link rel="preload" as="image" href="./img/hory-video-m.jpg" media="(max-width: 900px)" fetchpriority="high">
+<link rel="preload" as="image" href="./img/hory-video.jpg" media="(min-width: 901px)" fetchpriority="high">
+<link rel="preload" as="script" href="./vendor/react-18.3.1.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous">
+<link rel="preload" as="script" href="./vendor/react-dom-18.3.1.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous">
+<script src="./support.js"></script>
+<script src="./cookies/cookies.js" defer></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preload" href="./fonty/archivo-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="./fonty/archivo-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<!-- Slovenské znaky (ľ, č, ž…) sú v sade latin-ext a sú hneď v nadpise aj texte úvodu. -->
+<link rel="preload" href="./fonty/archivo-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="./fonty/archivo-latin-ext-800-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="stylesheet" href="./fonty/fonty.css">
+<style>
+html,body{margin:0;background:#f6f4ef}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* Celá výška viditeľnej plochy telefónu (100vh je v mobilnom Safari a Chrome vyššie, pätička by bola pod panelom). */
+.nm-koren{min-height:100vh;min-height:100dvh}
+/* Odkazy v hlavičke a pätičke: plocha na ťuknutie aspoň 44 px (odporúčanie Apple a Google). */
+header a,footer a{display:inline-flex;align-items:center;min-height:44px}
+*{box-sizing:border-box}
+a{color:#272361;text-decoration:underline;text-underline-offset:4px}
+@media (hover:hover){a:hover{color:#11122f;text-decoration-thickness:3px}}
+input::placeholder{color:#50516a;opacity:1}
+a:focus-visible,button:focus-visible,input:focus-visible,[role="img"]:focus-visible{outline:3px solid #272361;outline-offset:2px}
+footer a:focus-visible{outline-color:#f6f4ef}
+/* Rozšírený dizajn 17. 11. 2026 (moderný, technický): akcent mätová #7fe0c8 len na tmavom, #0e6b58 na svetlom. */
+.nm-wrap{width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding-left:clamp(20px,5vw,64px);padding-right:clamp(20px,5vw,64px)}
+.nm-main-uvod{max-width:none !important;padding:0 !important}
+.nm-hlavicka-pas{background:#11122f}
+.nm-hlavicka{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-top:16px;padding-bottom:16px}
+.nm-logo{font:800 24px/1.2 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff !important;text-decoration:none !important}
+.nm-logo span{color:#7fe0c8}
+.nm-nav{display:flex;flex-wrap:wrap;gap:0 28px;font-size:16px}
+.nm-nav a{color:#c9c8e6;text-decoration:none}
+@media (hover:hover){.nm-nav a:hover{color:#ffffff}}
+@media (max-width:760px){.nm-nav-sek{display:none !important}}
+.nm-hlavicka a:focus-visible,.nm-hero a:focus-visible,.nm-faq-pas a:focus-visible{outline-color:#7fe0c8}
+.nm-hero{position:relative;overflow:hidden;isolation:isolate;background:url(img/hory-video.jpg) center/cover #11122f;color:#ffffff}
+.nm-uvod-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
+@media (max-width:900px){.nm-hero{background:url(img/hory-video-m.jpg) 50% 0/auto 600px no-repeat #11122f}.nm-mriezka{background:linear-gradient(180deg,rgba(17,18,47,.55) 0%,rgba(17,18,47,.8) 40%,rgba(17,18,47,.95) 70%)}}
+.nm-hero::after{content:"";position:absolute;inset:auto -20% -60% 30%;height:120%;background:radial-gradient(closest-side,rgba(127,224,200,.16),transparent);pointer-events:none}
+.nm-mriezka{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(17,18,47,.9) 0%,rgba(17,18,47,.72) 42%,rgba(17,18,47,.3) 100%),linear-gradient(0deg,rgba(17,18,47,.9),transparent 30%)}
+.nm-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,72px);align-items:start;padding-top:clamp(24px,4vw,48px);padding-bottom:clamp(40px,6vw,72px)}
+@media (max-width:900px){.nm-hero-in{grid-template-columns:1fr}}
+.nm-stitok{display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
+.nm-bod{width:8px;height:8px;border-radius:50%;background:#7fe0c8;box-shadow:0 0 0 4px rgba(127,224,200,.18)}
+.nm-hero h1{margin:0;font:800 clamp(44px,6vw,64px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance;max-width:13ch}
+.nm-lead{margin:20px 0 0;max-width:40ch;font-size:clamp(19px,2vw,24px);color:#c9c8e6}
+.nm-hladanie{margin-top:28px;max-width:680px;padding:20px;background:#ffffff;border-radius:20px;color:#11122f;box-shadow:0 24px 60px -20px rgba(0,0,0,.5)}
+.nm-hladanie button[type=submit]{transition:background .15s,transform .15s}
+@media (hover:hover){.nm-hladanie button[type=submit]:hover{transform:translateY(-1px)}}
+.nm-pod{margin:16px 0 0}
+.nm-pod a{color:#c9c8e6}
+@media (hover:hover){.nm-pod a:hover{color:#ffffff}}
+.nm-ukazka{margin-top:clamp(0px,3vw,40px);padding:28px;border:1px solid rgba(201,200,230,.2);border-radius:20px;background:rgba(39,35,97,.55)}
+.nm-ukazka-hlava{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:16px;color:#c9c8e6}
+.nm-cip{padding:4px 12px;border-radius:999px;background:rgba(127,224,200,.14);color:#7fe0c8;font-weight:600}
+.nm-ukazka-cena{margin:16px 0 24px;white-space:nowrap;font:800 clamp(28px,3.2vw,40px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:#ffffff}
+.nm-stupnica{position:relative;height:12px;border-radius:999px;background:rgba(201,200,230,.18)}
+.nm-stupnica-fill{position:absolute;left:30%;right:22%;top:0;bottom:0;border-radius:999px;background:#7fe0c8}
+.nm-stupnica-pin{position:absolute;left:54%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#ffffff;border:4px solid #7fe0c8}
+.nm-stupnica-lbl{display:flex;justify-content:space-between;margin-top:10px;font-size:16px;color:#c9c8e6}
+.nm-stlpce{display:flex;align-items:flex-end;gap:6px;height:88px;margin-top:24px}
+.nm-stlpce i{flex:1;border-radius:4px 4px 0 0;background:rgba(201,200,230,.22);transform-origin:bottom;animation:nm-rast .8s cubic-bezier(.2,.8,.2,1) both}
+.nm-stlpce i.on{background:#7fe0c8}
+@keyframes nm-rast{from{transform:scaleY(.1)}to{transform:scaleY(1)}}
+.nm-ukazka-pozn{margin:12px 0 0;font-size:16px;color:#c9c8e6}
+.nm-cisla{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(201,200,230,.18);background:linear-gradient(90deg,rgba(17,18,47,.35),rgba(17,18,47,.8))}
+.nm-cisla div{padding:28px 24px 32px 0}
+.nm-cisla div+div{padding-left:24px;border-left:1px solid rgba(201,200,230,.18)}
+.nm-cisla b{display:block;font:800 clamp(32px,4vw,44px)/1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#7fe0c8;font-variant-numeric:tabular-nums}
+.nm-cisla span{display:block;margin-top:8px;font-size:16px;color:#c9c8e6;max-width:20ch}
+@media (max-width:760px){.nm-cisla div{padding:20px 12px 24px 0}.nm-cisla div+div{padding-left:12px}}
+.nm-uvod h2{margin:0;font:800 clamp(32px,4.4vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;max-width:20ch}
+.nm-uvod h3{margin:0;font:800 24px/1.15 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361}
+.nm-blok{padding-top:clamp(64px,9vw,120px)}
+.nm-kicker{margin:0 0 12px;font-size:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#0e6b58}
+.nm-kicker.nm-svetly{color:#7fe0c8}
+.nm-kroky{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:20px}
+.nm-kroky li{position:relative;padding:32px;background:#ffffff;border:1px solid #dcd9d0;border-radius:20px;box-shadow:0 1px 2px rgba(17,18,47,.06),0 12px 32px -12px rgba(17,18,47,.18);transition:transform .2s,box-shadow .2s}
+@media (hover:hover){.nm-kroky li:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(17,18,47,.06),0 20px 40px -14px rgba(17,18,47,.25)}}
+.nm-num{position:absolute;top:28px;right:32px;font-weight:800;font-size:16px;color:#50516a;font-variant-numeric:tabular-nums}
+.nm-kroky svg{width:48px;height:48px;padding:10px;border-radius:12px;background:#272361;fill:none;stroke:#7fe0c8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nm-kroky h3{margin-top:24px}
+.nm-kroky p{margin:8px 0 0;color:#50516a}
+.nm-faq-pas{position:relative;overflow:hidden;isolation:isolate;margin-top:clamp(64px,9vw,120px);background:url(img/hory-liptov.webp) center 40%/cover #272361}
+.nm-faq-pas::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(39,35,97,.86) 0%,rgba(39,35,97,.66) 45%,rgba(39,35,97,.3) 100%)}
+@media (max-width:900px){.nm-faq-pas::before{background:linear-gradient(180deg,rgba(39,35,97,.75) 0%,rgba(39,35,97,.6) 45%,rgba(39,35,97,.45) 100%)}}
+.nm-faq-in{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(32px,5vw,72px);align-items:center;padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(56px,8vw,96px)}
+@media (max-width:900px){.nm-faq-in{grid-template-columns:1fr}}
+.nm-uvod h2.nm-svetly-h{color:#ffffff}
+.nm-faq-vsetky{margin:24px 0 0}
+.nm-faq-vsetky a{color:#7fe0c8;font-weight:600}
+.nm-faq-karta{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px;min-height:240px;padding:clamp(28px,4vw,44px);background:#ffffff;border-radius:20px;color:#11122f;text-decoration:none;box-shadow:0 30px 60px -24px rgba(0,0,0,.55)}
+.nm-faq-n{font-size:16px;font-weight:600;color:#50516a;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.nm-faq-q{font:800 clamp(28px,3.4vw,36px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance}
+.nm-faq-odp{font-size:clamp(19px,2.2vw,22px);max-width:38ch}
+.nm-faq-viac{margin-top:auto;font-weight:600;color:#272361;text-decoration:underline;text-underline-offset:4px}
+@media (hover:hover){.nm-faq-karta:hover .nm-faq-viac{text-decoration-thickness:3px}}
+.nm-faq-a,.nm-faq-b,.nm-faq-stop{position:absolute;left:0;top:0;height:4px;width:100%;background:#0e6b58;transform-origin:left}
+.nm-faq-a{animation:nm-faq-a 5s linear both}.nm-faq-b{animation:nm-faq-b 5s linear both}.nm-faq-stop{transform:scaleX(0)}
+@keyframes nm-faq-a{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes nm-faq-b{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.nm-mesta{margin-top:40px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:200px;gap:16px}
+.nm-mesto{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;border-radius:20px;overflow:hidden;color:#ffffff !important;text-decoration:none !important;background-color:#272361;background-size:cover;background-position:center}
+.nm-mesto::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(17,18,47,.92),rgba(17,18,47,.35) 70%,rgba(17,18,47,.15))}
+.nm-mesto-velke{grid-column:span 2;grid-row:span 2}
+.nm-mesto-bez,.nm-mesto-foto-bez{background-color:#272361 !important;background-image:linear-gradient(rgba(201,200,230,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(201,200,230,.09) 1px,transparent 1px) !important;background-size:28px 28px !important}
+.nm-mesto-foto-bez{justify-content:flex-start !important;align-items:flex-end !important;text-align:left !important;padding:28px !important}
+.nm-mesto-foto-text{display:flex;flex-direction:column;color:#ffffff}
+.nm-mesto-foto-text b{font:800 clamp(32px,4vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em}
+.nm-mesto b{font:800 clamp(24px,2.6vw,32px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em}
+.nm-reg{font-size:16px;color:#7fe0c8;font-weight:600;margin-bottom:4px}
+.nm-mesto::after{content:"→";position:absolute;top:18px;right:20px;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16);font-size:20px;transition:transform .2s,background .2s}
+@media (hover:hover){.nm-mesto:hover::after{transform:translateX(4px);background:#7fe0c8;color:#11122f}}
+.nm-mesto:focus-visible{outline:3px solid #272361;outline-offset:3px}
+@media (max-width:900px){.nm-mesta{grid-template-columns:1fr 1fr;grid-auto-rows:160px}}
+@media (max-width:520px){.nm-mesta{grid-template-columns:1fr}.nm-mesto-velke{grid-column:auto}}
+.nm-kalk{display:grid;grid-template-columns:minmax(0,640px) minmax(0,340px);gap:clamp(32px,6vw,96px);align-items:start}
+@media (max-width:900px){.nm-kalk{grid-template-columns:1fr}.nm-kalk-panel{display:none}}
+.nm-kalk-panel{position:sticky;top:24px;padding:28px;background:#ffffff;border:1px solid #dcd9d0;border-radius:20px;box-shadow:0 1px 2px rgba(17,18,47,.06),0 12px 32px -12px rgba(17,18,47,.18)}
+.nm-kalk-adr{margin:0 0 16px;font-weight:600;color:#272361}
+.nm-kalk-riadky{list-style:none;margin:0;padding:0;border-top:1px solid #dcd9d0}
+.nm-kalk-riadky li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #dcd9d0;font-size:16px;color:#50516a}
+.nm-kalk-riadky li b{font-weight:600;color:#50516a;text-align:right}
+.nm-kalk-riadky li.nm-hotovo b{color:#11122f}
+.nm-kalk-z{display:inline-block;box-sizing:border-box;width:18px;height:18px;margin-right:8px;vertical-align:-4px;flex:none;border-radius:50%;border:1.5px solid #dcd9d0}
+.nm-kalk-riadky li.nm-hotovo .nm-kalk-z{border-color:#7fe0c8;background:#7fe0c8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%2311122f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;background-origin:border-box}
+.nm-kalk-riadky li.nm-teraz{color:#272361;font-weight:600}
+.nm-kalk-riadky li.nm-teraz .nm-kalk-z{border:0;background:#d32441;transform:scale(.6);animation:nm-pulz 1.4s ease-in-out infinite}
+@keyframes nm-pulz{50%{opacity:.35}}
+.nm-kalk-cena{margin-top:20px;padding:16px;border-radius:12px;background:#272361}
+.nm-kalk-stlpce{display:flex;align-items:flex-end;gap:5px;height:56px;filter:blur(2px)}
+.nm-kalk-stlpce i{flex:1;border-radius:3px 3px 0 0;background:#7fe0c8;opacity:.7}
+.nm-kalk-pozn{margin:12px 0 0;font-size:16px;color:#50516a}
+.nm-opt{transition:transform .15s,box-shadow .15s}
+@media (hover:hover){.nm-opt:hover{transform:translateY(-1px);box-shadow:0 8px 20px -10px rgba(17,18,47,.45)}}
+.nm-ico{display:flex !important;align-items:center;gap:14px}
+.nm-ico::before{content:"";flex:none;width:28px;height:28px;background:currentColor;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
+.nm-ico-byt{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Crect x='5' y='3' width='14' height='18' rx='1'/%3E%3Cpath d='M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M11 21v-3h2v3'/%3E%3C/svg%3E")}
+.nm-ico-dom{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7'/%3E%3Cpath d='M5 10v10h14V10'/%3E%3Cpath d='M10 20v-5h4v5'/%3E%3C/svg%3E")}
+.nm-ico-chata{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M2 13L12 4l10 9'/%3E%3Cpath d='M5 11v9h14v-9M10 20v-4h4v4'/%3E%3Cpath d='M16 6V3h2v5'/%3E%3C/svg%3E")}
+.nm-ico-apartman{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M3 21V9l6-4 6 4v12M15 21V12h6v9M2 21h20'/%3E%3Cpath d='M7 12h4M7 16h4'/%3E%3C/svg%3E")}
+.nm-ico-pozemok{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M3 8l6-3 6 3 6-3v11l-6 3-6-3-6 3z'/%3E%3Cpath d='M9 5v11M15 8v11'/%3E%3C/svg%3E")}
+@media (prefers-reduced-motion:reduce){.nm-kalk-riadky li.nm-teraz .nm-kalk-z{animation:none}.nm-opt{transition:none}}
+.nm-ico-lupa{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M20 20l-4.6-4.6'/%3E%3C/svg%3E")}
+.nm-ico-predaj{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12V4h8l10 10-8 8z'/%3E%3Ccircle cx='7.5' cy='8.5' r='1.5'/%3E%3C/svg%3E")}
+.nm-ico-dedic{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h7l5 5v13H7z'/%3E%3Cpath d='M14 3v5h5M10 13h6M10 17h6'/%3E%3C/svg%3E")}
+.nm-ico-rozvod{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='12' r='5'/%3E%3Ccircle cx='15' cy='12' r='5'/%3E%3C/svg%3E")}
+.nm-ico-invest{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 20h18'/%3E%3Cpath d='M5 16l5-5 4 3 6-7'/%3E%3Cpath d='M15 7h5v5'/%3E%3C/svg%3E")}
+.nm-ico-povodny{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V10l8-6 8 6v10z'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E")}
+.nm-ico-ciastocna{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 5.5a4 4 0 0 0-5 5L4 16l4 4 5.5-5.5a4 4 0 0 0 5-5L16 12l-4-4z'/%3E%3C/svg%3E")}
+.nm-ico-kompletna{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'/%3E%3C/svg%3E")}
+.nm-ico-novostavba{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='15' r='4'/%3E%3Cpath d='M11 12l9-9M17 6l3 3M15 8l2 2'/%3E%3C/svg%3E")}
+.nm-ico-ano{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 20h18M5 20V9h14v11M3 9h18M8 13v7M12 13v7M16 13v7'/%3E%3C/svg%3E")}
+.nm-ico-nie{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V8h16v12z'/%3E%3Cpath d='M9 20v-6h6v6M4 4l16 16'/%3E%3C/svg%3E")}
+.nm-main-kalk{position:relative;isolation:isolate}
+.nm-main-kalk::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:url(img/vrstevnice.svg) center/cover no-repeat;opacity:.09;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 55%);mask-image:linear-gradient(90deg,transparent 0%,#000 55%)}
+@media (max-width:900px){.nm-main-kalk::before{opacity:.06;-webkit-mask-image:linear-gradient(180deg,#000,transparent 70%);mask-image:linear-gradient(180deg,#000,transparent 70%)}}
+.nm-koren{overflow-x:clip}
+.nm-opt-t{display:flex;flex-direction:column;gap:2px}
+.nm-opt-s{font-weight:400;font-size:16px;line-height:1.35;opacity:.78}
+.nm-opt{background-image:linear-gradient(90deg,transparent calc(100% - 52px),rgba(39,35,97,.05) calc(100% - 52px)) !important;position:relative}
+.nm-opt::after{content:"";position:absolute;right:20px;top:50%;width:10px;height:10px;margin-top:-6px;border-right:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg);opacity:.45;transition:transform .15s,opacity .15s}
+@media (hover:hover){.nm-opt:hover::after{opacity:1;transform:translateX(3px) rotate(45deg)}}
+.nm-opt-on{box-shadow:0 0 0 4px rgba(127,224,200,.55),0 10px 24px -12px rgba(17,18,47,.6) !important}
+.nm-opt-on::after{opacity:1}
+.nm-ico::before{width:40px;height:40px;padding:9px;box-sizing:border-box;border-radius:10px;background-color:currentColor;-webkit-mask-origin:content-box;mask-origin:content-box;-webkit-mask-clip:content-box;mask-clip:content-box}
+.nm-opt.nm-ico{padding-left:16px !important;padding-right:56px !important}
+.nm-chipy{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.nm-chip{min-height:44px;padding:0 16px;border:1.5px solid #dcd9d0;border-radius:999px;background:#ffffff;color:#272361;font:600 16px 'Archivo',sans-serif;cursor:pointer;transition:border-color .15s,background .15s}
+@media (hover:hover){.nm-chip:hover{border-color:#272361;background:#f6f4ef}}
+.nm-chip:focus-visible{outline:3px solid #272361;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.nm-opt::after,.nm-chip{transition:none}}
+.nm-main-kalk{padding-top:0 !important}
+.nm-kalk-hlava{position:relative;isolation:isolate;color:#ffffff;margin-bottom:clamp(-72px,-5vw,-40px);padding:clamp(32px,5vw,56px) 0 clamp(88px,9vw,120px)}
+.nm-kalk-hlava::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:linear-gradient(90deg,rgba(17,18,47,.97) 0%,rgba(17,18,47,.88) 50%,rgba(17,18,47,.6) 100%),url(img/hory-liptov.webp) center 35%/cover #11122f}
+.nm-kalk-hlava-in{max-width:760px}
+.nm-kroky-k{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.nm-kroky-k li{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:4px 14px 4px 4px;border-radius:999px;border:1px solid rgba(201,200,230,.25);color:#c9c8e6;font-size:16px}
+.nm-kroky-k-c{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(201,200,230,.15);font-weight:800;font-variant-numeric:tabular-nums}
+.nm-kroky-k li.nm-k-hotovo{border-color:rgba(127,224,200,.45);color:#ffffff}
+.nm-kroky-k li.nm-k-hotovo .nm-kroky-k-c{background:#7fe0c8;color:#11122f;font-size:0}
+.nm-kroky-k li.nm-k-hotovo .nm-kroky-k-c::before{content:"✓";font-size:16px}
+.nm-kroky-k li.nm-k-teraz{background:#ffffff;border-color:#ffffff;color:#11122f;font-weight:600}
+.nm-kroky-k li.nm-k-teraz .nm-kroky-k-c{background:#d32441;color:#ffffff}
+@media (max-width:620px){.nm-kroky-k li{padding:4px}.nm-kroky-k li .nm-kroky-k-l{display:none}.nm-kroky-k li.nm-k-teraz{padding-right:14px}.nm-kroky-k li.nm-k-teraz .nm-kroky-k-l{display:inline}}
+.nm-kalk-riadok{margin-top:20px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.nm-kalk-stav{font-weight:600;color:#7fe0c8}
+.nm-kalk-h1{margin:8px 0 0;font:800 clamp(36px,5.4vw,56px)/1.03 'Archivo',sans-serif;letter-spacing:-0.025em;color:#ffffff;text-wrap:balance}
+.nm-kalk-hint{margin:16px 0 0;max-width:52ch;color:#c9c8e6;font-size:clamp(18px,1.6vw,20px)}
+.nm-kalk-telo{position:relative}
+.nm-volby{display:grid;gap:14px}
+.nm-volby-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.nm-volby .nm-opt{min-height:84px !important;padding:16px 52px 16px 16px !important;border:1px solid #dcd9d0 !important;border-radius:16px !important;background-color:#ffffff !important;color:#11122f !important;box-shadow:0 1px 2px rgba(17,18,47,.06),0 14px 30px -16px rgba(17,18,47,.28);background-image:none !important}
+.nm-volby .nm-opt .nm-opt-t>span:first-child{color:#272361;font-weight:700}
+@media (hover:hover){.nm-volby .nm-opt:hover{border-color:#272361 !important;transform:translateY(-2px);box-shadow:0 1px 2px rgba(17,18,47,.06),0 20px 36px -16px rgba(17,18,47,.38)}}
+.nm-volby .nm-opt.nm-ico::before{width:48px;height:48px;padding:0;border-radius:12px;-webkit-mask:none !important;mask:none !important;background:#7fe0c8 var(--ico) center/24px 24px no-repeat !important}
+.nm-volby .nm-opt-on{background-color:#272361 !important;border-color:#272361 !important;color:#ffffff !important;box-shadow:0 0 0 4px rgba(127,224,200,.6),0 18px 36px -16px rgba(17,18,47,.55) !important}
+.nm-volby .nm-opt-on .nm-opt-t>span:first-child{color:#ffffff}
+.nm-kalk-panel{background:#11122f !important;border-color:#11122f !important;color:#ffffff;box-shadow:0 30px 60px -28px rgba(17,18,47,.7) !important;padding-top:24px !important}
+.nm-kalk-panel .nm-kicker{color:#7fe0c8}
+.nm-kalk-panel .nm-kalk-adr{color:#ffffff;padding-right:88px;min-height:2.6em}
+.nm-kalk-panel .nm-kicker{padding-right:88px}
+.nm-kalk-telo>sc-if>form,.nm-kalk-telo form{padding:clamp(20px,3vw,28px);background:#ffffff;border:1px solid #dcd9d0;border-radius:16px;box-shadow:0 1px 2px rgba(17,18,47,.06),0 14px 30px -16px rgba(17,18,47,.28)}
+.nm-kalk-telo>button,.nm-kalk-telo sc-if>button{box-shadow:0 14px 30px -16px rgba(17,18,47,.5)}
+.nm-kalk-panel .nm-kalk-riadky{border-top-color:rgba(201,200,230,.2)}
+.nm-kalk-panel .nm-kalk-riadky li{border-bottom-color:rgba(201,200,230,.2);color:#c9c8e6}
+.nm-kalk-panel .nm-kalk-riadky li b{color:#c9c8e6}
+.nm-kalk-panel .nm-kalk-riadky li.nm-hotovo b,.nm-kalk-panel .nm-kalk-riadky li.nm-teraz{color:#ffffff}
+.nm-kalk-panel .nm-kalk-z{border-color:rgba(201,200,230,.35)}
+.nm-kalk-panel .nm-kalk-cena{background:rgba(201,200,230,.08)}
+.nm-kalk-panel .nm-kalk-pozn{color:#c9c8e6}
+.nm-kalk-pkruh{position:absolute;top:20px;right:24px;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#7fe0c8 calc(var(--p) * 1%),rgba(201,200,230,.18) 0);transition:background .4s}
+.nm-kalk-pkruh span{display:block;width:62px;height:62px;line-height:62px;text-align:center;white-space:nowrap;border-radius:50%;background:#11122f;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums}
+.nm-kalk{position:relative}
+@media (min-width:901px){.nm-kalk-panel{margin-top:-8px}}
+.nm-main-kalk::before{top:280px}
+.nm-main-vysl::before{top:420px}
+.nm-vysl-hlava{position:relative;isolation:isolate;color:#ffffff;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:clamp(24px,4vw,56px);align-items:end;padding:clamp(32px,5vw,56px) 0 clamp(40px,5vw,64px)}
+@media (max-width:900px){.nm-vysl-hlava{grid-template-columns:1fr}}
+.nm-vysl-hlava::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:linear-gradient(90deg,rgba(17,18,47,.97) 0%,rgba(17,18,47,.9) 55%,rgba(17,18,47,.62) 100%),url(img/hory-liptov.webp) center 35%/cover #11122f}
+.nm-vysl-sum{display:inline-flex;align-items:center;gap:10px;margin:0;padding:6px 14px;border:1px solid rgba(201,200,230,.25);border-radius:999px;font-size:16px;color:#c9c8e6}
+.nm-vysl-nacitava{margin:24px 0 0;font:800 clamp(28px,4vw,40px)/1.1 'Archivo',sans-serif;color:#ffffff}
+.nm-vysl-hlava [role=alert]{color:#ffffff}
+.nm-vysl-hlava [role=alert] svg *{stroke:#7fe0c8}
+.nm-vysl-hlava a{color:#7fe0c8}
+.nm-vysl-hlava-in{container-type:inline-size}
+.nm-vysl-cena{margin:0;font:800 min(104px,calc(100cqw / 11.2))/1.02 'Archivo',sans-serif;letter-spacing:-0.025em;font-variant-numeric:tabular-nums;color:#ffffff;white-space:nowrap}
+.nm-vysl-nadpis{margin:20px 0 0;font:800 clamp(36px,5vw,56px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance}
+.nm-vysl-skala-wrap{margin-top:28px;max-width:640px}
+.nm-vysl-skala{position:relative;height:14px;border-radius:999px;background:rgba(201,200,230,.2)}
+.nm-vysl-skala-pas{position:absolute;top:0;bottom:0;left:33.333%;width:33.333%;border-radius:999px;background:#7fe0c8;box-shadow:0 0 24px rgba(127,224,200,.45)}
+.nm-vysl-skala-pin{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#ffffff;border:4px solid #7fe0c8}
+.nm-vysl-skala-lbl{position:relative;height:32px;margin-top:10px;font-weight:700;color:#ffffff;font-variant-numeric:tabular-nums}
+.nm-vysl-veta{margin:12px 0 0;max-width:62ch;color:#c9c8e6}
+.nm-vysl-zdroj{font-size:16px}
+.nm-vysl-m2{padding:24px;border:1px solid rgba(201,200,230,.2);border-radius:20px;background:rgba(39,35,97,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.nm-vysl-m2-c{margin:8px 0 0;font:800 clamp(24px,2.6vw,30px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#ffffff;font-variant-numeric:tabular-nums}
+.nm-vysl-m2-p{margin:6px 0 0;font-size:16px;color:#c9c8e6}
+.nm-vysl-m2-riadok{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(201,200,230,.2);font-size:16px;color:#c9c8e6}
+.nm-vysl-m2-riadok b{color:#7fe0c8;white-space:nowrap}
+.nm-main-vysl .nm-dalej{margin-top:clamp(40px,5vw,56px);border-top:0;padding-top:0}
+.nm-dalej{margin-top:clamp(48px,6vw,72px);padding-top:32px;border-top:1.5px solid #272361}
+.nm-dalej .nm-kicker{margin-bottom:8px}
+.nm-dalej-veta{margin:0;max-width:52ch;font:600 clamp(19px,2.2vw,22px)/1.4 'Archivo',sans-serif;color:#272361}
+.nm-vysl-grid{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px}
+.nm-karta-vysl{padding:clamp(24px,3vw,32px);background:#ffffff;border:1px solid #dcd9d0;border-radius:20px;box-shadow:0 1px 2px rgba(17,18,47,.06),0 12px 32px -12px rgba(17,18,47,.18)}
+.nm-vysl-grid>.nm-karta-vysl:first-child,.nm-vysl-grid>:first-child .nm-karta-vysl{border-color:#272361}
+.nm-vyhody{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.nm-vyhody li{position:relative;padding-left:30px}
+.nm-vyhody li::before{content:"";position:absolute;left:0;top:.2em;width:20px;height:20px;border-radius:50%;background:#7fe0c8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%2311122f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.nm-dovera{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:32px 48px;padding-top:clamp(64px,9vw,120px);padding-bottom:clamp(64px,9vw,120px)}
+.nm-dovera div{padding-top:20px;border-top:3px solid #272361}
+.nm-dovera p{margin:8px 0 0;color:#50516a}
+@media (prefers-reduced-motion:reduce){.nm-faq-a,.nm-faq-b{display:none}.nm-stlpce i{animation:none}.nm-kroky li,.nm-mesto::after,.nm-hladanie button{transition:none}}
+@keyframes nc-in{from{opacity:0}to{opacity:1}}
+main>section{animation:nc-in 150ms linear}
+@media (prefers-reduced-motion:reduce){main>section{animation:none}}
+</style>
+</helmet>
+<div class="nm-koren" style="display:flex;flex-direction:column;background:#f6f4ef;color:#11122f;font:400 clamp(18px,calc(18px + (100vw - 600px) / 400),19px)/1.5 'Archivo',sans-serif">
+  <div class="nm-hlavicka-pas">
+  <header class="nm-wrap nm-hlavicka">
+    <a href="#" onClick="{{ goHome }}" class="nm-logo">nacenime<span>.sk</span></a>
+    <nav aria-label="Hlavná navigácia" class="nm-nav">
+      <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}"><a href="#ako" class="nm-nav-sek">Ako to funguje</a><a href="#mesta" class="nm-nav-sek">Mestá</a></sc-if>
+      <a href="./faq.html">Časté otázky</a>
+    </nav>
+  </header>
+  </div>
+
+  <main class="{{ mainClass }}" style="flex:1;width:100%;max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:clamp(40px,6vw,72px) clamp(20px,5vw,64px) clamp(48px,7vw,96px)">
+
+  <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="01 Úvod" class="nm-uvod">
+    <section class="nm-hero">
+      <video id="nm-uvod-video" class="nm-uvod-video" aria-hidden="true" tabindex="-1" loop playsInline preload="none"></video>
+      <div class="nm-mriezka" aria-hidden="true"></div>
+      <div class="nm-wrap nm-hero-in">
+        <div>
+          <p class="nm-stitok"><span class="nm-bod" aria-hidden="true"></span>Liptov · Turiec · Orava</p>
+          <h1>Ko<span style="margin-right:0.1em">ľ</span>ko stojí váš byt alebo dom?</h1>
+          <p class="nm-lead">Päť otázok a cenu vidíte hneď. Z predajov vo vašom okolí. Bez registrácie, bez telefónu.</p>
+          <div class="nm-hladanie">
+        <sc-if value="{{ useGoogle }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ startCalc }}" style="margin:0">
+          <label for="adresa-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Adresa nehnuteľnosti</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <input id="adresa-uvod" type="text" role="combobox" aria-autocomplete="list" aria-controls="navrhy-adries" aria-expanded="{{ suggestExpanded }}" autoComplete="street-address" placeholder="Bystrická cesta 12, Ružomberok" value="{{ address }}" onChange="{{ setAddress }}" style="flex:999 1 260px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+        <p role="status" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0">{{ suggestStatus }}</p>
+        <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ true }}">
+          <div id="navrhy-adries" role="listbox" aria-label="Návrhy adries" style="margin-top:12px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;overflow:hidden">
+            <sc-for list="{{ suggestions }}" as="sg" hint-placeholder-count="1">
+            <button type="button" role="option" onClick="{{ sg.pick }}" style="display:flex;flex-direction:column;gap:2px;width:100%;min-height:60px;padding:10px 20px;border:0;background:#ffffff;color:#11122f;text-align:left;font:400 19px/1.4 'Archivo',sans-serif;cursor:pointer" style-hover="background:#f6f4ef">
+              <span style="font-weight:600;color:#272361">{{ sg.line }}</span>
+              <span style="font-size:16px">{{ sg.town }}</span>
+            </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        </sc-if>
+        <sc-if value="{{ isFallback }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitFallback }}" style="margin:0">
+          <div style="display:flex;flex-wrap:wrap;gap:16px 12px">
+            <div style="flex:999 1 240px;min-width:0"><label for="ulica-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Ulica a číslo</label><input id="ulica-uvod" type="text" autoComplete="address-line1" placeholder="Bystrická cesta 12" value="{{ street }}" onChange="{{ setStreet }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <div style="flex:1 1 180px;min-width:0"><label for="obec-uvod" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Obec</label><input id="obec-uvod" type="text" autoComplete="address-level2" placeholder="Ružomberok" value="{{ town }}" onChange="{{ setTown }}" onBlur="{{ checkTown }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="flex:1 0 auto;align-self:flex-end;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+        <sc-if value="{{ townOut }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p></sc-if>
+        </sc-if>
+          </div>
+          <p class="nm-pod"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
+        </div>
+        <aside class="nm-ukazka" aria-label="Ukážka výsledku so vzorovými údajmi">
+          <div class="nm-ukazka-hlava"><span>Ukážka výsledku</span><span class="nm-cip">Byt · 66 m²</span></div>
+          <p class="nm-ukazka-cena">120 000 – 135 000 €</p>
+          <div aria-hidden="true">
+            <div class="nm-stupnica"><div class="nm-stupnica-fill"></div><div class="nm-stupnica-pin"></div></div>
+            <div class="nm-stupnica-lbl"><span>nižšie</span><span>typické</span><span>vyššie</span></div>
+            <div class="nm-stlpce"><i style="height:30%"></i><i style="height:45%"></i><i style="height:62%"></i><i class="on" style="height:80%"></i><i class="on" style="height:100%"></i><i class="on" style="height:86%"></i><i style="height:58%"></i><i style="height:40%"></i><i style="height:24%"></i></div>
+          </div>
+          <p class="nm-ukazka-pozn">Rozloženie cien podobných predajov v okolí. Vzorové údaje.</p>
+        </aside>
+      </div>
+      <div class="nm-wrap nm-cisla">
+        <div><b>5</b><span>otázok a máte cenu</span></div>
+        <div><b>7</b><span>okresov Liptova, Turca a Oravy</span></div>
+        <div><b>213</b><span>obcí v kalkulačke</span></div>
+      </div>
+    </section>
+
+    <section class="nm-wrap nm-blok" id="ako" aria-labelledby="ako-nadpis">
+      <p class="nm-kicker">Ako to funguje</p>
+      <h2 id="ako-nadpis">Od adresy k cene za menej ako minútu</h2>
+      <ol class="nm-kroky">
+        <li><span class="nm-num" aria-hidden="true">01</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><h3>Zadáte adresu</h3><p>Nájdeme ju na mape a určíme okolie, s ktorým porovnávame.</p></li>
+        <li><span class="nm-num" aria-hidden="true">02</span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><h3>Odpoviete na 5 otázok</h3><p>Typ, výmera, stav a pár detailov. Žiadny kontakt.</p></li>
+        <li><span class="nm-num" aria-hidden="true">03</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><h3>Uvidíte rozpätie</h3><p>Cenu z predajov v okolí. Ak chcete, pošleme ju v PDF.</p></li>
+      </ol>
+    </section>
+
+    <section class="nm-faq-pas" aria-labelledby="faq-nadpis" onFocus="{{ faqHoldOn }}" onBlur="{{ faqHoldOff }}">
+      <div class="nm-wrap nm-faq-in">
+        <div>
+          <p class="nm-kicker nm-svetly">Časté otázky</p>
+          <h2 id="faq-nadpis" class="nm-svetly-h">Odpovede na to, čo ľudí zaujíma najviac</h2>
+          <p class="nm-faq-vsetky"><a href="./faq.html">Všetky otázky a odpovede</a></p>
+        </div>
+        <div aria-live="{{ faqLive }}" aria-atomic="true">
+          <a class="nm-faq-karta" href="{{ faqHref }}">
+            <span class="{{ faqProgClass }}" aria-hidden="true"></span>
+            <span class="nm-faq-n">{{ faqNo }}</span>
+            <span class="nm-faq-q">{{ faqQ }}</span>
+            <span class="nm-faq-odp">{{ faqA }}</span>
+            <span class="nm-faq-viac">Celá odpoveď</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="nm-wrap nm-blok" id="mesta" aria-labelledby="mesta-nadpis">
+      <p class="nm-kicker">Mestá</p>
+      <h2 id="mesta-nadpis">Ceny bytov a domov podľa mesta</h2>
+      <div class="nm-mesta">
+        <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
+          <a href="#" onClick="{{ c.open }}" class="{{ c.cls }}" style="background-image:{{ c.bg }}"><span class="nm-reg">{{ c.reg }}</span><b>{{ c.name }}</b></a>
+        </sc-for>
+      </div>
+    </section>
+
+    <section class="nm-wrap nm-dovera">
+      <div><h3>Orientačný odhad</h3><p>Nie znalecký posudok. Prvá predstava o cene, ktorú si overíte s maklérom.</p></div>
+      <div><h3>Bez kontaktu</h3><p>E-mail len pre PDF, telefón len ak chcete cenu od makléra.</p></div>
+      <div><h3>Miestne dáta</h3><p>Porovnávame s predajmi vo vašom okolí, nie s celoslovenským priemerom.</p></div>
+    </section>
+  </div>
+  </sc-if>
+
+
+    <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="01b Potvrdenie adresy">
+        <div id="mapa-potvrdenie"></div>
+        <h1 style="margin:0;font:800 clamp(32px,5vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance;margin:clamp(28px,4vw,40px) 0 0">{{ confirmAddr }}</h1>
+        <sc-if value="{{ outOfRegion }}" hint-placeholder-val="{{ false }}">
+          <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p>
+        </sc-if>
+        <p style="margin:20px 0 0;font-size:clamp(19px,2.2vw,24px)">Je to správna adresa?</p>
+        <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:12px;max-width:560px">
+          <button type="button" onClick="{{ goIntro }}" style="flex:1 1 160px;height:60px;padding:0 32px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">Upraviť</button>
+          <button type="button" onClick="{{ confirmAddress }}" style="flex:2 1 220px;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Áno, pokračovať</button>
+        </div>
+        <p style="margin:20px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isOut }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="01c Mimo regiónu" style="max-width:640px">
+        <h1 style="margin:0;font:800 clamp(32px,6vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">U vás zatiaľ neoceňujeme</h1>
+        <p style="margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2.2vw,24px)">Dáme vám vedieť, keď začneme.</p>
+        <form onSubmit="{{ sendNotify }}" noValidate="{{ true }}" style="margin:32px 0 0"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
+          <label for="email-notify" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <input id="email-notify" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ notifyEmail }}" onChange="{{ setNotifyEmail }}" style="flex:999 1 240px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Dajte mi vedieť</button>
+          </div>
+        </form>
+        <div style="margin-top:14px"><sc-if value="{{ hasNotifyMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ notifyIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ notifyMsg }}</span></p></sc-if></div>
+        <p style="margin:16px 0 0"><a href="#" onClick="{{ goHome }}">Späť na úvod</a></p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isCity }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="04 Mesto">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:32px clamp(32px,5vw,64px);align-items:stretch">
+          <div style="display:flex;flex-direction:column;justify-content:center">
+            <h1 style="margin:0;font:800 clamp(32px,5.4vw,44px)/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Ko<span style="margin-right:0.1em">ľ</span>ko stojí váš byt alebo dom {{ cityIn }}?</h1>
+            <p style="margin:24px 0 0;max-width:40ch;font-size:clamp(19px,2.2vw,24px)">Päť otázok a cenu vidíte hneď. Bez registrácie, bez telefónu.</p>
+            <sc-if value="{{ useGoogle }}" hint-placeholder-val="{{ true }}">
+            <form onSubmit="{{ startCalc }}" style="margin:32px 0 0;max-width:none">
+          <label for="adresa-mesto" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Adresa nehnuteľnosti</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <input id="adresa-mesto" type="text" autoComplete="street-address" placeholder="Bystrická cesta 12, Ružomberok" value="{{ address }}" onChange="{{ setAddress }}" style="flex:999 1 260px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+            </sc-if>
+            <sc-if value="{{ isFallback }}" hint-placeholder-val="{{ false }}">
+              <form onSubmit="{{ submitFallback }}" style="margin:32px 0 0;max-width:none">
+          <div style="display:flex;flex-wrap:wrap;gap:16px 12px">
+            <div style="flex:999 1 240px;min-width:0"><label for="ulica-mesto" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Ulica a číslo</label><input id="ulica-mesto" type="text" autoComplete="address-line1" placeholder="Bystrická cesta 12" value="{{ street }}" onChange="{{ setStreet }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <div style="flex:1 1 180px;min-width:0"><label for="obec-mesto" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Obec</label><input id="obec-mesto" type="text" autoComplete="address-level2" placeholder="Ružomberok" value="{{ town }}" onChange="{{ setTown }}" onBlur="{{ checkTown }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="flex:1 0 auto;align-self:flex-end;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zistiť cenu</button>
+          </div>
+        </form>
+        <sc-if value="{{ townOut }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zatiaľ oceňujeme len Liptov, Turiec a Oravu.</span></p></sc-if>
+            </sc-if>
+        <p style="margin:16px 0 0;max-width:62ch"><a href="#" onClick="{{ skipAddress }}">Oceňujete pozemok? Pokračujte bez adresy.</a></p>
+            <p style="margin:24px 0 0;max-width:62ch">Orientačný odhad, nie znalecký posudok.</p>
+          </div>
+          <div class="{{ cityBoxCls }}" style="min-height:clamp(240px,38vw,480px);border-radius:20px;background:#dcd9d0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#11122f;position:relative;overflow:hidden"><sc-if value="{{ cityNoPhoto }}" hint-placeholder-val="{{ false }}"><span class="nm-mesto-foto-text" aria-hidden="true"><span class="nm-reg">{{ cityReg }}</span><b>{{ cityAlt }}</b></span></sc-if><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ cityAlt }}" style="position:absolute;inset:0;background-image:{{ cityBg }};background-size:cover;background-position:center"></div></sc-if></div>
+        </div>
+
+        <div style="margin-top:clamp(64px,8vw,112px)">
+          <h2 style="margin:0;font:800 32px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Ceny {{ cityIn }}</h2>
+          <div style="margin-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:32px 48px">
+            <div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">{{ cityByt }}</div>
+              <div style="margin-top:6px">{{ cityBytLbl }}</div>
+            </div>
+            <div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">{{ cityDom }}</div>
+              <div style="margin-top:6px">{{ cityDomLbl }}</div>
+            </div>
+            <div>
+              <div style="font:800 clamp(24px,3vw,32px)/1.1 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361">{{ cityPocet }}</div>
+              <div style="margin-top:6px">{{ cityPocetLbl }}</div>
+            </div>
+          </div>
+          <p style="margin:40px 0 0;max-width:62ch;text-wrap:pretty">{{ cityText }}</p>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isCalc }}" hint-placeholder-val="{{ false }}">
+      <div class="nm-kalk-hlava">
+        <div class="nm-kalk-hlava-in">
+          <ol class="nm-kroky-k" aria-label="Postup">
+            <sc-for list="{{ kroky }}" as="k" hint-placeholder-count="5"><li class="{{ k.cls }}"><span class="nm-kroky-k-c" aria-hidden="true">{{ k.n }}</span><span class="nm-kroky-k-l">{{ k.label }}</span></li></sc-for>
+          </ol>
+          <div class="nm-kalk-riadok">
+            <span class="nm-kalk-stav">{{ stepLabel }}</span>
+            <button type="button" onClick="{{ back }}" style="height:60px;padding:0 4px;border:0;background:none;color:#c9c8e6;font:600 19px 'Archivo',sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer" style-hover="color:#ffffff">Späť</button>
+          </div>
+          <h1 class="nm-kalk-h1">{{ question }}</h1>
+          <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ true }}"><p class="nm-kalk-hint">{{ hint }}</p></sc-if>
+        </div>
+      </div>
+      <div class="nm-kalk">
+      <section data-screen-label="02 Kalkulačka" class="nm-kalk-telo" style="min-width:0">
+
+        <sc-if value="{{ isChoice }}" hint-placeholder-val="{{ true }}">
+          <div class="{{ volbyCls }}">
+            <sc-for list="{{ options }}" as="opt" hint-placeholder-count="5">
+              <button type="button" onClick="{{ opt.pick }}" class="{{ opt.cls }}" aria-describedby="{{ opt.subId }}" style="min-height:60px;padding:12px 20px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ opt.bg }};color:{{ opt.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff"><span class="nm-opt-t"><span>{{ opt.label }}</span><sc-if value="{{ opt.hasSub }}" hint-placeholder-val="{{ false }}"><span class="nm-opt-s" id="{{ opt.subId }}" aria-hidden="true">{{ opt.sub }}</span></sc-if></span></button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isArea }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitArea }}" noValidate="{{ true }}">
+            <label for="vymera" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Výmera</label>
+              <div style="display:flex;flex-wrap:wrap;gap:12px">
+                <div style="position:relative;flex:999 1 220px;min-width:0">
+                  <input id="vymera" type="text" inputMode="decimal" placeholder="65" value="{{ area }}" onChange="{{ setArea }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0;padding-right:72px;font:600 24px 'Archivo',sans-serif">
+                  <span aria-hidden="true" style="position:absolute;right:20px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">m²</span>
+                </div>
+                <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button>
+              </div>
+            <div class="nm-chipy" role="group" aria-label="Rýchly výber výmery">
+              <sc-for list="{{ areaChips }}" as="ch" hint-placeholder-count="5"><button type="button" class="nm-chip" onClick="{{ ch.pick }}">{{ ch.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ areaError }}" hint-placeholder-val="{{ false }}">
+              <p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zadajte výmeru od 10 do 2000 m².</span></p>
+            </sc-if>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDom0 }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitDom }}" noValidate="{{ true }}">
+            <p style="margin:0 0 14px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Výmera podlaží v m². Prázdne pole = dané podlažie nemáte.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+              <sc-for list="{{ domPolia }}" as="f" hint-placeholder-count="6">
+                <div>
+                  <label for="{{ f.id }}" style="display:block;margin:0 0 6px;font:600 19px/1.4 'Archivo',sans-serif;color:#272361">{{ f.label }}</label>
+                  <div style="position:relative"><input id="{{ f.id }}" type="text" inputMode="decimal" placeholder="{{ f.ph }}" value="{{ f.value }}" onChange="{{ f.set }}" style="width:100%;height:60px;padding:0 42px 0 14px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:600 19px 'Archivo',sans-serif;min-width:0"><span aria-hidden="true" style="position:absolute;right:12px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">m²</span></div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ domError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ domError }}</span></p></sc-if>
+            <div style="display:flex;margin-top:20px"><button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button></div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDom1 }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitDom }}" noValidate="{{ true }}">
+            <p id="dom-vl" style="margin:0 0 10px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Dom stojí na pozemku, ktorý vlastníte?</p>
+            <div role="group" aria-labelledby="dom-vl" style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ domVlast }}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="min-height:52px;padding:10px 18px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ t.bg }};color:{{ t.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
+            </div>
+            <label for="dom-pozemok" style="display:block;margin:22px 0 6px;font:600 19px/1.4 'Archivo',sans-serif;color:#272361">Výmera pozemku (nepovinné)</label>
+            <div style="position:relative;max-width:360px"><input id="dom-pozemok" type="text" inputMode="decimal" placeholder="600" value="{{ domPozemok }}" onChange="{{ setDomPozemok }}" style="width:100%;height:60px;padding:0 42px 0 14px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:600 19px 'Archivo',sans-serif;min-width:0"><span aria-hidden="true" style="position:absolute;right:12px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">m²</span></div>
+            <sc-if value="{{ domError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ domError }}</span></p></sc-if>
+            <div style="display:flex;margin-top:20px"><button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button></div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDom2 }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitDom }}" noValidate="{{ true }}">
+            <p id="dom-st" style="margin:0 0 10px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Čo ešte stojí na pozemku? Vyberte všetko, čo sedí.</p>
+            <div role="group" aria-labelledby="dom-st" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+              <sc-for list="{{ domStavby }}" as="t" hint-placeholder-count="5"><button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="min-height:52px;padding:10px 18px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ t.bg }};color:{{ t.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ domIneOn }}" hint-placeholder-val="{{ false }}">
+              <label for="dom-ine" style="display:block;margin:16px 0 6px;font:600 19px/1.4 'Archivo',sans-serif;color:#272361">Aká stavba?</label>
+              <input id="dom-ine" type="text" maxLength="100" placeholder="napríklad altánok" value="{{ domIne }}" onChange="{{ setDomIne }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+            </sc-if>
+            <p id="dom-bz" style="margin:22px 0 10px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Je tam bazén?</p>
+            <div role="group" aria-labelledby="dom-bz" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+              <sc-for list="{{ domBazen }}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{ t.on }}" onClick="{{ t.pick }}" style="min-height:52px;padding:10px 18px;text-align:left;border:1.5px solid #272361;border-radius:12px;background:{{ t.bg }};color:{{ t.fg }};font:600 19px/1.3 'Archivo',sans-serif;cursor:pointer">{{ t.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ domError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ domError }}</span></p></sc-if>
+            <div style="display:flex;margin-top:20px"><button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button></div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isPrice }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitPrice }}" noValidate="{{ true }}">
+            <label for="cena" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Predstava o cene</label>
+              <div style="display:flex;flex-wrap:wrap;gap:12px">
+                <div style="position:relative;flex:999 1 220px;min-width:0">
+                  <input id="cena" type="text" inputMode="numeric" placeholder="150 000" value="{{ price }}" onChange="{{ setPrice }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0;padding-right:72px;font:600 24px 'Archivo',sans-serif">
+                  <span aria-hidden="true" style="position:absolute;right:20px;top:0;height:60px;display:flex;align-items:center;font-weight:600;color:#272361;pointer-events:none">€</span>
+                </div>
+                <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button>
+              </div>
+            <p style="margin:20px 0 0"><a href="#" onClick="{{ skipPrice }}" style="font-weight:600">Preskočiť</a></p>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isObec }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitObec }}" noValidate="{{ true }}">
+            <label for="obec-kalk" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Obec</label>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">
+              <input id="obec-kalk" type="text" autoComplete="address-level2" placeholder="Ružomberok" value="{{ obec }}" onChange="{{ setObec }}" style="flex:999 1 200px;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0">
+              <button type="submit" style="flex:1 0 auto;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Pokračovať</button>
+            </div>
+            <sc-if value="{{ obecError }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:14px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>Zadajte obec.</span></p></sc-if>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+          <button type="button" onClick="{{ showResult }}" style="width:100%;max-width:360px;height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zobraziť cenu</button>
+        </sc-if>
+      </section>
+      <aside class="nm-kalk-panel" aria-label="Zhrnutie odpovedí">
+        <div class="nm-kalk-pkruh" style="--p:{{ panelPct }}" aria-hidden="true"><span>{{ panelPctTxt }}</span></div>
+        <p class="nm-kicker" style="margin:0 0 4px">Váš odhad</p>
+        <p class="nm-kalk-adr">{{ panelAdr }}</p>
+        <ul class="nm-kalk-riadky">
+          <sc-for list="{{ panelRows }}" as="r" hint-placeholder-count="5">
+            <li class="{{ r.cls }}"><span class="nm-kalk-l"><i class="nm-kalk-z" aria-hidden="true"></i>{{ r.label }}</span><b>{{ r.value }}</b></li>
+          </sc-for>
+        </ul>
+        <div class="nm-kalk-cena" aria-hidden="true">
+          <div class="nm-kalk-stlpce"><i style="height:30%"></i><i style="height:48%"></i><i style="height:66%"></i><i style="height:88%"></i><i style="height:100%"></i><i style="height:80%"></i><i style="height:56%"></i><i style="height:36%"></i></div>
+        </div>
+        <p class="nm-kalk-pozn">{{ panelNote }}</p>
+      </aside>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="03 Výsledok">
+      <div class="nm-vysl-hlava">
+        <div class="nm-vysl-hlava-in">
+        <p class="nm-vysl-sum"><span class="nm-bod" aria-hidden="true"></span>{{ summary }}</p>
+        <sc-if value="{{ resLoading }}" hint-placeholder-val="{{ false }}"><p role="status" class="nm-vysl-nacitava">Počítame odhad…</p></sc-if>
+        <sc-if value="{{ resError }}" hint-placeholder-val="{{ false }}">
+          <p role="alert" style="margin:16px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;font-weight:600"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg><span>{{ resErrorText }}</span></p>
+          <p style="margin:12px 0 0"><a href="#" onClick="{{ retry }}" style="font-weight:600">Skúsiť znova</a></p>
+        </sc-if>
+        <sc-if value="{{ resOk }}" hint-placeholder-val="{{ false }}">
+          <p class="nm-kicker nm-svetly" style="margin:20px 0 4px">Orientačná cena</p>
+          <h1 class="nm-vysl-cena">{{ priceText }}</h1>
+          <div role="img" aria-label="{{ scaleLabel }}" class="nm-vysl-skala-wrap">
+            <div class="nm-vysl-skala"><div class="nm-vysl-skala-pas"></div><div class="nm-vysl-skala-pin" style="left:33.333%"></div><div class="nm-vysl-skala-pin" style="left:66.667%"></div></div>
+            <div class="nm-vysl-skala-lbl">
+              <span style="position:absolute;left:33.333%;transform:translateX(-50%)">{{ scaleFrom }}</span>
+              <span style="position:absolute;left:66.667%;transform:translateX(-50%)">{{ scaleTo }}</span>
+            </div>
+          </div>
+          <sc-if value="{{ hasScaleNote }}" hint-placeholder-val="{{ true }}"><p class="nm-vysl-veta">{{ scaleNote }}</p></sc-if>
+          <sc-if value="{{ hasPriplatok }}" hint-placeholder-val="{{ false }}"><p class="nm-vysl-veta">{{ priplatokText }}</p></sc-if>
+          <sc-if value="{{ hasUpozornenie }}" hint-placeholder-val="{{ false }}"><p class="nm-vysl-veta">{{ upozornenie }}</p></sc-if>
+          <p class="nm-vysl-veta nm-vysl-zdroj">{{ veta }}</p>
+        </sc-if>
+        <sc-if value="{{ resNoPrice }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ hasNadpis }}" hint-placeholder-val="{{ false }}"><h1 class="nm-vysl-nadpis">{{ nadpis }}</h1></sc-if>
+          <sc-if value="{{ hasVeta }}" hint-placeholder-val="{{ false }}"><p class="nm-vysl-veta">{{ veta }}</p></sc-if>
+        </sc-if>
+
+        </div>
+        <sc-if value="{{ resOk }}" hint-placeholder-val="{{ false }}">
+        <aside class="nm-vysl-m2" aria-label="Cena za meter štvorcový">
+          <p class="nm-kicker nm-svetly" style="margin:0">Za meter štvorcový</p>
+          <p class="nm-vysl-m2-c">{{ m2Text }}</p>
+          <p class="nm-vysl-m2-p">{{ m2Note }}</p>
+          <sc-if value="{{ hasM2Mesto }}" hint-placeholder-val="{{ false }}"><div class="nm-vysl-m2-riadok"><span>{{ m2MestoLbl }}</span><b>{{ m2MestoText }}</b></div></sc-if>
+        </aside>
+        </sc-if>
+      </div>
+        <sc-if value="{{ resDone }}" hint-placeholder-val="{{ false }}">
+          <div class="nm-dalej"><p class="nm-kicker">Čo ďalej</p><p class="nm-dalej-veta">{{ dalejText }}</p></div>
+          <sc-if value="{{ maklerFirst }}" hint-placeholder-val="{{ true }}">
+          <div class="nm-vysl-grid">
+          <form onSubmit="{{ requestCall }}" noValidate="{{ true }}" class="nm-karta-vysl" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
+            <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Cena od makléra</h2>
+            <ul class="nm-vyhody"><li>Obhliadka a jedna presná cena</li><li>Rada, ako predať čo najvýhodnejšie</li><li>Nezáväzne, rozhodnutie je na vás</li></ul>
+            <div><label for="meno" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Meno <span style="font-weight:400">(nepovinné)</span></label><input id="meno" type="text" autoComplete="name" autoCapitalize="words" enterKeyHint="next" placeholder="Jana Nováková" maxLength="{{ 80 }}" value="{{ callName }}" onChange="{{ setCallName }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <div><label for="telefon" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Telefón</label><input id="telefon" type="tel" autoComplete="tel" placeholder="0900 123 456" value="{{ phone }}" onChange="{{ setPhone }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Zavolajte mi</button>
+            <p style="margin:0;max-width:62ch">{{ maklerName }} si nehnuteľnosť pozrie a povie jednu cenu.</p>
+            <sc-if value="{{ hasCallMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ callIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ callMsg }}</span></p></sc-if>
+          </form>
+          <sc-if value="{{ showPdf }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ sendPdf }}" noValidate="{{ true }}" class="nm-karta-vysl" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
+            <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Odhad v PDF</h2>
+            <ul class="nm-vyhody"><li>Rozpätie ceny a údaje o nehnuteľnosti</li><li>S dátumom, na uloženie alebo preposlanie</li><li>Hneď do e-mailu, bez registrácie</li></ul>
+            <div><label for="email-pdf" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label><input id="email-pdf" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ email }}" onChange="{{ setEmail }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <label style="display:flex;gap:14px;align-items:flex-start;cursor:pointer;max-width:62ch">
+              <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="flex:none;width:28px;height:28px;margin:0;accent-color:#272361">
+              <span>Súhlasím, aby ma maklér NajBývanie kontaktoval ohľadom predaja. Nepovinné.</span>
+            </label>
+            <button type="submit" style="height:60px;padding:0 32px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">Poslať PDF</button>
+            <sc-if value="{{ hasPdfMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ pdfIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ pdfMsg }}</span></p></sc-if>
+          </form></sc-if>
+          </div>
+          </sc-if>
+          <sc-if value="{{ pdfFirst }}" hint-placeholder-val="{{ false }}">
+          <div class="nm-vysl-grid">
+          <sc-if value="{{ showPdf }}" hint-placeholder-val="{{ true }}"><form onSubmit="{{ sendPdf }}" noValidate="{{ true }}" class="nm-karta-vysl" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
+            <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Odhad v PDF</h2>
+            <ul class="nm-vyhody"><li>Rozpätie ceny a údaje o nehnuteľnosti</li><li>S dátumom, na uloženie alebo preposlanie</li><li>Hneď do e-mailu, bez registrácie</li></ul>
+            <div><label for="email-pdf" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">E-mail</label><input id="email-pdf" type="email" autoComplete="email" placeholder="meno@example.sk" value="{{ email }}" onChange="{{ setEmail }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <label style="display:flex;gap:14px;align-items:flex-start;cursor:pointer;max-width:62ch">
+              <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="flex:none;width:28px;height:28px;margin:0;accent-color:#272361">
+              <span>Súhlasím, aby ma maklér NajBývanie kontaktoval ohľadom predaja. Nepovinné.</span>
+            </label>
+            <button type="submit" style="height:60px;padding:0 32px;border:0;border-radius:12px;background:#d32441;color:#ffffff;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#b81d37">Poslať PDF</button>
+            <sc-if value="{{ hasPdfMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ pdfIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ pdfMsg }}</span></p></sc-if>
+          </form></sc-if>
+          <form onSubmit="{{ requestCall }}" noValidate="{{ true }}" class="nm-karta-vysl" style="display:flex;flex-direction:column;gap:16px"><input type="text" name="web" value="{{ web }}" onChange="{{ setWeb }}" tabIndex="{{ -1 }}" autoComplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0">
+            <h2 style="margin:0;font:800 24px/1.05 'Archivo',sans-serif;letter-spacing:-0.02em;color:#272361;text-wrap:balance">Cena od makléra</h2>
+            <ul class="nm-vyhody"><li>Obhliadka a jedna presná cena</li><li>Rada, ako predať čo najvýhodnejšie</li><li>Nezáväzne, rozhodnutie je na vás</li></ul>
+            <div><label for="meno" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Meno <span style="font-weight:400">(nepovinné)</span></label><input id="meno" type="text" autoComplete="name" autoCapitalize="words" enterKeyHint="next" placeholder="Jana Nováková" maxLength="{{ 80 }}" value="{{ callName }}" onChange="{{ setCallName }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <div><label for="telefon" style="display:block;margin:0 0 8px;font:600 19px/1.5 'Archivo',sans-serif;color:#272361">Telefón</label><input id="telefon" type="tel" autoComplete="tel" placeholder="0900 123 456" value="{{ phone }}" onChange="{{ setPhone }}" style="width:100%;height:60px;padding:0 20px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#11122f;font:400 19px 'Archivo',sans-serif;min-width:0"></div>
+            <button type="submit" style="height:60px;padding:0 32px;border:1.5px solid #272361;border-radius:12px;background:#ffffff;color:#272361;font:600 19px 'Archivo',sans-serif;cursor:pointer" style-hover="background:#272361;color:#ffffff">Zavolajte mi</button>
+            <p style="margin:0;max-width:62ch">{{ maklerName }} si nehnuteľnosť pozrie a povie jednu cenu.</p>
+            <sc-if value="{{ hasCallMsg }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;display:flex;gap:10px;align-items:flex-start;font-weight:600"><sc-if value="{{ callIsErr }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="10" fill="none" stroke="#272361" stroke-width="2"></circle><path d="M12 7v6.5M12 16.5v0.5" stroke="#272361" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if><span>{{ callMsg }}</span></p></sc-if>
+          </form>
+          </div>
+          </sc-if>
+        </sc-if>
+
+        <div style="margin-top:32px;display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+          <span style="max-width:62ch">Orientačný, nezáväzný odhad. Nejde o znalecký posudok.</span>
+          <a href="#" onClick="{{ editData }}" style="font-weight:600;display:inline-flex;align-items:center;min-height:48px">Upraviť údaje</a>
+        </div>
+      </section>
+    </sc-if>
+  </main>
+
+  <footer style="background:#11122f;color:#f6f4ef;font-size:16px;line-height:1.5">
+    <div style="max-width:calc(1060px + 2 * clamp(20px,5vw,64px));margin:0 auto;padding:32px clamp(20px,5vw,64px);display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px 40px">
+    <sc-if value="{{ isCity }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Ostatné mestá" style="flex:1 0 100%;display:flex;flex-wrap:wrap;gap:8px 28px;padding-bottom:8px">
+        <sc-for list="{{ otherCities }}" as="c" hint-placeholder-count="4">
+          <a href="#" onClick="{{ c.open }}" style="color:#f6f4ef">{{ c.name }}</a>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <a href="#" onClick="{{ goHome }}" class="nm-logo nm-logo-pata">nacenime<span>.sk</span></a>
+    <span style="align-self:center">Prevádzkuje NajBývanie Ružomberok, s. r. o.</span>
+    <nav style="display:flex;flex-wrap:wrap;gap:8px 28px">
+      <a href="./faq.html" style="color:#f6f4ef">Časté otázky</a>
+      <a href="./ochrana-osobnych-udajov.html" style="color:#f6f4ef">Ochrana osobných údajov</a>
+      <a href="./cookies.html" style="color:#f6f4ef">Cookies</a>
+      <a href="./kontakt.html" style="color:#f6f4ef">Kontakt</a>
+      <a href="./fotografie.html" style="color:#f6f4ef">Zdroje fotografií</a>
+    </nav>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Úvod&quot;,&quot;Potvrdenie adresy&quot;,&quot;Mimo regiónu&quot;,&quot;Mesto&quot;,&quot;Kalkulačka&quot;,&quot;Výsledok&quot;],&quot;default&quot;:&quot;Úvod&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showSuggest&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Adresa&quot;},&quot;googleDown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Adresa&quot;},&quot;outOfRegion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Adresa&quot;},&quot;autoAdvance&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;maklerName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;[MENO MAKLÉRA]&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Maklér&quot;},&quot;typyBezRozpatia&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Rozpätie&quot;}}">
+class Component extends DCLogic {
+  QS = [
+    { q: 'Prečo zisťujete cenu?', o: ['Len zisťujem', 'Predám do 3–6 mesiacov', 'Dedičstvo', 'Rozvod', 'Investícia'], h: 'Podľa toho vám na konci ponúkneme to, čo sa vám hodí. Kontakt zadávať nemusíte.' },
+    { q: 'Čo oceňujeme?', o: ['Byt', 'Dom', 'Chata', 'Apartmán', 'Pozemok'], h: 'Porovnáme len s podobnými nehnuteľnosťami, nie s celým trhom.' },
+    { q: 'Aká je výmera?', h: 'Z výmery počítame cenu podľa predajov vo vašom okolí.' },
+    { q: 'V akom je stave?', o: ['Pôvodný', 'Čiastočná rekonštrukcia', 'Kompletná rekonštrukcia', 'Novostavba'], h: 'Po rekonštrukcii sa nehnuteľnosti predávajú za viac, preto sa pýtame.' },
+    { q: 'Má balkón, loggiu alebo terasu?', o: ['Áno', 'Nie'], h: 'Kupujúci to sledujú. Je to posledná otázka pred cenou.' }
+  ];
+  FAQS = [{ id: "kontakt", q: "Musím zadať kontakt?", a: "Nie. E-mail len vtedy, ak chcete odhad v PDF." }, { id: "zdroj", q: "Z čoho cenu rátate?", a: "Z predajov vo vašom okolí." }, { id: "volanie", q: "Bude mi niekto volať?", a: "Iba ak o to požiadate." }, { id: "zavaznost", q: "Je odhad záväzný?", a: "Nie. Orientačný odhad, nie znalecký posudok." }, { id: "oblast", q: "Pre ktoré mestá to funguje?", a: "Liptov, Turiec a Orava." }, { id: "pozemok", q: "Oceňujem pozemok. Dá sa to?", a: "Áno, pokračujte bez adresy." }];
+  CITIES = [
+    { name: 'Ružomberok', loc: 'v Ružomberku', reg: 'Liptov', photo: '', img: 'img/ruzomberok.jpg', ceny: { byt: 2140, bytZ: 'Predaje', bytOkres: false, bytN: 16, dom: 1140, domZ: 'Ponuky', domOkres: true, domN: 20, okres: 'Ružomberok' } },
+    { name: 'Liptovský Mikuláš', loc: 'v Liptovskom Mikuláši', reg: 'Liptov', photo: '', img: 'img/liptovsky-mikulas.jpg', ceny: { byt: 2860, bytZ: 'Ponuky', bytOkres: false, bytN: 103, dom: 2290, domZ: 'Ponuky', domOkres: false, domN: 21, okres: 'Liptovský Mikuláš' } },
+    { name: 'Martin', loc: 'v Martine', reg: 'Turiec', photo: '', img: 'img/martin.webp', ceny: { byt: 2390, bytZ: 'Ponuky', bytOkres: false, bytN: 145, dom: 2160, domZ: 'Ponuky', domOkres: false, domN: 36, okres: 'Martin' } },
+    { name: 'Dolný Kubín', loc: 'v Dolnom Kubíne', reg: 'Orava', photo: '', img: 'img/dolny-kubin.webp', ceny: { byt: 2570, bytZ: 'Ponuky', bytOkres: false, bytN: 50, dom: 2570, domZ: 'Ponuky', domOkres: true, domN: 8, okres: 'Dolný Kubín' } },
+    { name: 'Námestovo', loc: 'v Námestove', reg: 'Orava', photo: '', img: 'img/namestovo.webp', ceny: { byt: 2440, bytZ: 'Ponuky', bytOkres: true, bytN: 59, dom: 2570, domZ: 'Ponuky', domOkres: true, domN: 8, okres: 'Dolný Kubín' } }
+  ];
+  ADDR = [
+    { line: 'Vzorová ulica 1', town: 'Ružomberok', zip: '034 01', ok: true },
+    { line: 'Vzorová ulica 12', town: 'Liptovský Mikuláš', zip: '031 01', ok: true },
+    { line: 'Vzorová ulica 3', town: 'Martin', zip: '036 01', ok: true },
+    { line: 'Vzorová ulica 5', town: 'Dolný Kubín', zip: '026 01', ok: true },
+    { line: 'Vzorová ulica 7', town: 'Žilina', zip: '010 01', ok: false }
+  ];
+  norm = t => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  // Ukážkový režim (?screen=...): bez volania servera, s vymyslenými údajmi. Na živom webe sa nepoužíva.
+  demo = new URLSearchParams(location.search).has('screen');
+  sid = 0;
+  // Volanie servera. GET bez tela, POST ako JSON. Sieťová chyba vyhodí výnimku, odpoveď servera nie.
+  api = async (path, body) => {
+    const r = await fetch('api/' + path, body === undefined ? { headers: { Accept: 'application/json' } } : { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) });
+    let data = null;
+    try { data = await r.json(); } catch (e) { data = null; }
+    return { ok: r.ok, status: r.status, data };
+  };
+  // Session token pre Google: jedno písanie plus výber jednej adresy.
+  tok = () => this._tok || (this._tok = (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : (Math.random().toString(36) + '00000000').slice(2, 14) + Date.now().toString(36)));
+  // Texty chýb (schválené 15. 11. 2026): 429 = príliš veľa pokusov, sieť = bez spojenia, inak chyba servera.
+  TEXT_LIMIT = 'Príliš veľa pokusov za krátky čas. Skúste to o minútu.';
+  TEXT_SIET = 'Nepodarilo sa spojiť so serverom. Skontrolujte pripojenie a skúste to znova.';
+  TEXT_SERVER = 'Niečo sa pokazilo na našej strane. Skúste to o chvíľu znova.';
+  textChyby = r => !r ? this.TEXT_SIET : r.status === 429 ? this.TEXT_LIMIT : this.TEXT_SERVER;
+  // Udalosti pre GA4 (cez GTM). dataLayer vzniká až po súhlase s analytikou (cookies/cookies.js), bez súhlasu sa nič neposiela.
+  // Žiadne osobné údaje: len typ nehnuteľnosti, výsledok a či dal súhlas s kontaktovaním.
+  udalost = (event, parametre) => { try { if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event, ...parametre }); } catch (e) { /* meranie nesmie rozbiť kalkulačku */ } };
+  jeChyba = m => !!m && !/^(Ďakujeme|Odhad vám pošleme)/.test(m);
+  chybaPola = (r, pole) => (r.data && r.data.chyby && r.data.chyby[pole]) || '';
+  onAddress = e => {
+    const v = e.target.value, long = v.trim().length >= 3;
+    clearTimeout(this.t);
+    const id = ++this.sid;
+    this.setState(p => ({ address: v, sugg: long ? p.sugg : [] }));
+    if (!long) return;
+    this.t = setTimeout(async () => {
+      if (this.demo) {
+        const q = this.norm(v.trim()), m = this.ADDR.filter(a => this.norm(a.line + ' ' + a.town).includes(q));
+        return this.setState({ sugg: m.length ? m : this.ADDR.slice(0, 4) });
+      }
+      try {
+        const r = await this.api('adresa?q=' + encodeURIComponent(v.trim()) + '&token=' + this.tok());
+        if (id !== this.sid) return;
+        if (!r.ok || !r.data || r.data.zaloha) return this.setState({ zaloha: true, sugg: [], street: v.trim() });
+        this.setState({ sugg: (r.data.navrhy || []).map(n => ({ id: n.id, line: n.hlavny, town: n.vedlajsi })) });
+      } catch (err) { if (id === this.sid) this.setState({ zaloha: true, sugg: [], street: v.trim() }); }
+    }, 300);
+  };
+  // Výber návrhu: detail prinesie PSČ, obec, súradnice a či je adresa v regióne. Token sa potom zahodí.
+  pickAddr = async a => {
+    if (this.demo) return this.go({ screen: 'Potvrdenie adresy', picked: a, address: a.line + ', ' + a.town, sugg: [] });
+    const tok = this.tok();
+    this._tok = null;
+    try {
+      const r = await this.api('adresa/detail?id=' + encodeURIComponent(a.id) + '&token=' + tok), d = r.data;
+      if (!r.ok || !d || d.zaloha) throw new Error('zaloha');
+      const place = { line: d.ulica || a.line, town: d.obec || a.town, zip: d.psc || '', ok: !!d.v_regione, lat: d.lat, lng: d.lng, ulica: d.ulica || a.line };
+      this.go({ screen: 'Potvrdenie adresy', picked: place, address: [place.line, place.town].filter(Boolean).join(', '), sugg: [] });
+    } catch (err) { this.setState({ zaloha: true, sugg: [], street: a.line || '' }); }
+  };
+  // Záloha bez Google: obec overí server (zoznam obcí 7 okresov, bez ohľadu na diakritiku).
+  overObec = async town => {
+    if (this.demo || !town) return true;
+    try { const r = await this.api('obec?obec=' + encodeURIComponent(town)); return r.ok && r.data ? !!r.data.v_regione : true; } catch (err) { return true; }
+  };
+  state = { faqIdx: 0, faqHold: false, callName: '', odhadChyba: '', zaloha: false, odhadId: null, busy: false, obec: '', obecError: false, odhad: null, odhadState: 'loading', townOut: false, notifyEmail: '', notifyMsg: '', web: '', sugg: [], picked: null, street: '', town: '', from: 'Potvrdenie adresy', city: 0, screen: new URLSearchParams(location.search).get('screen') || this.props.startScreen || 'Úvod', step: 0, answers: {}, address: '', price: '', area: '', areaError: false, dom: { p: {}, vlast: '', pozemok: '', stavby: [], bazen: '', ine: '' }, domPart: 0, domError: '', email: '', consent: false, phone: '', pdfMsg: '', callMsg: '' };
+  componentDidUpdate(prev) {
+    const faqKluc = this.state.faqIdx + '|' + this.state.faqHold + '|' + this.state.screen;
+    if (faqKluc !== this.faqKluc) { this.faqKluc = faqKluc; this.faqPlan(); this.faqVideo(); }
+    this.synchronizujMapu();
+    if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, step: 0 }, () => this.props.startScreen === 'Výsledok' && this.runOdhad());
+  }
+  faqPlan() {
+    clearTimeout(this.faqCasovac);
+    const s = this.state;
+    if (s.screen !== 'Úvod' || s.faqHold || document.hidden) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.faqCasovac = setTimeout(() => this.setState(p => ({ faqIdx: (p.faqIdx + 1) % this.FAQS.length })), 5000);
+  }
+  faqViditelnost = () => this.faqPlan();
+  // Video v pozadí úvodu: prehrá sa vždy (rozhodnutie majiteľa 18. 11. 2026), okrem zapnutého šetrenia dát.
+  faqVideo() {
+    const v = document.getElementById('nm-uvod-video');
+    if (!v || v.dataset.ok) return;
+    if (navigator.connection && navigator.connection.saveData) return;
+    v.dataset.ok = '1'; v.muted = true; v.loop = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('loop', ''); v.addEventListener('ended', () => { v.currentTime = 0; const q = v.play(); if (q && q.catch) q.catch(() => {}); }); v.src = window.matchMedia && window.matchMedia('(max-width: 900px)').matches ? 'img/hory-video-m.mp4' : 'img/hory-video.mp4';
+    const p = v.play(); if (p && p.catch) p.catch(() => {});
+  }
+  // Video až po načítaní stránky a v čase nečinnosti, aby nebrzdilo prvé vykreslenie (výkon na mobile).
+  faqVideoNeskor() {
+    const spusti = () => (window.requestIdleCallback ? requestIdleCallback(() => this.faqVideo(), { timeout: 3000 }) : setTimeout(() => this.faqVideo(), 1500));
+    if (document.readyState === 'complete') spusti(); else window.addEventListener('load', spusti, { once: true });
+  }
+  componentDidMount() { this.faqPlan(); this.faqVideoNeskor(); document.addEventListener('visibilitychange', this.faqViditelnost); this.synchronizujMapu(); if (this.state.screen === 'Výsledok') this.runOdhad(); }
+  componentWillUnmount() { clearTimeout(this.faqCasovac); document.removeEventListener('visibilitychange', this.faqViditelnost); this.zrusMapu(); }
+  // Mapa (Leaflet + OpenStreetMap, modul mapa/) sa načíta až na obrazovke Potvrdenie adresy. React jej obsah nespravuje.
+  zrusMapu() { if (this._mapa) this._mapa.zrus(); this._mapa = null; this._mapaEl = null; }
+  synchronizujMapu() {
+    const el = this.state.screen === 'Potvrdenie adresy' ? document.getElementById('mapa-potvrdenie') : null;
+    if (!el) return this.zrusMapu();
+    if (el === this._mapaEl) return;
+    this.zrusMapu();
+    this._mapaEl = el;
+    const p = this.state.picked, lat = p && typeof p.lat === 'number' ? p.lat : 49.0816, lng = p && typeof p.lng === 'number' ? p.lng : 19.3048;
+    import(new URL('mapa/mapa.js', location.href).href).then(m => m.vytvorMapu(el, {
+      lat, lng,
+      naZmenu: c => this.setState(st => ({ picked: st.picked ? { ...st.picked, lat: c.lat, lng: c.lng } : st.picked }))
+    })).then(m => { if (this._mapaEl === el && el.isConnected) this._mapa = m; else m.zrus(); }).catch(() => {}); // pri chybe ostane sivá plocha
+  }
+  // Dom: podlahová plocha = prízemie + poschodia + podkrovie + 30 % pivnice (rovnako ako na serveri, backend/src/Dom.php).
+  DOM_POLIA = [['prizemie', 'Prízemie', '80'], ['poschodie1', '1. poschodie', '60'], ['poschodie2', '2. poschodie', ''], ['poschodie3', '3. poschodie', ''], ['podkrovie', 'Podkrovie', ''], ['pivnica', 'Pivnica', '']];
+  DOM_VLAST = [['ano', 'Áno, dom aj pozemok'], ['bez', 'Nie, dom stojí na cudzom pozemku'], ['neviem', 'Neviem']];
+  DOM_STAVBY = [['garaz', 'Garáž alebo prístrešok'], ['domcek', 'Záhradný domček alebo chatka'], ['humno', 'Humno alebo hospodárska stavba'], ['studna', 'Studňa alebo čistička'], ['ine', 'Iná stavba']];
+  DOM_BAZEN = [['', 'Nie'], ['maly', 'Do 15 m²'], ['stredny', '15 až 30 m²'], ['velky', 'Nad 30 m²']];
+  cislo = v => { const t = String(v == null ? '' : v).replace(/[\s\u00a0]/g, '').replace(',', '.'); return /^\d+(\.\d+)?$/.test(t) ? Number(t) : null; };
+  domPlocha = p => { const n = k => this.cislo(p[k]) || 0; return Math.round((n('prizemie') + n('poschodie1') + n('poschodie2') + n('poschodie3') + n('podkrovie') + 0.3 * n('pivnica')) * 10) / 10; };
+  // Výpočet beží na serveri (POST /api/odhad). V ukážkovom režime sa vráti pevný vzorový výsledok.
+  runOdhad = async () => {
+    const s = this.state, a = s.answers, id = this.rid = (this.rid || 0) + 1;
+    const obec = (s.picked && s.picked.town) || s.town.trim() || String(a[6] || '').trim() || 'Ružomberok';
+    const typ = a[1] || 'Byt', pozemok = typ === 'Pozemok', vymera = String(a[2] || 66).replace(',', '.');
+    this.setState({ odhad: null, odhadState: 'loading', odhadId: null });
+    if (this.demo) {
+      const d = { stav: 'ok', od: 142000, do: 158000, pocet: 24, veta: 'Podľa 24 podobných predajov v okolí.', poznamka: 'Vyššiu cenu dosahujú byty po rekonštrukcii a s dobrou prípravou predaja.', makler: this.props.maklerName || '[MENO MAKLÉRA]' };
+      return setTimeout(() => id === this.rid && this.setState({ odhad: d, odhadState: 'ok' }), 400);
+    }
+    const body = { typ, obec, vymera };
+    if (!pozemok) body.stav = a[3] || 'Kompletná rekonštrukcia';
+    if (typ === 'Dom' && s.dom.done) body.dom = { podlazia: s.dom.p, vlastnictvo: s.dom.vlast || 'neviem', ...(s.dom.pozemok.trim() ? { pozemok: s.dom.pozemok.trim() } : {}), stavby: s.dom.stavby, ...(s.dom.stavby.includes('ine') && s.dom.ine.trim() ? { ine: s.dom.ine.trim() } : {}), bazen: s.dom.bazen || 'nie' };
+    if (a[0]) body.dovod = a[0];
+    if (!pozemok && a[4]) body.balkon = a[4];
+    if (String(a[5] || '').trim()) body.predstava_ceny = String(a[5]).trim();
+    const p = s.picked;
+    if (p && typeof p.lat === 'number') body.adresa = { ulica: p.ulica || p.line, psc: p.zip || '', lat: p.lat, lng: p.lng };
+    else if (s.street.trim() || s.town.trim()) body.adresa = { ulica: s.street.trim(), zo_zalohy: true };
+    else body.adresa = { bez_adresy: true };
+    try {
+      const r = await this.api('odhad', body);
+      if (id !== this.rid) return;
+      const d = r.data;
+      if (!r.ok || !d || !d.stav) return this.setState({ odhadState: 'error', odhadChyba: this.textChyby(r) });
+      if (d.stav === 'mimo regiónu') { this.udalost('mimo_regionu', { typ }); return this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' }); }
+      this.udalost('odhad', { typ, vysledok: d.stav });
+      this.setState({ odhad: d, odhadState: 'ok', odhadId: d.odhad_id || null });
+    } catch (err) { if (id === this.rid) this.setState({ odhadState: 'error', odhadChyba: this.TEXT_SIET }); }
+  };
+  // Kontaktné formuláre: server vráti hotový text (200) alebo vetu pod pole (422).
+  poslat = async (cesta, telo, pole, kluc, chybaDemo, okDemo) => {
+    if (this.state.busy) return;
+    if (this.demo) return this.setState({ [kluc]: chybaDemo || okDemo });
+    this.setState({ busy: true });
+    try {
+      const r = await this.api('kontakt/' + cesta, { ...telo, web: this.state.web });
+      if (r.ok && r.data && r.data.sprava) this.udalost({ pdf: 'pdf', makler: 'telefonat', 'mimo-regionu': 'mimo_regionu_email' }[cesta], { typ: this.state.answers[1] || '', ...(cesta === 'pdf' ? { suhlas: !!telo.suhlas } : {}) });
+      this.setState({ [kluc]: r.ok && r.data && r.data.sprava ? r.data.sprava : this.chybaPola(r, pole) || this.textChyby(r) });
+    } catch (err) { this.setState({ [kluc]: this.TEXT_SIET }); }
+    this.setState({ busy: false });
+  };
+  go(patch) { this.setState(patch); window.scrollTo(0, 0); }
+  renderVals() {
+    const zamer = ({ 'Predám do 3–6 mesiacov': 'predaj', 'Dedičstvo': 'dedicstvo', 'Rozvod': 'rozvod', 'Investícia': 'investicia' })[this.state.answers && this.state.answers[0]] || 'zistujem';
+    const s = this.state, step = s.step, done = step >= 7, isPrice = step === 5, isObec = step === 6, cur = this.QS[step] || {};
+    const a = s.answers, pozemok = a[1] === 'Pozemok', obecAddr = (s.picked && s.picked.town) || s.town.trim(), needObec = !obecAddr, obecVal = obecAddr || String(a[6] || '').trim();
+    const od = s.odhad, resOk = s.odhadState === 'ok' && !!od && od.stav === 'ok', resNoPrice = s.odhadState === 'ok' && !!od && od.stav !== 'ok';
+    const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+    const scaleNote = (resOk && od.poznamka) || '';
+    const k = n => Math.round(n / 1000);
+    const auto = this.props.autoAdvance ?? true;
+    const city = this.CITIES[s.city];
+    const cities = this.CITIES.map((c, i) => ({ name: c.name, i, reg: c.reg, cls: 'nm-mesto' + (i === 0 ? ' nm-mesto-velke' : '') + (c.img ? '' : ' nm-mesto-bez'), bg: c.img ? 'url(' + c.img + ')' : 'none', open: e => { e.preventDefault(); this.go({ screen: 'Mesto', city: i }); } }));
+    const set = k => e => this.setState({ [k]: e.target.value });
+    const down = (this.props.googleDown ?? false) || s.zaloha;
+    const place = s.picked || ((this.props.outOfRegion ?? false) ? this.ADDR[4] : this.ADDR[0]);
+    const sugg = (s.sugg.length ? s.sugg : this.demo && (this.props.showSuggest ?? true) && !s.address.trim() ? [this.ADDR[0]] : []).map(a => ({ line: a.line, town: a.town,
+      pick: () => this.pickAddr(a) }));
+    return {
+      isCity: s.screen === 'Mesto', cities, otherCities: cities.filter(c => c.i !== s.city), cityIn: city.loc, cityPhoto: city.photo, hasPhoto: !!city.img, cityNoPhoto: !city.img, cityBg: city.img ? 'url(' + city.img + ')' : 'none', cityAlt: city.name, cityBoxCls: city.img ? '' : 'nm-mesto-foto-bez', cityReg: city.reg,
+      ...(() => { const c = city.ceny || {}, e = n => n ? n.toLocaleString('sk-SK').replace(/\s/g, '\u00a0') + '\u00a0€/m²' : '–', lbl = (typ, z, ok) => 'medián ' + (z === 'Predaje' ? 'predajnej' : 'ponúkanej') + ' ceny ' + typ + ' za m²' + (ok ? ', okres ' + c.okres : '');
+        return { cityByt: e(c.byt), cityBytLbl: lbl('bytu', c.bytZ, c.bytOkres), cityDom: e(c.dom), cityDomLbl: lbl('domu', c.domZ, c.domOkres), cityPocet: String((c.bytN || 0) + (c.domN || 0)), cityPocetLbl: 'predajov a ponúk bytov a domov v dátach',
+          cityText: (c.bytOkres ? 'Pre ' + city.name + ' zatiaľ nemáme dosť vlastných predajov, preto ukazujeme ceny okresu ' + c.okres + '. ' : '') + 'Ponúkaná cena v inzerátoch býva vyššia ako cena, za ktorú sa nehnuteľnosť nakoniec predá. Kalkulačka to zohľadní a cenu ukáže pre vašu adresu, výmeru a stav. Údaje k 16. 11. 2026.' }; })(),
+      isConfirm: s.screen === 'Potvrdenie adresy',
+      faqQ: this.FAQS[s.faqIdx].q, faqA: this.FAQS[s.faqIdx].a, faqHref: './faq.html#' + this.FAQS[s.faqIdx].id, faqNo: (s.faqIdx + 1) + ' z ' + this.FAQS.length,
+      faqLive: s.faqHold ? 'polite' : 'off', faqProgClass: s.faqHold ? 'nm-faq-stop' : s.faqIdx % 2 ? 'nm-faq-b' : 'nm-faq-a',
+      faqHoldOn: () => this.setState({ faqHold: true }), faqHoldOff: () => this.setState({ faqHold: false }),
+      useGoogle: !down, isFallback: down, suggestions: sugg, showSuggest: sugg.length > 0, suggestExpanded: sugg.length > 0 ? 'true' : 'false',
+      suggestStatus: s.address.trim().length >= 3 && s.sugg.length ? s.sugg.length + (s.sugg.length === 1 ? ' návrh adresy' : s.sugg.length < 5 ? ' návrhy adries' : ' návrhov adries') : '',
+      street: s.street, town: s.town, setStreet: set('street'), setTown: e => this.setState({ town: e.target.value, townOut: false }), checkTown: async () => { const t = s.town.trim(); if (t) this.setState({ townOut: !(await this.overObec(t)) }); }, townOut: s.townOut,
+      submitFallback: async e => { e.preventDefault(); if (!(await this.overObec(s.town.trim()))) return this.udalost('mimo_regionu', {}), this.go({ screen: 'Mimo regiónu', townOut: true, notifyEmail: '', notifyMsg: '' }); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, address: [s.street.trim(), s.town.trim()].filter(Boolean).join(', ') }); },
+      confirmAddr: [place.line, [place.zip, place.town].filter(Boolean).join(' ')].filter(Boolean).join(', '), outOfRegion: !place.ok,
+      goIntro: () => this.go({ screen: 'Úvod' }),
+      confirmAddress: () => place.ok ? this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: place }) : (this.udalost('mimo_regionu', {}), this.go({ screen: 'Mimo regiónu', notifyEmail: '', notifyMsg: '' })),
+      isOut: s.screen === 'Mimo regiónu', notifyEmail: s.notifyEmail, notifyMsg: s.notifyMsg, hasNotifyMsg: !!s.notifyMsg, notifyIsErr: this.jeChyba(s.notifyMsg),
+      setNotifyEmail: e => this.setState({ notifyEmail: e.target.value, notifyMsg: '' }),
+      sendNotify: e => { e.preventDefault(); this.poslat('mimo-regionu', { email: s.notifyEmail.trim() }, 'email', 'notifyMsg', /^\S+@\S+\.\S+$/.test(s.notifyEmail.trim()) ? '' : 'Zadajte e-mail.', 'Ďakujeme, dáme vám vedieť.'); },
+      web: s.web, setWeb: e => this.setState({ web: e.target.value }),
+      skipAddress: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0, from: s.screen, picked: null, town: '', street: '', address: '' }); },
+      isPrice, price: s.price, setPrice: set('price'),
+      isObec, obec: s.obec, obecError: s.obecError, setObec: e => this.setState({ obec: e.target.value, obecError: false }),
+      submitObec: e => { e.preventDefault(); const v = s.obec.trim(); if (!v) return this.setState({ obecError: true }); this.go({ answers: { ...s.answers, 6: v }, step: 7 }); },
+      submitPrice: e => { e.preventDefault(); this.go({ answers: { ...s.answers, 5: s.price.trim() }, step: needObec ? 6 : 7 }); },
+      skipPrice: e => { e.preventDefault(); this.go({ price: '', step: needObec ? 6 : 7 }); },
+      isIntro: s.screen === 'Úvod', mainClass: s.screen === 'Úvod' ? 'nm-main-uvod' : s.screen === 'Kalkulačka' ? 'nm-main-kalk' : s.screen === 'Výsledok' ? 'nm-main-kalk nm-main-vysl' : '', isCalc: s.screen === 'Kalkulačka', isResult: s.screen === 'Výsledok',
+      address: s.address, area: s.area, areaError: s.areaError, email: s.email, phone: s.phone, consent: s.consent, pdfMsg: s.pdfMsg, callMsg: s.callMsg, hasPdfMsg: !!s.pdfMsg, pdfIsErr: this.jeChyba(s.pdfMsg), hasCallMsg: !!s.callMsg, callIsErr: this.jeChyba(s.callMsg),
+      setAddress: this.onAddress, setEmail: set('email'), setPhone: set('phone'), setCallName: set('callName'), callName: s.callName,
+      setArea: e => this.setState({ area: e.target.value, areaError: false }),
+      toggleConsent: () => this.setState(p => ({ consent: !p.consent })),
+      goHome: e => { e.preventDefault(); this.go({ screen: 'Úvod' }); },
+      startCalc: e => {
+        e.preventDefault();
+        if (this.demo) return this.go({ screen: 'Potvrdenie adresy', picked: s.sugg[0] || s.picked, sugg: [] });
+        if (s.sugg[0]) return this.pickAddr(s.sugg[0]);
+        this.setState({ zaloha: true, street: s.address.trim() }); // nič sa nenašlo: ručné polia Ulica a Obec
+      },
+      segments: [0, 1, 2, 3, 4].map(i => ({ bg: i < step || (i === step && !done) ? '#272361' : '#dcd9d0' })),
+      kroky: (pozemok ? ['Dôvod', 'Typ', 'Výmera'] : ['Dôvod', 'Typ', 'Výmera', 'Stav', 'Balkón']).map((label, i) => ({ n: i + 1, label, cls: done || i < step ? 'nm-k-hotovo' : i === step ? 'nm-k-teraz' : '' })),
+      volbyCls: 'nm-volby' + (cur.o && cur.o.length > 3 ? ' nm-volby-2' : ''),
+      get panelPctTxt() { return this.panelPct + '\u00a0%'; },
+      panelPct: Math.round(100 * [0, 1, 2, 3, 4].filter(i => !(pozemok && i > 2) && a[i] != null && a[i] !== '').length / (pozemok ? 3 : 5)),
+      panelAdr: (s.address.trim() || obecVal || 'Bez adresy').replace(/\.$/, ''),
+      panelRows: [['Dôvod', a[0]], ['Typ', a[1]], ['Výmera', a[2] ? String(a[2]).replace('.', ',') + ' m²' : ''], ...(pozemok ? [] : [['Stav', a[3]], ['Balkón / terasa', a[4]]])]
+        .map(([label, v], i) => ({ label, value: v || '–', cls: v ? 'nm-hotovo' : (i === Math.min(step, 4) ? 'nm-teraz' : '') })),
+      panelNote: done ? 'Všetko máme. Cena je pripravená.' : 'Cena sa ukáže hneď po poslednej otázke. Bez registrácie.',
+      stepLabel: done ? 'Hotovo' : isPrice ? 'Nepovinná otázka · potom hneď cena' : isObec ? 'Posledná otázka' : step === 4 ? 'Otázka 5 z 5 · potom hneď cena' : 'Otázka ' + (step + 1) + ' z 5 · ešte ' + (4 - step) + (4 - step === 1 ? ' otázka' : ' otázky') + ' do ceny',
+      hint: done ? 'Cena je pripravená. Ukážeme rozpätie podľa predajov vo vašom okolí.' : isPrice ? 'Porovnáme ju s odhadom. Môžete ju preskočiť.' : isObec ? 'Podľa obce vyberieme predaje na porovnanie.' : step === 2 && a[1] === 'Dom' ? ['Pivnicu počítame ako 30 % plochy, ostatné podlažia celé.', 'Ak pozemok nevlastníte, cena sa môže líšiť.', 'Bazén a vedľajšie stavby môžu cenu zvýšiť.'][s.domPart] : (cur.h || ''),
+      hasHint: true,
+      question: done ? 'Máme všetko' : isPrice ? 'Akú máte predstavu o cene?' : isObec ? 'V ktorej obci je nehnuteľnosť?' : step === 2 && a[1] === 'Dom' ? ['Aká je výmera podlaží?', 'Pozemok pod domom', 'Čo je na pozemku?'][s.domPart] : cur.q,
+      areaChips: (pozemok ? [400, 600, 800, 1000, 1500] : a[1] === 'Dom' || a[1] === 'Chata' ? [80, 100, 120, 150, 200] : [40, 55, 65, 75, 90]).map(n => ({ label: n + ' m²', pick: () => this.setState({ area: String(n), areaError: false }) })),
+      isChoice: !done && !isPrice && !isObec && !!cur.o, isArea: step === 2 && a[1] !== 'Dom', isDone: done,
+      isDom0: step === 2 && a[1] === 'Dom' && s.domPart === 0, isDom1: step === 2 && a[1] === 'Dom' && s.domPart === 1, isDom2: step === 2 && a[1] === 'Dom' && s.domPart === 2, domError: s.domError,
+      domPolia: this.DOM_POLIA.map(([k, label, ph]) => ({ id: 'dom-' + k, label: label + (k === 'prizemie' ? ' *' : ''), ph, value: s.dom.p[k] || '', set: e => { const v = e.target.value; this.setState(st => ({ dom: { ...st.dom, p: { ...st.dom.p, [k]: v } }, domError: '' })); } })),
+      domPozemok: s.dom.pozemok, setDomPozemok: e => { const v = e.target.value; this.setState(st => ({ dom: { ...st.dom, pozemok: v }, domError: '' })); },
+      domVlast: this.DOM_VLAST.map(([k, label]) => ({ label, on: s.dom.vlast === k ? 'true' : 'false', bg: s.dom.vlast === k ? '#272361' : '#ffffff', fg: s.dom.vlast === k ? '#ffffff' : '#272361', pick: () => this.setState(st => ({ dom: { ...st.dom, vlast: k }, domError: '' })) })),
+      domStavby: this.DOM_STAVBY.map(([k, label]) => { const on = s.dom.stavby.includes(k); return { label, on: on ? 'true' : 'false', bg: on ? '#272361' : '#ffffff', fg: on ? '#ffffff' : '#272361', pick: () => this.setState(st => ({ dom: { ...st.dom, stavby: on ? st.dom.stavby.filter(x => x !== k) : [...st.dom.stavby, k] } })) }; }),
+      domIneOn: s.dom.stavby.includes('ine'), domIne: s.dom.ine, setDomIne: e => { const v = e.target.value; this.setState(st => ({ dom: { ...st.dom, ine: v } })); },
+      domBazen: this.DOM_BAZEN.map(([k, label]) => ({ label, on: s.dom.bazen === k ? 'true' : 'false', bg: s.dom.bazen === k ? '#272361' : '#ffffff', fg: s.dom.bazen === k ? '#ffffff' : '#272361', pick: () => this.setState(st => ({ dom: { ...st.dom, bazen: k } })) })),
+      submitDom: e => {
+        e.preventDefault();
+        const d = s.dom, part = s.domPart;
+        if (part === 0) {
+          const bad = this.DOM_POLIA.find(([k]) => { const t = String(d.p[k] || '').trim(); const n = this.cislo(t); return t !== '' && (n == null || n > 2000); });
+          if (bad) return this.setState({ domError: 'Pri poli ' + bad[1] + ' zadajte výmeru v m², najviac 2000.' });
+          const pr = this.cislo(d.p.prizemie);
+          if (pr == null || pr < 10) return this.setState({ domError: 'Zadajte výmeru prízemia, aspoň 10 m².' });
+          if (this.domPlocha(d.p) > 2000) return this.setState({ domError: 'Súčet výmer je príliš veľký, najviac 2000 m².' });
+          return this.setState({ domPart: 1, domError: '' });
+        }
+        if (part === 1) {
+          if (!d.vlast) return this.setState({ domError: 'Vyberte, či dom stojí na vašom pozemku.' });
+          if (d.pozemok.trim() && (this.cislo(d.pozemok) == null || this.cislo(d.pozemok) < 1)) return this.setState({ domError: 'Výmeru pozemku zadajte v m², alebo políčko nechajte prázdne.' });
+          return this.setState({ domPart: 2, domError: '' });
+        }
+        this.go({ answers: { ...s.answers, 2: this.domPlocha(d.p) }, dom: { ...d, done: true }, domPart: 0, domError: '', step: 3 });
+      },
+      options: done || !cur.o ? [] : cur.o.map(label => {
+        const on = s.answers[step] === label;
+        const ico = ({ 'Len zisťujem': 'lupa', 'Predám do 3–6 mesiacov': 'predaj', 'Dedičstvo': 'dedic', 'Rozvod': 'rozvod', 'Investícia': 'invest',
+          'Byt': 'byt', 'Dom': 'dom', 'Chata': 'chata', 'Apartmán': 'apartman', 'Pozemok': 'pozemok',
+          'Pôvodný': 'povodny', 'Čiastočná rekonštrukcia': 'ciastocna', 'Kompletná rekonštrukcia': 'kompletna', 'Novostavba': 'novostavba', 'Áno': 'ano', 'Nie': 'nie' })[label] || '';
+        const sub = ({ 'Len zisťujem': 'Zaujíma ma, koľko to má hodnotu', 'Predám do 3–6 mesiacov': 'Chcem predať čo najlepšie', 'Dedičstvo': 'Potrebujem podklad k vyrovnaniu', 'Rozvod': 'Delíme spoločný majetok', 'Investícia': 'Porovnávam ceny na trhu',
+          'Pôvodný': 'Bez väčších úprav od výstavby', 'Čiastočná rekonštrukcia': 'Napríklad nová kúpeľňa alebo okná', 'Kompletná rekonštrukcia': 'Rozvody, podlahy, kúpeľňa aj kuchyňa', 'Novostavba': 'Nová alebo len pár rokov stará' })[label] || '';
+        return { label, sub, hasSub: !!sub, subId: sub ? 'opt-popis-' + step + '-' + cur.o.indexOf(label) : null, bg: on ? '#272361' : '#ffffff', fg: on ? '#ffffff' : '#272361', cls: 'nm-opt' + (on ? ' nm-opt-on' : '') + (ico ? ' nm-ico nm-ico-' + ico : ''),
+          pick: () => this.go({ answers: { ...s.answers, [step]: label }, step: auto ? step + 1 : step }) };
+      }),
+      back: () => step === 2 && a[1] === 'Dom' && s.domPart > 0 ? this.setState({ domPart: s.domPart - 1, domError: '' }) : step === 3 && a[1] === 'Dom' ? this.go({ step: 2, domPart: 2 }) : step === 0 ? this.go({ screen: s.from }) : this.go({ step: step === 7 && !needObec ? 5 : step === 5 && pozemok ? 2 : step - 1 }),
+      submitArea: e => {
+        e.preventDefault();
+        const n = Number(String(s.area).replace(',', '.').trim());
+        if (!s.area.trim() || !(n >= 10 && n <= 2000)) return this.setState({ areaError: true });
+        this.go({ answers: { ...s.answers, 2: n }, step: pozemok ? 5 : 3 }); // pozemok preskakuje stav aj balkón
+      },
+      resLoading: s.odhadState === 'loading', resError: s.odhadState === 'error', resErrorText: s.odhadChyba || this.TEXT_SERVER, resOk, resNoPrice, resDone: resOk || resNoPrice, showPdf: resOk,
+      ...(() => {
+        const vym = Number(String(s.answers[2] || 0).replace(',', '.')), typ = s.answers[1] || 'Byt', m = this.CITIES.find(c => (obecVal || '').indexOf(c.name) === 0 || (s.address || '').indexOf(c.name) !== -1);
+        const pr = (resOk && od.priplatok) || 0, lo = resOk && vym ? Math.round((od.od - pr) / vym / 10) * 10 : 0, hi = resOk && vym ? Math.round((od.do - pr) / vym / 10) * 10 : 0, e = n => fmt(n) + '\u00a0€';
+        const mc = m && m.ceny ? (typ === 'Dom' || typ === 'Chata' ? m.ceny.dom : typ === 'Byt' || typ === 'Apartmán' ? m.ceny.byt : 0) : 0;
+        return { m2Text: lo ? e(lo) + ' – ' + e(hi) : '', m2Note: typ === 'Pozemok' ? 'za m² pozemku pri ' + fmt(vym) + ' m²' : (resOk && od.plocha ? 'pri rátanej ploche ' : 'pri výmere ') + String(vym).replace('.', ',') + ' m²',
+          hasPriplatok: pr > 0, priplatokText: pr > 0 ? 'Cena zahŕňa príplatky +' + fmt(pr) + '\u00a0€: ' + (od.priplatky || []).map(x => x.nazov.toLowerCase()).join(', ') + '.' : '', hasUpozornenie: !!(resOk && od.upozornenie), upozornenie: (resOk && od.upozornenie) || '',
+          hasM2Mesto: !!(lo && mc), m2MestoLbl: m ? 'Medián ' + (typ === 'Dom' || typ === 'Chata' ? 'domov' : 'bytov') + ' ' + m.loc : '', m2MestoText: mc ? e(mc) + '/m²' : '' };
+      })(),
+      maklerFirst: !resOk || zamer === 'predaj', pdfFirst: resOk && zamer !== 'predaj',
+      dalejText: zamer === 'predaj' ? 'Predávate do pol roka? Maklér si nehnuteľnosť pozrie, povie jednu cenu a poradí, ako predať čo najvýhodnejšie.'
+        : zamer === 'dedicstvo' ? 'Pri dedičstve sa hodí mať odhad písomne. Pošleme vám ho v PDF. Na konanie môže byť potrebný znalecký posudok.'
+        : zamer === 'rozvod' ? 'Odhad v PDF poslúži ako podklad pri dohode o majetku. Úradne sa zvyčajne vyžaduje znalecký posudok.'
+        : zamer === 'investicia' ? 'Uložte si odhad v PDF a porovnávajte s ponukami na trhu.'
+        : 'Uložte si odhad do e-mailu. Keď sa rozhodnete predávať, máte ho po ruke.',
+      priceText: resOk ? fmt(od.od) + ' až ' + fmt(od.do) + '\u00a0€' : '', hasNadpis: resNoPrice && !!od.nadpis, nadpis: od && od.nadpis || '',
+      hasVeta: !!(od && od.veta), veta: od && od.veta || '', hasScaleNote: !!scaleNote, scaleNote, maklerName: (od && od.makler) || this.props.maklerName || '[MENO MAKLÉRA]',
+      scaleFrom: resOk ? k(od.od) : '', scaleTo: resOk ? k(od.do) : '', scaleLabel: resOk ? 'Ilustračná stupnica, odhad od ' + k(od.od) + ' do ' + k(od.do) + ' tisíc eur' : '',
+      retry: e => { e.preventDefault(); this.runOdhad(); },
+      showResult: () => { this.go({ screen: 'Výsledok' }); this.runOdhad(); },
+      editData: e => { e.preventDefault(); this.go({ screen: 'Kalkulačka', step: 0 }); },
+      summary: (s.address.trim() || obecVal).replace(/\.$/, '') + '. ' + (s.answers[1] || 'Byt') + ' ' + (s.answers[2] || 66) + ' m²',
+      sendPdf: e => { e.preventDefault(); this.poslat('pdf', { email: s.email.trim(), odhad_id: s.odhadId, ...(s.consent ? { suhlas: true } : {}) }, 'email', 'pdfMsg', /^\S+@\S+\.\S+$/.test(s.email.trim()) ? '' : 'Zadajte e-mail.', 'Odhad vám pošleme na e-mail.'); },
+      requestCall: e => { e.preventDefault(); this.poslat('makler', { telefon: s.phone.trim(), odhad_id: s.odhadId, ...(s.callName.trim() ? { meno: s.callName.trim() } : {}) }, 'telefon', 'callMsg', s.phone.replace(/\D/g, '').length >= 9 ? '' : 'Zadajte telefónne číslo.', 'Ďakujeme, ozveme sa vám.'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

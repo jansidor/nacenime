@@ -1,0 +1,336 @@
+<?php
+declare(strict_types=1);
+
+namespace Nacenime;
+
+/** Ukladanie odhadov a kontaktov do SQLite (PDO, len pripravené dotazy). */
+final class Storage
+{
+    private \PDO $pdo;
+
+    public function __construct(string $cesta)
+    {
+        if ($cesta !== ':memory:' && !is_dir(dirname($cesta))) {
+            mkdir(dirname($cesta), 0750, true);
+        }
+        $this->pdo = new \PDO('sqlite:' . $cesta, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 5]);
+        // Pri prvom vytvorení databázy z viacerých workerov naraz môže inicializácia aj napriek časovému limitu skončiť
+        // chybou "database is locked" (prepnutie na WAL ho nerešpektuje). Je bezpečná na opakovanie, tak sa zopakuje.
+        for ($pokus = 1; ; $pokus++) {
+            try {
+                $this->inicializuj();
+                break;
+            } catch (\PDOException $e) {
+                $zamok = in_array((int) ($e->errorInfo[1] ?? 0), [5, 6], true) || stripos($e->getMessage(), 'locked') !== false;
+                if (!$zamok || $pokus >= 20) {
+                    throw $e;
+                }
+                usleep(random_int(10_000, 60_000));
+            }
+        }
+    }
+
+    /** WAL a schéma (idempotentné). */
+    private function inicializuj(): void
+    {
+        // WAL: čitatelia neblokujú zapisovateľa (pri súbežných požiadavkách rýchlejšie); čakanie na zámok najviac 5 s.
+        $this->pdo->exec('PRAGMA journal_mode=WAL');
+        $this->pdo->exec(<<<'SQL'
+CREATE TABLE IF NOT EXISTS odhady (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
+  adresa TEXT, psc TEXT, obec TEXT NOT NULL, lat REAL, lng REAL, bez_adresy INTEGER NOT NULL DEFAULT 0, zo_zalohy INTEGER NOT NULL DEFAULT 0,
+  dovod TEXT, typ TEXT NOT NULL, vymera REAL NOT NULL, stav TEXT, balkon TEXT, predstava_ceny INTEGER,
+  vysledok TEXT NOT NULL, cena_od INTEGER, cena_do INTEGER, pocet INTEGER, veta TEXT
+);
+CREATE TABLE IF NOT EXISTS denne_pocitadla (kluc TEXT NOT NULL, den TEXT NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, den));
+CREATE TABLE IF NOT EXISTS limity (kluc TEXT NOT NULL, okno INTEGER NOT NULL, pocet INTEGER NOT NULL, PRIMARY KEY (kluc, okno));
+CREATE TABLE IF NOT EXISTS stav (kluc TEXT PRIMARY KEY, hodnota TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS kontakty (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, vytvorene TEXT NOT NULL,
+  druh TEXT NOT NULL CHECK (druh IN ('pdf','makler','mimo_regionu')),
+  email TEXT, telefon TEXT, suhlas INTEGER NOT NULL DEFAULT 0, odhad_id INTEGER REFERENCES odhady(id),
+  odoslane INTEGER NOT NULL DEFAULT 0, pokusy INTEGER NOT NULL DEFAULT 0,
+  oznamene INTEGER NOT NULL DEFAULT 0, oznam_pokusy INTEGER NOT NULL DEFAULT 0,
+  meno TEXT
+);
+SQL);
+        // Indexy pre časté dotazy (kontrola duplicít, GDPR podľa e-mailu/telefónu, retencia, cron PDF). Idempotentné.
+        $this->pdo->exec(<<<'SQL'
+CREATE INDEX IF NOT EXISTS kontakty_odhad ON kontakty (odhad_id);
+CREATE INDEX IF NOT EXISTS kontakty_druh_odhad ON kontakty (druh, odhad_id, vytvorene);
+CREATE INDEX IF NOT EXISTS kontakty_email ON kontakty (email);
+CREATE INDEX IF NOT EXISTS kontakty_telefon ON kontakty (telefon);
+CREATE INDEX IF NOT EXISTS kontakty_vytvorene ON kontakty (vytvorene);
+CREATE INDEX IF NOT EXISTS odhady_vytvorene ON odhady (vytvorene);
+SQL);
+        $this->doplnStlpec('odhady', 'veta', 'TEXT');
+        $this->doplnStlpec('odhady', 'dom_popis', 'TEXT'); // podlažia, pozemok a stavby pri dome
+        $this->doplnStlpec('kontakty', 'meno', 'TEXT'); // nepovinné meno pri žiadosti o telefonát
+        $this->doplnStlpec('kontakty', 'pokusy', 'INTEGER NOT NULL DEFAULT 0');
+        if ($this->doplnStlpec('kontakty', 'oznamene', 'INTEGER NOT NULL DEFAULT 0')) {
+            // Leady spred zavedenia oznámení sa neoznamujú spätne.
+            $this->pdo->exec('UPDATE kontakty SET oznamene = 1');
+        }
+        $this->doplnStlpec('kontakty', 'oznam_pokusy', 'INTEGER NOT NULL DEFAULT 0');
+    }
+
+    /** Spoločné spojenie pre CRM (rovnaká databáza a nastavenia). */
+    public function pdo(): \PDO
+    {
+        return $this->pdo;
+    }
+
+    /** Jednoduchá migrácia pre databázy vytvorené staršou verziou schémy. Vráti true, ak stĺpec pridala. */
+    private function doplnStlpec(string $tabulka, string $stlpec, string $typ): bool
+    {
+        foreach ($this->pdo->query("PRAGMA table_info($tabulka)") as $r) {
+            if ($r['name'] === $stlpec) {
+                return false;
+            }
+        }
+        try {
+            $this->pdo->exec("ALTER TABLE $tabulka ADD COLUMN $stlpec $typ");
+        } catch (\PDOException $e) {
+            // Súbeh: stĺpec medzitým pridala iná požiadavka. Nie je to chyba.
+            if (stripos($e->getMessage(), 'duplicate column') !== false) {
+                return false;
+            }
+            throw $e;
+        }
+        return true;
+    }
+
+    /** @param array<string, mixed> $d */
+    public function ulozOdhad(array $d): int
+    {
+        $s = $this->pdo->prepare('INSERT INTO odhady (vytvorene, adresa, psc, obec, lat, lng, bez_adresy, zo_zalohy, dovod, typ, vymera, stav, balkon, predstava_ceny, vysledok, cena_od, cena_do, pocet, veta, dom_popis)
+            VALUES (:vytvorene, :adresa, :psc, :obec, :lat, :lng, :bez_adresy, :zo_zalohy, :dovod, :typ, :vymera, :stav, :balkon, :predstava_ceny, :vysledok, :cena_od, :cena_do, :pocet, :veta, :dom_popis)');
+        $s->execute($d + ['vytvorene' => gmdate('c')]);
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    /** Zvýši počítadlo pre kľúč v minútovom okne a vráti nový počet; staré okná maže. */
+    public function zvysLimit(string $kluc, ?int $cas = null): int
+    {
+        $okno = intdiv($cas ?? time(), 60);
+        $this->pdo->prepare('DELETE FROM limity WHERE okno < ?')->execute([$okno - 1]);
+        $this->pdo->prepare('INSERT INTO limity (kluc, okno, pocet) VALUES (?, ?, 1) ON CONFLICT (kluc, okno) DO UPDATE SET pocet = pocet + 1')->execute([$kluc, $okno]);
+        $s = $this->pdo->prepare('SELECT pocet FROM limity WHERE kluc = ? AND okno = ?');
+        $s->execute([$kluc, $okno]);
+        return (int) $s->fetchColumn();
+    }
+
+    public function nastavStav(string $kluc, string $hodnota): void
+    {
+        $this->pdo->prepare('INSERT INTO stav (kluc, hodnota) VALUES (?, ?) ON CONFLICT (kluc) DO UPDATE SET hodnota = excluded.hodnota')->execute([$kluc, $hodnota]);
+    }
+
+    public function stav(string $kluc): ?string
+    {
+        $s = $this->pdo->prepare('SELECT hodnota FROM stav WHERE kluc = ?');
+        $s->execute([$kluc]);
+        $v = $s->fetchColumn();
+        return $v === false ? null : (string) $v;
+    }
+
+    /**
+     * Nevybavená fronta pre monitoring: PDF na odoslanie a (ak sa oznamujú) leady na oznámenie, ktoré ešte majú pokusy.
+     * @return array{pocet: int, najstarsi: ?string, vzdane: int} najstarší = čas vytvorenia (ISO 8601), vzdané = PDF, ktoré po všetkých pokusoch neodišli
+     */
+    public function fronta(bool $ajOznamenia, int $maxPokusov = 5): array
+    {
+        $podm = "(druh = 'pdf' AND odoslane = 0 AND pokusy < :m)";
+        if ($ajOznamenia) {
+            $podm .= " OR ((druh = 'makler' OR (druh = 'pdf' AND suhlas = 1)) AND oznamene = 0 AND oznam_pokusy < :m)";
+        }
+        $s = $this->pdo->prepare("SELECT COUNT(*) AS pocet, MIN(vytvorene) AS najstarsi FROM kontakty WHERE $podm");
+        $s->execute(['m' => $maxPokusov]);
+        $r = $s->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $v = $this->pdo->prepare("SELECT COUNT(*) FROM kontakty WHERE druh = 'pdf' AND odoslane = 0 AND pokusy >= ?");
+        $v->execute([$maxPokusov]);
+        return ['pocet' => (int) ($r['pocet'] ?? 0), 'najstarsi' => $r['najstarsi'] ?? null, 'vzdane' => (int) $v->fetchColumn()];
+    }
+
+    /** Kontrola dostupnosti databázy (zápis aj čítanie). */
+    public function ping(): bool
+    {
+        $this->pdo->exec('DELETE FROM limity WHERE okno < 0'); // overí aj zápis
+        return (int) $this->pdo->query('SELECT 1')->fetchColumn() === 1;
+    }
+
+    /**
+     * Denné počítadlo (napr. volania na platené API). Zvýši hodnotu pre kľúč a deň (UTC) a vráti nový počet.
+     * Údaje staršie ako 7 dní sa mažú.
+     */
+    public function zvysDenne(string $kluc, ?string $den = null): int
+    {
+        $den ??= gmdate('Y-m-d');
+        $this->pdo->prepare('DELETE FROM denne_pocitadla WHERE den < ?')->execute([gmdate('Y-m-d', strtotime($den . ' -7 days'))]);
+        $this->pdo->prepare('INSERT INTO denne_pocitadla (kluc, den, pocet) VALUES (?, ?, 1) ON CONFLICT (kluc, den) DO UPDATE SET pocet = pocet + 1')->execute([$kluc, $den]);
+        $s = $this->pdo->prepare('SELECT pocet FROM denne_pocitadla WHERE kluc = ? AND den = ?');
+        $s->execute([$kluc, $den]);
+        return (int) $s->fetchColumn();
+    }
+
+    /** @return array<string, mixed>|null */
+    public function odhad(int $id): ?array
+    {
+        $s = $this->pdo->prepare('SELECT * FROM odhady WHERE id = ?');
+        $s->execute([$id]);
+        return $s->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /** E-maily s PDF, ktoré ešte neboli odoslané. @return list<array<string, mixed>> */
+    public function cakajucePdf(int $maxPokusov, int $limit = 50): array
+    {
+        $s = $this->pdo->prepare("SELECT * FROM kontakty WHERE druh = 'pdf' AND odoslane = 0 AND pokusy < ? ORDER BY id LIMIT ?");
+        $s->execute([$maxPokusov, $limit]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** @param int $stav 1 = odoslané, 2 = preskočené (kontakt bez odhadu) */
+    public function oznacOdoslane(int $kontaktId, int $stav = 1): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET odoslane = ? WHERE id = ?')->execute([$stav, $kontaktId]);
+    }
+
+    public function pokusZlyhal(int $kontaktId): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET pokusy = pokusy + 1 WHERE id = ?')->execute([$kontaktId]);
+    }
+
+    /** Leady (telefonát, PDF so súhlasom), o ktorých ešte nepadlo oznámenie maklérovi. @return list<array<string, mixed>> */
+    public function cakajuceOznamenia(int $maxPokusov, int $limit = 20): array
+    {
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, k.meno, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.vysledok, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny, o.bez_adresy, o.dom_popis
+            FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
+            WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.oznamene = 0 AND k.oznam_pokusy < ? ORDER BY k.id LIMIT ?");
+        $s->execute([$maxPokusov, $limit]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function oznacOznamene(int $kontaktId): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET oznamene = 1 WHERE id = ?')->execute([$kontaktId]);
+    }
+
+    public function oznamenieZlyhalo(int $kontaktId): void
+    {
+        $this->pdo->prepare('UPDATE kontakty SET oznam_pokusy = oznam_pokusy + 1 WHERE id = ?')->execute([$kontaktId]);
+    }
+
+    public function odhadExistuje(int $id): bool
+    {
+        $s = $this->pdo->prepare('SELECT 1 FROM odhady WHERE id = ?');
+        $s->execute([$id]);
+        return (bool) $s->fetchColumn();
+    }
+
+    /**
+     * Uloží kontakt. Rovnaký kontakt (e-mail bez ohľadu na veľkosť písmen, telefón podľa číslic) pre ten istý odhad
+     * a druh v okne `$oknoSekund` sa neukladá znova (dvojklik, opakované odoslanie). Ak sa pri opakovaní
+     * pridá súhlas, doplní sa k existujúcemu záznamu. Vráti id záznamu.
+     */
+    public function ulozKontakt(string $druh, ?string $email, ?string $telefon, bool $suhlas, ?int $odhadId, int $oknoSekund = 600, ?int $teraz = null, ?string $meno = null): int
+    {
+        $teraz ??= time();
+        $s = $this->pdo->prepare('SELECT id, email, telefon, suhlas, meno FROM kontakty WHERE druh = :d AND odhad_id IS :o AND vytvorene >= :od');
+        $s->execute(['d' => $druh, 'o' => $odhadId, 'od' => gmdate('c', $teraz - $oknoSekund)]);
+        $kluc = fn(?string $e, ?string $t): string => $e !== null ? 'e:' . mb_strtolower($e) : 't:' . preg_replace('/\D/', '', (string) $t);
+        foreach ($s->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            if ($kluc($r['email'], $r['telefon']) === $kluc($email, $telefon)) {
+                if ($suhlas && !(int) $r['suhlas']) {
+                    $this->pdo->prepare('UPDATE kontakty SET suhlas = 1 WHERE id = ?')->execute([$r['id']]);
+                }
+                if ($meno !== null && ($r['meno'] ?? null) === null) {
+                    $this->pdo->prepare('UPDATE kontakty SET meno = ? WHERE id = ?')->execute([$meno, $r['id']]);
+                }
+                return (int) $r['id'];
+            }
+        }
+        $i = $this->pdo->prepare('INSERT INTO kontakty (vytvorene, druh, email, telefon, suhlas, odhad_id, meno) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $i->execute([gmdate('c', $teraz), $druh, $email, $telefon, (int) $suhlas, $odhadId, $meno]);
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function kontakty(string $druh): array
+    {
+        $s = $this->pdo->prepare('SELECT * FROM kontakty WHERE druh = ? ORDER BY id');
+        $s->execute([$druh]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** Kontakty podľa e-mailu alebo telefónu (export na žiadosť o prístup k údajom). @return list<array<string, mixed>> */
+    public function najdiKontakty(string $hodnota): array
+    {
+        $s = $this->pdo->prepare('SELECT k.*, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.cena_od, o.cena_do FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id WHERE k.email = :h OR k.telefon = :h ORDER BY k.id');
+        $s->execute(['h' => $hodnota]);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** Leady pre makléra: žiadosti o telefonát a PDF so súhlasom s kontaktovaním. @return list<array<string, mixed>> */
+    public function leady(?string $od = null): array
+    {
+        $s = $this->pdo->prepare("SELECT k.id, k.vytvorene, k.druh, k.telefon, k.email, k.meno, o.adresa, o.psc, o.obec, o.typ, o.vymera, o.stav, o.cena_od, o.cena_do, o.dovod, o.predstava_ceny
+            FROM kontakty k LEFT JOIN odhady o ON o.id = k.odhad_id
+            WHERE (k.druh = 'makler' OR (k.druh = 'pdf' AND k.suhlas = 1)) AND k.vytvorene >= ? ORDER BY k.id");
+        $s->execute([$od ?? '0000']);
+        return $s->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** Zmaže kontakty podľa e-mailu/telefónu aj odhady, na ktoré už neodkazuje iný kontakt. Vráti počet zmazaných kontaktov. */
+    public function zmazKontakty(string $hodnota): int
+    {
+        return $this->vTransakcii(function () use ($hodnota): int {
+            $ids = $this->pdo->prepare('SELECT DISTINCT odhad_id FROM kontakty WHERE (email = :h OR telefon = :h) AND odhad_id IS NOT NULL');
+            $ids->execute(['h' => $hodnota]);
+            $odhady = $ids->fetchAll(\PDO::FETCH_COLUMN);
+            $n = $this->pdo->prepare('DELETE FROM kontakty WHERE email = :h OR telefon = :h');
+            $n->execute(['h' => $hodnota]);
+            // Len odhady zmazaného kontaktu a len ak na ne neodkazuje iný kontakt.
+            $d = $this->pdo->prepare('DELETE FROM odhady WHERE id = ? AND id NOT IN (SELECT odhad_id FROM kontakty WHERE odhad_id IS NOT NULL)');
+            foreach ($odhady as $id) {
+                $d->execute([$id]);
+            }
+            $this->zmazOsireleCrm();
+            return $n->rowCount();
+        });
+    }
+
+    /** Retencia: zmaže kontakty a odhady staršie ako N mesiacov. @return array{kontakty: int, odhady: int} */
+    public function zmazStarsie(int $mesiace, ?int $teraz = null): array
+    {
+        $hranica = gmdate('c', strtotime("-$mesiace months", $teraz ?? time()));
+        return $this->vTransakcii(function () use ($hranica): array {
+            $k = $this->pdo->prepare('DELETE FROM kontakty WHERE vytvorene < ?');
+            $k->execute([$hranica]);
+            $o = $this->pdo->prepare('DELETE FROM odhady WHERE vytvorene < ? AND id NOT IN (SELECT odhad_id FROM kontakty WHERE odhad_id IS NOT NULL)');
+            $o->execute([$hranica]);
+            $this->zmazOsireleCrm();
+            return ['kontakty' => $k->rowCount(), 'odhady' => $o->rowCount()];
+        });
+    }
+
+    /** CRM záznamy (meno klienta, poznámky, história) k zmazaným kontaktom. Tabuľky CRM nemusia existovať. */
+    private function zmazOsireleCrm(): void
+    {
+        $tabulky = $this->pdo->query("SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('crm_leady', 'crm_poznamky', 'crm_historia')")->fetchAll(\PDO::FETCH_COLUMN);
+        foreach ($tabulky as $t) {
+            $this->pdo->exec("DELETE FROM $t WHERE kontakt_id NOT IN (SELECT id FROM kontakty)");
+        }
+    }
+
+    private function vTransakcii(callable $f): mixed
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $r = $f();
+            $this->pdo->commit();
+            return $r;
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
+}
