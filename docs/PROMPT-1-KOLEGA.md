@@ -1,24 +1,24 @@
-# Pracovný prompt 1 (verzia 2): technická časť, tri nástroje (Claude Code, Claude v Chrome, bežný Claude)
+# Pracovný prompt 1 (verzia 3, 25. 11. 2026): kolega – duplikát CRM, kontrola kódu, skúška nasadenia
 
-Pre kolegu s väčším predplatným. Skopíruj všetko pod čiarou do každého z troch nástrojov. Každý si prečíta len svoju časť (A, B alebo C). Prompt neobsahuje tajomstvá ani mená; prístupy a mená dostane nástroj od teba počas práce.
+Pre kolegu. Skopíruj všetko pod čiarou do každého z troch nástrojov (Claude Code, Claude v Chrome, bežný Claude). Každý číta len svoju časť (A, B alebo C). Prompt neobsahuje tajomstvá ani mená; prístupy a mená dostane nástroj od teba počas práce.
 
 ---
 
 ## KONTEXT (platí pre všetky tri nástroje)
-Integrácia troch projektov jednej firmy (NajBývanie Ružomberok, s. r. o.): **nacenime.sk** (živý oceňovací nástroj), **rozia.sk** (platforma pre maklérov s vlastným CRM v Supabase) a **duplikát CRM NajBývania** (zdroj dát a šablón dokumentov, len na čítanie). Záväzný plán rozhodnutí je v repe `jansidor/nacenime`, súbor `docs/PLAN-INTEGRACIE.md` (vetva `claude/nifty-dijkstra-aqmzuc`). Ak nástroj plán nevidí, požiada o jeho vloženie, nehádá.
+Integrácia troch projektov jednej firmy (NajBývanie Ružomberok, s. r. o.): **nacenime.sk** (živý oceňovací nástroj), **rozia.sk** (platforma pre maklérov s vlastným CRM v Supabase) a **duplikát CRM NajBývania** (zdroj dát a šablón dokumentov, **len na čítanie**). Záväzný plán rozhodnutí je v repe `jansidor/nacenime`, súbor `docs/PLAN-INTEGRACIE.md`. Ak nástroj plán nevidí, požiada o jeho vloženie, nehádá.
+
+### Stav k 24. 11. 2026 (večer)
+- **Hotové a zlúčené:** podpis webhooku v nacenime; v rozia migrácie `0001` až `0008`, testy oprávnení (6 sád) a CI (zelené); príjem leadov z nacenime (route `/api/inbound/nacenime/` + databázová funkcia); uchovávanie údajov a denná údržba (`/api/cron/retention/`); **CRM aplikácia v1** (`/crm/`: prihlásenie, ocenenia, Nepridelené, pridelenie adminom, nábory s detailom, vrátený klient, archív, odovzdanie kolegovi, financovanie); **zásady ochrany údajov schválené a zverejnené** na nacenime.sk aj v rozia.
+- **Overené na skutočnom testovacom Supabase:** migrácie 0001 až 0008, všetky testy, verejný kľúč nevolá funkcie CRM. **Neoverené v prehliadači:** prihlásenie a obrazovky CRM (zatiaľ nie je nasadené).
+- **Nenasadené:** doména `rozia.sk` v DNS neexistuje a repo rozia pravdepodobne nie je napojené na Vercel. Rieši to majiteľ (jeho zoznam úloh je v `docs/ULOHY-MAJITEL.md`).
+- **Webhook z nacenime do CRM je vypnutý** a zapína ho až majiteľ.
+- **Duplikát CRM NajBývania:** prístup len na čítanie mal prísť v pondelok; ak ho ešte nemáš, povedz to majiteľovi hneď ráno. Tvoja hlavná práca čaká práve na neho.
+- Repo rozia nemá vetvu `main`; hlavná vetva je `claude/eager-edison-tqydun`. Pracuj vo vlastnej vetve a rob pull requesty.
 
 ### Kto čo robí
-- **Majiteľ** (druhý človek): prompt 2 – aplikácia v rozia (prihlásenie, obrazovky), Supabase staging.
-- **Ty (kolega):** tento prompt – prepojenia, duplikát CRM, bezpečnosť, import, synchronizácia.
-- Migrácie databázy píše vždy len jeden z vás. Vstupné tabuľky (`inbound_events`, `import_batches`, `sync_runs`) patria tebe, ostatné majiteľovi.
-
-### Stav k 24. 11. 2026
-- nacenime PR #63 (podpis webhooku HMAC-SHA256, `docs/WEBHOOK.md`) je **zlúčený**, 4 kontroly prešli. Podpis je vypnutý, kým nie je nastavené `NACENIME_LEAD_WEBHOOK_SECRET`.
-- rozia PR #1 (schéma CRM jadra `0002`, `0003`, testy oprávnení) je **otvorený**.
-- Vetva `claude/nifty-dijkstra-aqmzuc` v repe rozia obsahuje navyše: migráciu **`0004_hardening_handoff.sql`** (opravy z kontroly PR #1: `audit()` už nie je volateľný zvonka, ochrana stĺpcov ocenení, Nepridelené aj bez pobočky, kontakt Financií len pri nábore, odovzdanie kolegovi, dostupnosť makléra), testy `supabase/tests/rls_crm_2.sql`, simuláciu Supabase `supabase/tests/bootstrap_local.sql`, CI `.github/workflows/ci.yml` a `docs/PROSTREDIA.md`. Lokálne všetko prešlo (migrácie 0001 až 0004, obe sady testov, build, typecheck, kontrast), na skutočnom Supabase **nič nebolo spustené**.
-- Tabuľka `inbound_events` (jedinečné `(source, event_id)`) už existuje v `0002`. Príjem webhooku v rozia **ešte nie je napísaný**.
-- V rozia je od migrácie **`0005_lifecycle.sql`** (vetva `claude/nifty-dijkstra-aqmzuc`, zatiaľ nezlúčená, ak ju už majiteľ nezlúčil): číselník obcí `municipalities` (213 obcí 7 okresov) a funkcia `branch_for_municipality(obec, okres)`, nastavenia `app_settings`, funkcia `auto_assign_valuation(ocenenie)` (len server, robí niečo len pri `assignment_mode = 'round_robin'`), `anonymize_archived()` (len server), archív a obnova náborov, vrátený klient, `suggest_documents()`. Pobočky a okresy nasadzuje `supabase/seed/branches.sql`. Nepíš ich znova, použi ich.
-- Duplikát CRM NajBývania zatiaľ nikto nevidel. Prístup má byť **len na čítanie**.
+- **Majiteľ:** doména, Vercel, premenné prostredia, vyskúšanie obrazoviek CRM, zapnutie webhooku, skutoční zamestnanci.
+- **Ty (kolega):** duplikát CRM (audit, mapovanie, import, šablóny), nezávislá kontrola kódu a bezpečnosti, skúška nasadenia po tom, čo ho majiteľ pripraví.
+- Migrácie databázy píše vždy len jeden z vás. Ak potrebuješ novú tabuľku alebo stĺpec, napíš to majiteľovi alebo urob pull request s migráciou `0009_…` a názvom, ktorý ešte nikto nepoužil.
 
 ## ZÁSADY (neporušiteľné, platia pre všetky tri nástroje)
 1. **Originálne CRM firmy sa nedotýkaš.** Len duplikát, a ten len čítať. Ak by bola možnosť zápisu do originálu, zastav sa.
@@ -44,78 +44,73 @@ Neoverené: …
 
 Rola: senior inžinier. Máš prístup k `jansidor/nacenime` a `jansidor/rozia.sk`. Pracuj vo vetvách, nikdy priamo do hlavnej vetvy. Každá úloha = malý pull request s popisom: čo, prečo, ako otestovať, ako sa vrátiť späť. `main` v nacenime sa automaticky nasadzuje na živý web.
 
-**A0. Prevzatie a kontrola (najprv)**
-1. Prečítaj `docs/PLAN-INTEGRACIE.md` celý, potom `docs/WEBHOOK.md` v nacenime a `supabase/README.md` v rozia.
-2. Skontroluj vetvu `claude/nifty-dijkstra-aqmzuc` v rozia (migrácia 0004, testy, CI). Spusti lokálne postup z `supabase/README.md` (sekcia „Testy bez Supabase“). Napíš, čo prešlo a čo nie. **Nezlučuj** nič bez súhlasu majiteľa.
-3. Over, že PR #1 a vetva s 0004 spolu fungujú (0004 stojí na 0002 a 0003).
+**A0. Prevzatie a nezávislá kontrola (hneď, nepotrebuje duplikát)**
+1. Prečítaj `docs/PLAN-INTEGRACIE.md`, `docs/WEBHOOK.md` (nacenime) a `supabase/README.md`, `docs/PROSTREDIA.md` (rozia).
+2. Spusti lokálne postup „Testy bez Supabase“ z `supabase/README.md` a `npm test`, `npm run typecheck`, `npm run build`. Napíš, čo prešlo.
+3. **Kontrola kódu CRM a webhooku** (nová aplikácia nebola nikdy skúšaná v prehliadači). Prejdi najmä: `app/crm/actions.ts`, `lib/crm/*`, `proxy.ts`, `app/api/inbound/nacenime/route.ts`, `lib/inbound.ts`, `lib/webhook.ts`, `app/api/cron/retention/route.ts` a migrácie `supabase/migrations/0004` až `0008`. Hľadaj: obídenie oprávnení, chýbajúcu validáciu vstupov, únik osobných údajov do chýb alebo logov, otvorené presmerovania, chyby v RLS, nesprávne dotazy (PostgREST vnorené výbery), problémy s cookies relácie. Výstup: zoznam nálezov s vážnosťou a návrhom opravy. **Nálezy nezlučuj sám**: malé opravy daj do pull requestu a popíš ich.
+4. Skontroluj, že CI v oboch repách je zelené a že testy naozaj niečo overujú (nie sú prázdne).
 
-**A1. Príjem webhooku z nacenime v rozia (I-072, I-073)** – dá sa robiť hneď
-- Route handler napr. `app/api/inbound/nacenime/route.ts`. Číta **surové telo** (`await req.text()`, nie `req.json()`), overí podpis (`X-Nacenime-Signature: t=<unix>,v1=<hex>`, HMAC-SHA256 z `"<t>.<telo>"`, konštantný čas, tolerancia 300 s) presne podľa `docs/WEBHOOK.md`. Tajomstvo z premennej prostredia, nikdy nie v kóde.
-- Chybný, chýbajúci alebo starý podpis → 401, telo sa nespracuje. Nič neloguj z tela (osobné údaje).
-- Platná udalosť: zapíš do `inbound_events` (jedinečné `(source, event_id)` z `X-Nacenime-Event-Id`), duplicitu prijmi s 2xx a nespracuj znova. 2xx až po uložení. Zápis cez server so servisným kľúčom.
-- Spracovanie `inbound_events` → klient (`clients`) a ocenenie (`valuations`) cez upsert podľa `(source, source_id)`; chybná udalosť dostane `status = 'error'` a text chyby, nie pád.
-- Pridelenie podľa lokality: `branch_for_municipality(obec)` vráti pobočku (Liptovský Mikuláš, Ružomberok, Dolný Kubín = celá Orava, Martin/Vrútky = celý Turiec) alebo null. Ocenenie bez pobočky ostane `nepridelene` s `branch_id = null` (smie ho vziať každý maklér). Po uložení ocenenia zavolaj `auto_assign_valuation(id)` servisným kľúčom: kým je `assignment_mode = 'manual'` (štart), nič neurobí a ocenenie ostane na ručné pridelenie adminmi. Adresu ukladaj do `payload` pod kľúčom `adresa`, inak sa pri vrátenom klientovi neporovnáva. Pri novom ocenení klienta, ktorý už v CRM je, zavolaj `returning_client_check()`; prepojenie robí maklér cez aplikáciu.
-- Do rozia ide len lead, kde je telefón (žiadosť o telefonát) alebo súhlas (PDF so súhlasom). Pravidlo je už v nacenime, v príjme ho len over.
-- Migrácie pre vstupné tabuľky, ak treba niečo nad `inbound_events` (napr. `import_batches`, `sync_runs`), píš ako nové súbory `0005_…`. Uprav `supabase/tests/rls_crm_2.sql` alebo pridaj nový test; pridaj do funkcií zoznam v teste N9, ak pridáš funkciu.
-- Testy (vitest): podpis platný, zlý, starý, bez hlavičky, duplicitné doručenie, neplatné JSON, veľké telo, výpadok DB.
-- Over proti skutočnému nacenime: `php backend/tests/webhook.php` v nacenime ukazuje formát a príklad prijímača.
-- **Neaktivuj** produkčný webhook ani tajomstvo.
+**A1. Skúška nasadenia (až keď majiteľ pripraví Vercel a doménu alebo `*.vercel.app`)**
+- Pomôž overiť príjem leadov: `NACENIME_WEBHOOK_SECRET=… node scripts/send-test-lead.mjs https://<adresa>/api/inbound/nacenime/` (adresa s lomkou na konci). Očakávané `HTTP 200` a `{"status":"processed"}`; opakovanie s rovnakým id `duplicate`; zlý podpis `401`. Tajomstvo nikdy nevypisuj do chatu.
+- Over denné čistenie: route `/api/cron/retention/` s hlavičkou `Authorization: Bearer <CRON_SECRET>` (bez neho 401).
+- **Neaktivuj** produkčný webhook v nacenime. Zapnutie robí majiteľ po vašej spoločnej skúške.
 
-**A2. Audit duplikátu a import (po prístupe, ako A3/A4)** – kódová časť
-- Podľa výsledkov z časti B (Chrome) a C (analýza) napíš: mapovanie polí duplikát → rozia, importný skript s **dry-run** režimom (nič nezapíše, vypíše štatistiky), idempotentný (`source`, `source_id`), pravidlo konfliktov (polia z duplikátu sa aktualizujú, vlastné polia rozia sa nikdy neprepíšu), rollback podľa `import_batch_id`.
-- Konektor na čítanie z duplikátu s minimálnymi právami; tajomstvá len v prostredí. Rozhodnutie o spôsobe napojenia (DB len na čítanie / API / export) robí majiteľ po audite.
-- Synchronizácia šablón dokumentov do privátneho Storage (kontrolný súčet, nová verzia pri zmene, stará v archíve).
-- Zastav sa pred ostrým importom: záloha produkčnej DB a ostrý import robí majiteľ (I-065, I-066).
+**A2. Duplikát CRM NajBývania (po získaní prístupu len na čítanie)**
+1. Over, že duplikát je oddelený od originálu (iná databáza, iné prihlasovacie údaje, žiadna replikácia späť). Ak by existovala čo i len možnosť zápisu do originálu, zastav sa.
+2. Zisti technológiu, schému (tabuľky, vzťahy, počty riadkov) a entity: klienti, nehnuteľnosti, obchody, makléri, úlohy, dokumenty, prílohy. Výstup do `docs/duplikat/` (ER diagram a slovník polí, **bez osobných údajov**).
+3. Používatelia a role v duplikáte, umiestnenie súborov a ich objem, kvalita dát (duplicity, formáty telefónov, kódovanie diakritiky).
+4. **Dokumenty a šablóny:** kde sú, formát (očakávame prevažne Word, niektoré PDF), kategórie, verzie, či majú vyznačené polia na vyplnenie.
+5. Bezpečnostný audit a licencia kódu duplikátu.
+6. Správa s odporúčaním **spôsobu napojenia** (databáza len na čítanie / API / export) a frekvencie synchronizácie. **Zastav sa a nechaj majiteľa rozhodnúť**, kým nepôjdeš ďalej.
 
-**A3. GDPR synchronizácia (I-081) a monitoring (I-080, I-099)**
-- `bin/gdpr.php zmaz` v nacenime pošle udalosť `lead.deleted`; v rozia ju prijmi a údaje klienta anonymizuj (audit zostáva).
-- Skript na porovnanie počtu leadov nacenime vs. CRM (bez osobných údajov vo výstupe) a upozornenie na chybné `inbound_events`.
+**A3. Import a synchronizácia (po rozhodnutí o napojení)**
+- Mapovanie polí duplikát → rozia, importný skript s **dry-run** režimom (nič nezapíše, vypíše štatistiky), idempotentný podľa (`source`, `source_id`), pravidlo konfliktov (polia z duplikátu sa aktualizujú, vlastné polia rozia sa nikdy neprepíšu), rollback podľa `import_batch_id`.
+- Konektor na čítanie z duplikátu s minimálnymi právami; tajomstvá len v prostredí, nikdy v repe.
+- Synchronizácia šablón dokumentov do privátneho Storage (kontrolný súčet, nová verzia pri zmene, stará v archíve). Súbory na zmazanie sú vo fronte `storage_cleanup`.
+- Zastav sa pred ostrým importom: záloha produkčnej databázy a ostrý import robí majiteľ.
 
 ---
 
 # ČASŤ B: Claude v Chrome (klikanie v prehliadači)
 
-Rola: opatrný asistent, ktorý pracuje v prehliadači majiteľa pod jeho prihlásením. Pred začatím načítaj kontrolu karty a otvor vlastnú novú kartu. Nikdy nepracuj v kartách, ktoré si neotvoril ty.
+Rola: opatrný asistent, ktorý pracuje v prehliadači majiteľa alebo kolegu pod jeho prihlásením. Pred začatím načítaj kontrolu karty a otvor vlastnú novú kartu. Nikdy nepracuj v kartách, ktoré si neotvoril ty.
 
 **Čo smieš**
-- **B1. Duplikát CRM NajBývania: len pozorovať.** Prejdi menu a obrazovky a zapíš do správy: zoznam modulov a obrazoviek, zoznam polí pri každej entite (klient, nehnuteľnosť, obchod, úloha, dokument, makléri), typy polí, počet záznamov (len čísla), rola používateľov, kde sú dokumenty (kategórie, názvy šablón, formát Word alebo PDF alebo iný, ako sa dajú vyhľadať), aké sú možnosti exportu a import. **Zaznamenávaj štruktúru, nikdy obsah klientov.**
-- **B2. Staging Supabase** podľa `docs/PROSTREDIA.md` v repe rozia: vytvoriť projekt (Frankfurt) len ak ho majiteľ už otvoril alebo výslovne povie; spustiť migrácie `0001` až `0004` po jednej v SQL Editore a potom oba testy (`rls_crm.sql`, `rls_crm_2.sql`). `bootstrap_local.sql` na Supabase **nespúšťaj**. Výsledok: zapíš presný text, ktorý SQL Editor vrátil („VŠETKY TESTY PRESLI“, „VŠETKY TESTY 0004 PRESLI“) alebo chybu.
-- **B3. Kontrola práv bez kľúčov**: v SQL Editore v transakcii `begin; set local role anon; select audit('x','y','z'); rollback;` musí skončiť chybou „permission denied“. To isté skús pre `claim_unassigned`, `set_financing_status`, `handoff_mandate`, `list_colleagues`. Ak ktorékoľvek prejde, **zastav sa a oznám to** (je to bezpečnostná chyba).
-- **B4. Vercel**: nastaviť názvy premenných pre Preview (z `docs/PROSTREDIA.md`). **Hodnoty kľúčov zadáva človek sám.** Ty ich nečítaš ani nekopíruješ.
-- **B5. GitHub**: pozrieť stav kontrol a pull requestov, prečítať komentáre. **Nezlučuj, nemaž vetvy ani nemeň nastavenia** bez výslovného súhlasu majiteľa v tej istej správe.
+- **B1. Duplikát CRM NajBývania: len pozorovať.** Prejdi menu a obrazovky a zapíš: moduly, polia pri každej entite a ich typy, počty záznamov (len čísla), roly používateľov, kde sú dokumenty (kategórie, názvy šablón, formát), možnosti exportu. **Zaznamenávaj štruktúru, nikdy obsah klientov.**
+- **B2. Skúška CRM na nasadení** (po tom, čo majiteľ pripraví Vercel): otvor `/crm/`, prihlás sa testovacím účtom (heslo zadá človek sám) a prejdi toky: maklér (Nepridelené → Vziať si, Moje ocenenia → detail → Vytvoriť nábor → úprava, poznámka, nedohodli sme sa, obnoviť, odovzdať), admin (Na pridelenie → prideliť), financie (zoznam → detail → kontakt, stav, poznámka). Pri každom kroku zapíš výsledok a pri chybe presný text a adresu. **Nemaž a nemeň nič mimo testovacích údajov.**
+- **B3. GitHub:** pozrieť stav kontrol a pull requestov, prečítať komentáre. **Nezlučuj, nemaž vetvy ani nemeň nastavenia** bez výslovného súhlasu majiteľa v tej istej správe.
 
 **Čo nesmieš**
-- V duplikáte nič neukladať, neodosielať, nemazať, nepridávať, neimportovať, nespúšťať akcie (tlačidlá Uložiť, Odoslať, Vymazať, Importovať, Synchronizovať) a nesťahovať súbory s údajmi klientov.
+- V duplikáte nič neukladať, neodosielať, nemazať, nepridávať, neimportovať, nespúšťať akcie (Uložiť, Odoslať, Vymazať, Importovať, Synchronizovať) a nesťahovať súbory s údajmi klientov.
 - Neotvárať produkčnú databázu ani hosting; nepozerať a neprepisovať `.env`.
 - Nečítať ani nekopírovať heslá, kľúče, tokeny ani 2FA kódy. Ak sa objavia na obrazovke, nezaznamenávaj ich a povedz o tom.
 - Nepokračovať, ak obrazovka žiada nečakané oprávnenie, platbu alebo nový plán: zastav sa a opýtaj sa.
 
-**Výstup z Chrome** vlož ako text do správy kolegovi (do Claude Code alebo do bežného Clauda) ako štruktúrovaný zoznam: modul → entita → polia a typy → počty → dokumenty (kategória, názov šablóny, formát). Nikdy nie osobné údaje.
+**Výstup z Chrome** vlož ako text do správy kolegovi: modul → entita → polia a typy → počty → dokumenty (kategória, názov šablóny, formát), alebo pri B2 tabuľku „krok, výsledok, chyba“. Nikdy osobné údaje.
 
 ---
 
 # ČASŤ C: bežný Claude (analýza a texty, bez prístupu k repám)
 
-Rola: analytik a pisateľ. Nemáš prístup k repám ani k duplikátu; pracuješ s tým, čo ti človek vloží (poznámky z Chrome, exporty schémy bez údajov, zoznamy názvov šablón, texty). Žiadne osobné údaje, žiadne tajomstvá. Ak ti ich omylom pošle, nepoužívaj ich a upozorni.
+Rola: analytik a pisateľ. Pracuješ s tým, čo ti človek vloží (poznámky z Chrome, exporty schémy bez údajov, zoznamy názvov šablón). Žiadne osobné údaje, žiadne tajomstvá.
 
-- **C1. Mapovanie polí** duplikát → rozia: z poznámok z Chrome vytvor tabuľku (pole v duplikáte → tabuľka a stĺpec v rozia → transformácia → riziko). Tabuľky rozia: `clients`, `valuations`, `mandates`, `document_templates`, `document_rules`. Označ polia, ktoré v rozia nemajú miesto.
-- **C2. Zoznamy dokumentov podľa prípadu**: z názvov šablón a popisov navrhni pravidlá (`document_rules`): povinná alebo odporúčaná, podmienka (typ nehnuteľnosti, predaj/prenájom, vlastníctvo, pozemok, stavby). Základ: **Zmluva o sprostredkovaní predaja** pri každom nábore; byt → prepis vody, elektriny, plynu; dom, pozemok, spoluvlastníctvo a špeciálne prípady podľa dokumentov v duplikáte. Výstup je návrh, ktorý schvaľuje majiteľ.
-- **C3. Zásady ochrany osobných údajov** (návrh pre advokáta, nie finálny text): rovnaký prevádzkovateľ NajBývanie Ružomberok, s. r. o., na nacenime aj rozia; účely „spracovanie dopytu v CRM“, „archív nedohodnutých náborov 24 mesiacov“, „sprostredkovanie financovania“; doba uchovávania; práva klienta. Označ miesta, ktoré musí doplniť firma (IČO, sídlo, kontakty).
-- **C4. Otázky pre majiteľa**: zozbieraj otvorené rozhodnutia a nejasnosti a polož ich stručne, zoradené podľa dôležitosti.
-- **C5. Kontrola** výstupov z Claude Code a Chrome: hľadaj rozpory s plánom, riziká pre dáta a oprávnenia.
+- **C1. Mapovanie polí** duplikát → rozia: tabuľka (pole v duplikáte → tabuľka a stĺpec v rozia → transformácia → riziko). Tabuľky rozia: `clients`, `valuations`, `mandates`, `document_templates`, `document_rules`. Označ polia bez miesta v rozia.
+- **C2. Zoznamy dokumentov podľa prípadu** (byt, dom, pozemok, chata, prenájom, spoluvlastníctvo, špeciálne prípady): navrhni pravidlá pre `document_rules` (povinná alebo odporúčaná, podmienka). Základ: **Zmluva o sprostredkovaní predaja** pri každom nábore; byt → prepis vody, elektriny, plynu. Databáza dnes podporuje v podmienke len `property_type` a `transaction`; ak treba ďalšie podmienky (vlastníctvo, pozemok, stavby), napíš to ako návrh na rozšírenie. Výstup je návrh, ktorý schvaľuje majiteľ.
+- **C3. Otázky pre majiteľa:** zozbieraj otvorené rozhodnutia a nejasnosti, zoradené podľa dôležitosti.
+- **C4. Kontrola** výstupov z Claude Code a Chrome: hľadaj rozpory s plánom, riziká pre dáta a oprávnenia.
 
 ---
 
 ## ŠTARTOVACIE VETY
 **Claude Code:**
 ```text
-Prečítaj priložený súbor, časť KONTEXT, ZÁSADY a ČASŤ A. Začni úlohou A0 a po nej sa zastav a napíš správu.
+Prečítaj priložený súbor, časť KONTEXT, ZÁSADY a ČASŤ A. Začni úlohou A0 (kontrola kódu) a po nej sa zastav a napíš správu. Úlohy A2 a A3 začni až keď mám prístup k duplikátu.
 ```
 **Claude v Chrome:**
 ```text
-Prečítaj priložený súbor, časť KONTEXT, ZÁSADY a ČASŤ B. Povedz mi, čo z časti B môžeš teraz urobiť, a čakaj na môj pokyn, ktorú úlohu (B1 až B5) začať.
+Prečítaj priložený súbor, časť KONTEXT, ZÁSADY a ČASŤ B. Povedz mi, čo z časti B môžeš teraz urobiť, a čakaj na môj pokyn, ktorú úlohu (B1 až B3) začať.
 ```
 **Bežný Claude:**
 ```text
-Prečítaj priložený súbor, časť KONTEXT, ZÁSADY a ČASŤ C. Počkaj, kým ti vložím podklady, a potom začni podľa úlohy, ktorú ti určím (C1 až C5).
+Prečítaj priložený súbor, časť KONTEXT, ZÁSADY a ČASŤ C. Počkaj, kým ti vložím podklady, a potom začni podľa úlohy, ktorú ti určím (C1 až C4).
 ```
