@@ -22,35 +22,28 @@ Pomáhaš stavať **CRM v projekte rozia.sk** (Next.js 16, TypeScript strict, Ta
 7. Nevymýšľaj si. Ak niečo nevieš alebo plán nehovorí, **opýtaj sa** namiesto hádania.
 8. Po každej úlohe napíš: čo si urobil, čo si spustil a výsledok, čo si **nespustil**.
 
-## ROZDELENIE MIGRÁCIÍ
-**Ty píšeš migrácie** pre: organizácie, pobočky, profily, role, nábory, pridelenie, dokumenty (šablóny a vyplnené kópie), financovanie, audit. **Migrácie pre vstupné tabuľky `inbound_events`, `import_batches`, `sync_runs` píše kolega**, nepíš ich. Názvy tabuliek sa dohadujú v `docs/ADR-*.md` v repe rozia **pred** použitím.
+## STAV K 24. 11. 2026 (dôležité: čo už je hotové, to NEPÍŠ znova)
+- **Dátový model a RLS sú hotové.** Migrácie `0002_crm_core.sql`, `0003_hardening.sql` sú v rozia PR #1 (otvorený) a `0004_hardening_handoff.sql` je vo vetve `claude/nifty-dijkstra-aqmzuc` repa rozia (nad PR #1). Obsahujú pobočky, zamestnancov s rolami (`broker`, `admin`, `finance`), klientov, ocenenia, nábory, financovanie, odovzdanie, šablóny, pravidlá dokumentov, vyplnené dokumenty a audit.
+- **Testy oprávnení sú hotové:** `supabase/tests/rls_crm.sql`, `rls_crm_2.sql`, simulácia Supabase `bootstrap_local.sql`. CI pre rozia je v `.github/workflows/ci.yml`, návod na prostredia v `docs/PROSTREDIA.md`.
+- **Funkcie, ktoré aplikácia volá** (cez Supabase RPC, každá si sama kontroluje rolu; ostatné funkcie sú interné):
+  `claim_unassigned(valuation)`, `handoff_mandate(mandate, to, note)`, `handoff_valuation(valuation, to, note)`, `list_colleagues()`,
+  `set_my_availability(stav, do_dátumu)`, `set_financing_status(mandate, stav, dôvod)`, `finance_view_client(client)` (zapisuje do auditu).
+  Priame zápisy do `audit_log`, do financovania na nábore a do odhadu ocenenia sú zakázané databázou.
+- Príjem webhooku z nacenime (`inbound_events`) a import z duplikátu robí kolega (prompt 1). Nezasahuj do nich.
+- Nové migrácie (`0005_…` a ďalšie) píš len ak ti nejaká obrazovka chýbajúce stĺpce vyžaduje, a najprv to napíš majiteľovi. Každá nová funkcia v schéme `public` musí mať `revoke all … from public, anon, authenticated` a grant len tam, kde treba (pozri `supabase/README.md`, test N9).
 
 ## ÚLOHY (zadávaj po jednej, v tomto poradí)
 
-### 1. Prostredie (F0)
-- **1.1** Pridaj do rozia CI (GitHub Actions): `typecheck`, `test`, `build`, `check:contrast`. (I-003)
-- **1.2** Pridaj priečinok `docs/` s `README` a šablónou `ADR-000-sablona.md` (záznam rozhodnutia: kontext, rozhodnutie, dôsledky). (I-008)
-- **1.3** Napíš krok za krokom návod pre majiteľa, ako založiť **staging Supabase projekt** (Frankfurt) a Vercel preview prostredie, aké premenné nastaviť (len názvy, žiadne hodnoty). Súbor `docs/PROSTREDIA.md`. (I-006, I-007)
-- **1.4** Rozšír `.env.example` o nové premenné (len názvy a popis, bez hodnôt).
+### 0. Prevzatie (najprv)
+- **0.1** Prečítaj plán a `supabase/README.md`. Lokálne spusti postup „Testy bez Supabase“ z README a napíš výsledok. Nič nemeň.
+- **0.2** Skontroluj, či `npm run build`, `npm run typecheck`, `npm test` prechádzajú.
 
-### 2. Dátový model (F3, F4)
-Pred písaním SQL napíš a daj schváliť `docs/ADR-001-datovy-model.md` s ER diagramom (Mermaid) pre:
-- `organizations`, `branches` (4 pobočky: Liptovský Mikuláš, Ružomberok, Dolný Kubín, Martin/Vrútky), `branch_districts` (pobočka ↔ okres), `fallback_branch_id` pri pobočke
-- `profiles` (užívateľ ↔ pobočka, **rola**: `makler`, `admin`, `financie`; **stav**: `aktivny`, `nepritomny` s dátumami, `neaktivny`)
-- `clients`, `leads` (ocenenia), `nabory` (stav: `rozpracovany`, `ulozeny`, `nedohodnuty`), `lead_assignments` (história pridelení a odovzdaní)
-- `document_templates`, `template_fields`, `client_documents` (vyplnená kópia, verzie), `document_rules` (podmienka → šablóna, povinná/odporúčaná)
-- `financing` (stav: `nove`, `priprava`, `riesi_sa`, `vyriesene`, `nerieni_sa` + dôvod) a `financing_notes`
-- `audit_log` (kto, kedy, čo; vrátane zobrazenia osobných údajov rolou `financie`)
-Všetky tabuľky majú `org_id`. Plán popisuje pravidlá rolí presne, drž sa ho.
+### 1. Prostredie (zvyšok)
+- **1.1** Hotové (CI). Skontroluj len, že workflow na GitHube prešiel; ak nie, oprav.
+- **1.2** Pridaj `docs/ADR-000-sablona.md` (kontext, rozhodnutie, dôsledky) a krátky `docs/README.md` s odkazom na plán a `PROSTREDIA.md`.
+- **1.3** Hotové (`docs/PROSTREDIA.md`). Staging Supabase projekt zakladá majiteľ.
 
-### 3. Migrácie a RLS (F4)
-- **3.1** `0002_core.sql`: organizácie, pobočky, profily, role. Len pridávajúca.
-- **3.2** `0003_crm.sql`: klienti, leady, nábory, pridelenia.
-- **3.3** `0004_documents.sql`: šablóny, polia, vyplnené dokumenty, pravidlá.
-- **3.4** `0005_financing.sql`: financovanie a poznámky.
-- **3.5** `0006_audit.sql`: audit log.
-- **3.6** **RLS testy** (`tests/rls/`): maklér A nevidí nábory makléra B; admin vidí všetko; `financie` vidí všetky nábory, ale nemôže meniť nábor ani dokumenty, len stav financovania a svoje poznámky; neprihlásený nevidí nič. Spúšťať v CI proti čistej databáze.
-Po každej migrácii spusti testy.
+*(Úlohy 2 a 3, dátový model a migrácie, sú hotové: pozri STAV vyššie.)*
 
 ### 4. Prihlásenie a role (F4)
 - **4.1** Supabase Auth (e-mail + magic link / obnova hesla), odhlásenie. Session len cez httpOnly cookies.
@@ -63,10 +56,10 @@ Každá obrazovka s prázdnym stavom, ktorý vysvetlí, čo sa tu bude zobrazova
 - **5.1** Navigácia: CRM, Dokumenty, Postup, (Financie podľa roly).
 - **5.2** Zoznam ocenení maklérovi (len jeho) + detail + tlačidlo „Vytvoriť nábor“ (predvyplní údaje z ocenenia).
 - **5.3** Nábor: stavy Rozpracovaný / Uložený / Nedohodnutý (pýta dôvod a potvrdenie). **Archív nedohodnutých** s tlačidlom „Obnoviť nábor“.
-- **5.4** Kategória **Nepridelené** s tlačidlom „Vziať si“: **atomicky** (prvý vyhráva, druhý dostane správu „už si ho vzal …“), **limit 1 za 24 h na makléra** (nastaviteľný, admina sa netýka), kontrola na serveri, nie len v UI.
-- **5.5** **Odovzdať kolegovi**: výber kolegu + dôvod, prejdú poznámky aj dokumenty, história. Povolené aj do inej pobočky.
+- **5.4** Kategória **Nepridelené** s tlačidlom „Vziať si“: volaj `claim_unassigned()` (atomicky, prvý vyhráva, limit 1 za 24 h kontroluje databáza; chybu zobraz používateľovi po slovensky). Ocenenia bez pobočky vidia všetci makléri, ostatné maklér danej a záložnej pobočky.
+- **5.5** **Odovzdať kolegovi**: zoznam z `list_colleagues()` (meno, pobočka, dostupnosť), volaj `handoff_mandate()` alebo `handoff_valuation()` s poznámkou. Prejdú poznámky aj dokumenty, história a audit sú v databáze. Povolené aj do inej pobočky, nie neprítomnému. Maklér si nastaví dovolenku/PN cez `set_my_availability()`.
 - **5.6** Fronta „Na pridelenie“ pre adminov (zatiaľ ručné pridelenie). Prepínač „ručne / striedavo“ zatiaľ len v nastaveniach, striedanie je neskôr.
-- **5.7** Obrazovka **Financie** (rola `financie`): zoznam všetkých začatých náborov s filtrami (stav financovania, pobočka, maklér), zmena stavu, poznámky. Vidí meno a kontakt klienta, každé zobrazenie sa zapíše do auditu. Maklér vidí stav a poznámky na svojom nábore.
+- **5.7** Obrazovka **Financie** (rola `financie`): zoznam všetkých začatých náborov s filtrami (stav financovania, pobočka, maklér), zmena stavu cez `set_financing_status()`, poznámky. Meno a kontakt klienta čítaj cez `finance_view_client()` (zapíše do auditu a pustí len klienta s náborom). Maklér vidí stav a poznámky na svojom nábore.
 - **5.8** Knižnica **Dokumentov**: zoznam šablón s kategóriami a vyhľadávaním, akcie „Stiahnuť prázdnu“ a „Vyplniť pre klienta“. Šablóny len na čítanie (Storage politiky).
 - **5.9** V nábore: sekcia dokumentov so **zoznamom navrhnutých** (Zmluva o sprostredkovaní predaja vždy prvá), makléri môžu pridať/odobrať, stiahnuť, upraviť vo Worde a **nahrať späť ako novú verziu**.
 

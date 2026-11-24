@@ -80,6 +80,21 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - **Pobočky s jedným maklérom (Dolný Kubín, Martin/Vrútky) – potvrdené 21. 11.:** keď je maklér neprítomný (PN, dovolenka, neaktívny), nové ocenenia z jeho pobočky idú **automaticky do Ružomberka** (záložná pobočka, tam sa striedajú); admin ich môže presunúť aj inam. Maklér môže pred neprítomnosťou svoje rozpracované nábory odovzdať kolegovi v Ružomberku alebo inej pobočke. Záložná pobočka je nastavenie (pri každej pobočke), nie pevne v kóde.
 - Výnimky po obciach (obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
 
+## 2c. Stav realizácie (24. 11. 2026)
+
+| Krok | Stav |
+|---|---|
+| I-069 až I-071 podpis webhooku v nacenime | **hotové a zlúčené** (nacenime PR #63, 4 kontroly prešli, podpis vypnutý do nastavenia tajomstva) |
+| I-003 CI pre rozia | **hotové** vo vetve `claude/nifty-dijkstra-aqmzuc` (rozia), čaká na zlúčenie |
+| I-037 až I-042, I-048, I-049, I-083, I-084a, I-088a (základ) | **migrácie 0002 až 0004 a testy oprávnení hotové** (rozia PR #1 + vetva s 0004), overené len na simulovanom Postgrese, **nie na skutočnom Supabase** |
+| I-074d, I-074g | **v databáze hotové** (Nepridelené, limit, odovzdanie); obrazovky ešte nie |
+| I-072, I-073 príjem webhooku v rozia | **nie je hotové** (kolega, prompt 1, blok A1) |
+| I-006, I-007 staging Supabase a Vercel | návod `docs/PROSTREDIA.md` hotový, projekt zakladá majiteľ |
+| F2 audit duplikátu, F5 import | čaká na prístup k duplikátu |
+| I-077 zásady ochrany OÚ, I-078 zapnutie webhooku, I-065/066 záloha a import | ručne majiteľ, zatiaľ nič |
+
+Rozhodnutie ešte čaká: ocenenia bez pobočky vidia a berú všetci makléri (implementované v 0004 podľa odporúčania, treba potvrdiť).
+
 ## 3. Bezpečnostné zásady (platia pre každý krok)
 
 1. **Originálne CRM firmy sa nikdy nedotýkame.** Pracujeme len s duplikátom a aj ten najprv len čítame.
