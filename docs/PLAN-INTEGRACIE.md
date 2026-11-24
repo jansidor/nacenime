@@ -89,8 +89,8 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 | I-037 až I-042, I-048, I-049, I-083, I-084a, I-088a (základ) | **migrácie 0002 až 0004 a testy oprávnení hotové** (rozia PR #1 + vetva s 0004), overené len na simulovanom Postgrese, **nie na skutočnom Supabase** |
 | I-074d, I-074g | **v databáze hotové** (Nepridelené, limit, odovzdanie); obrazovky ešte nie |
 | I-084a až I-084e, I-074a, I-074e, I-074f, I-089e až I-089g (databázová časť) | **hotové v migrácii 0005** (archív a obnova, anonymizácia po 24 mesiacoch, vrátený klient so zhodou 80 %, ručné pridelenie adminom, automatické striedanie pripravené a vypnuté, návrh dokumentov, číselník obcí), testy `rls_crm_3.sql`; **nie je zlúčené**, obrazovky ešte nie |
-| I-018 (podklad zásad OÚ) | **podklad pre advokáta hotový** (`docs/ZASADY-OU-NAVRH.md`), texty na weboch sa nemenili |
-| I-072, I-073 príjem webhooku v rozia | **nie je hotové** (kolega, prompt 1, blok A1) |
+| I-018, I-077 zásady OÚ | **schválené 24. 11. 2026 a zverejnené** na nacenime.sk aj rozia.sk (údaje firmy doplnené v `lib/site.ts`, text súhlasu vo formulároch rozia zosúladený); lehoty vynucuje databáza (0007, denná údržba cez Vercel Cron). Obchodné podmienky rozia zostávajú návrh |
+| I-072, I-073 príjem webhooku v rozia | **kód a databáza hotové a overené na testovacom Supabase** (0006); nasadenie a zapnutie webhooku (I-078) čaká na majiteľa |
 | I-006, I-007 staging Supabase a Vercel | návod `docs/PROSTREDIA.md` hotový, projekt zakladá majiteľ |
 | F2 audit duplikátu, F5 import | čaká na prístup k duplikátu |
 | I-077 zásady ochrany OÚ, I-078 zapnutie webhooku, I-065/066 záloha a import | ručne majiteľ, zatiaľ nič |

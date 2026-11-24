@@ -1,5 +1,9 @@
 # Zásady ochrany osobných údajov: podklad pre advokáta
 
+> **Stav k 24. 11. 2026:** majiteľ zásady schválil a potvrdil, že nacenime.sk, rozia.sk a NajBývanie sú jedna firma (NajBývanie Ružomberok, s. r. o.). Nové znenie je zverejnené na oboch weboch (nacenime: `ochrana-osobnych-udajov.html`, rozia: `/ochrana-osobnych-udajov/`).
+> Pri otvorených otázkach 2 a 3 ostalo znenie bez súhlasu: **financovanie** má základ „žiadosť klienta a predzmluvné opatrenia, prípadne oprávnený záujem, s právom namietať“ a **archív nedohodnutých** základ „oprávnený záujem, 24 mesiacov“. Ak by advokát určil súhlas, treba doplniť políčko súhlasu pri nábore (príznak `gdpr_purpose_financing` v databáze je pripravený) a text zásad.
+> Lehoty zo zásad vynucuje databáza (migrácie 0005 až 0007, denná údržba `run_retention()`). Zmena lehoty = zmena nastavenia v `app_settings` aj textu zásad.
+
 **Toto nie je text na zverejnenie.** Je to prehľad toho, čo sa v systéme mení a čo treba v zásadách a v právnom posúdení doriešiť, než sa začnú prenášať leady z nacenime.sk do CRM rozia.sk (krok I-077 plánu). Návrhy znení sú pracovné, miesta v hranatých zátvorkách [DOPLNIŤ] musí doplniť firma alebo advokát. Texty na weboch sa týmto dokumentom nemenia.
 
 Prevádzkovateľ na oboch weboch má byť ten istý: NajBývanie Ružomberok, s. r. o. (údaje firmy sú už v zásadách na nacenime.sk; na rozia.sk ešte chýbajú v `lib/site.ts`).
