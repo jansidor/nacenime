@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Nacenime;
 
+require_once __DIR__ . '/WebhookPodpis.php';
+
 /** Kontrola konfigurácie a prostredia. Nikdy nevypisuje hodnoty tajomstiev, len či sú nastavené. */
 final class Diagnostika
 {
@@ -74,6 +76,16 @@ final class Diagnostika
             $zle ? $chyba('NACENIME_LEAD_EMAIL obsahuje neplatný e-mail') : $ok('oznámenia o leadoch sú nastavené');
             $w = $c->get('LEAD_WEBHOOK');
             ($w === '' || str_starts_with($w, 'https://')) ? null : $chyba('NACENIME_LEAD_WEBHOOK musí začínať https://');
+            $t = $c->get('LEAD_WEBHOOK_SECRET');
+            if ($t !== '' && $w === '') {
+                $varuj('NACENIME_LEAD_WEBHOOK_SECRET je nastavené, ale NACENIME_LEAD_WEBHOOK chýba: podpis sa nikam neposiela');
+            } elseif ($t !== '' && strlen($t) < WebhookPodpis::MIN_DLZKA_TAJOMSTVA) {
+                $chyba('NACENIME_LEAD_WEBHOOK_SECRET musí mať aspoň ' . WebhookPodpis::MIN_DLZKA_TAJOMSTVA . ' znakov (napr. openssl rand -hex 32)');
+            } elseif ($t !== '') {
+                $ok('webhook je podpisovaný (HMAC-SHA256)');
+            } elseif ($w !== '') {
+                $varuj('webhook nie je podpisovaný: nastavte NACENIME_LEAD_WEBHOOK_SECRET, aby prijímač vedel overiť odosielateľa');
+            }
         }
 
         $m = $c->get('MAKLER_NAME', '[MENO MAKLÉRA]');

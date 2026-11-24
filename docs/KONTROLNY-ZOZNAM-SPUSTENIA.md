@@ -18,7 +18,7 @@ Stav k 16. 11. 2026. Overené priamo na webe, ak nie je uvedené inak.
 | # | Čo | Kto |
 |---|---|---|
 | 1 | **SMTP** do `shared/.env` a **cron** `odosli-pdf.php` každú minútu (+ záloha a retencia denne); skúška PDF na vlastný e-mail | správca hostingu |
-| 2 | **Oznámenia o leadoch:** `NACENIME_LEAD_EMAIL`; voliteľne SMS/Telegram cez n8n (`NACENIME_LEAD_WEBHOOK`) | správca hostingu |
+| 2 | **Oznámenia o leadoch:** `NACENIME_LEAD_EMAIL`; voliteľne SMS/Telegram cez n8n (`NACENIME_LEAD_WEBHOOK`); podpis webhooku `NACENIME_LEAD_WEBHOOK_SECRET` (`docs/WEBHOOK.md`) | správca hostingu |
 | 3 | **Monitoring** (UptimeRobot): `/api/health` a `/api/health/fronta` (beží cron, e-maily neviaznu). Návod v `deploy/NASADENIE-GIT.md` | správca |
 | 4 | **Zmazať skúšobné záznamy** (leady `0900 000 000`, `test@example.com`, testovacie odhady) cez `backend/bin/gdpr.php zmaz` | správca hostingu |
 | 5 | **CRM:** pozvať maklérov | majiteľ |

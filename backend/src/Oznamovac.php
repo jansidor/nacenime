@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Nacenime;
 
+require_once __DIR__ . '/WebhookPodpis.php';
+
 /**
  * Oznámi maklérovi nový lead (žiadosť o telefonát, PDF so súhlasom s kontaktovaním) e-mailom a voliteľne webhookom.
  * Beží z cronu spolu s odosielaním PDF. Idempotentné: oznámený lead sa neoznamuje znova, zlyhania sa opakujú najviac N-krát.
@@ -90,14 +92,20 @@ final class Oznamovac
         ];
     }
 
-    /** Webhook: POST JSON, do 5 s, úspech len pri 2xx. */
-    public static function webhook(string $url): callable
+    /**
+     * Webhook: POST JSON, do 5 s, úspech len pri 2xx. S tajomstvom pridá podpis HMAC (viď WebhookPodpis a docs/WEBHOOK.md);
+     * bez tajomstva sa správa ako doteraz. Každá hlavička nesie stabilné ID udalosti (lead), aby prijímač vedel opakovanie
+     * zahodiť. Časová pečiatka je pri každom pokuse nová, ID udalosti ostáva rovnaké.
+     */
+    public static function webhook(string $url, string $tajomstvo = ''): callable
     {
-        return function (array $data) use ($url): void {
+        return function (array $data) use ($url, $tajomstvo): void {
+            $telo = json_encode($data, JSON_UNESCAPED_UNICODE);
+            $hlavicky = WebhookPodpis::hlavicky($telo, $tajomstvo, WebhookPodpis::idUdalosti((int) ($data['id'] ?? 0)), time());
             $c = curl_init($url);
             curl_setopt_array($c, [
-                CURLOPT_POST => true, CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE),
-                CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true, CURLOPT_POSTFIELDS => $telo,
+                CURLOPT_HTTPHEADER => $hlavicky, CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TIMEOUT => 5, CURLOPT_CONNECTTIMEOUT => 3,
             ]);
             $ok = curl_exec($c);
