@@ -35,6 +35,10 @@ Pomáhaš stavať **CRM v projekte rozia.sk** (Next.js 16, TypeScript strict, Ta
 - **Funkcie, ktoré aplikácia volá** (cez Supabase RPC, každá si sama kontroluje rolu; ostatné funkcie sú interné):
   `claim_unassigned(valuation)`, `handoff_mandate(mandate, to, note)`, `handoff_valuation(valuation, to, note)`, `list_colleagues()`,
   `set_my_availability(stav, do_dátumu)`, `set_financing_status(mandate, stav, dôvod)`, `finance_view_client(client)` (zapisuje do auditu).
+  Od migrácie `0005_lifecycle.sql` (vo vetve `claude/nifty-dijkstra-aqmzuc` repa rozia, ak ju už majiteľ nezlúčil): `close_mandate_unagreed(nábor, dôvod)` (nedohodnutý → archív), `restore_mandate(nábor)`,
+  `returning_client_check(ocenenie)` a `link_returning_client(ocenenie, klient, obnovený_nábor)` (vrátený klient so zmenami „pôvodne → teraz“), `assign_valuation(ocenenie, maklér, poznámka)` (len admin, fronta „Na pridelenie“),
+  `suggest_documents(nábor)` (povinné a odporúčané dokumenty, `template_missing` ak šablóna ešte nie je), `branch_for_municipality(obec, okres)`. Nastavenia v `app_settings` (`assignment_mode`, `archive_retention_months`, `return_match_threshold`) mení admin.
+  Len server (nie z aplikácie): `auto_assign_valuation`, `anonymize_archived`.
   Priame zápisy do `audit_log`, do financovania na nábore a do odhadu ocenenia sú zakázané databázou.
 - Príjem webhooku z nacenime (`inbound_events`) a import z duplikátu robí kolega (prompt 1). Nezasahuj do nich.
 - Nové migrácie (`0005_…` a ďalšie) píš len ak ti nejaká obrazovka chýbajúce stĺpce vyžaduje, a najprv to napíš majiteľovi. Každá nová funkcia v schéme `public` musí mať `revoke all … from public, anon, authenticated` a grant len tam, kde treba (pozri `supabase/README.md`, test N9).
@@ -62,13 +66,13 @@ Pomáhaš stavať **CRM v projekte rozia.sk** (Next.js 16, TypeScript strict, Ta
 Každá obrazovka s prázdnym stavom, ktorý vysvetlí, čo sa tu bude zobrazovať. Seed dáta len vymyslené.
 - **5.1** Navigácia: CRM, Dokumenty, Postup, (Financie podľa roly).
 - **5.2** Zoznam ocenení maklérovi (len jeho) + detail + tlačidlo „Vytvoriť nábor“ (predvyplní údaje z ocenenia).
-- **5.3** Nábor: stavy Rozpracovaný / Uložený / Nedohodnutý (pýta dôvod a potvrdenie). **Archív nedohodnutých** s tlačidlom „Obnoviť nábor“.
+- **5.3** Nábor: stavy Rozpracovaný / Uložený / Nedohodnutý. „Nedohodnutý“ volá `close_mandate_unagreed()` (pýta dôvod a potvrdenie). **Archív nedohodnutých** (nábory so stavom `nedohodnuty`) s tlačidlom „Obnoviť nábor“ → `restore_mandate()`. Pri novom ocenení zobraz upozornenie „klient sa vrátil“ z `returning_client_check()` so zmenami pôvodne → teraz a tlačidlami „Obnoviť pôvodný nábor“ a „Nový nábor pre tohto klienta“ (`link_returning_client()`).
 - **5.4** Kategória **Nepridelené** s tlačidlom „Vziať si“: volaj `claim_unassigned()` (atomicky, prvý vyhráva, limit 1 za 24 h kontroluje databáza; chybu zobraz používateľovi po slovensky). Ocenenia bez pobočky vidia všetci makléri, ostatné maklér danej a záložnej pobočky.
 - **5.5** **Odovzdať kolegovi**: zoznam z `list_colleagues()` (meno, pobočka, dostupnosť), volaj `handoff_mandate()` alebo `handoff_valuation()` s poznámkou. Prejdú poznámky aj dokumenty, história a audit sú v databáze. Povolené aj do inej pobočky, nie neprítomnému. Maklér si nastaví dovolenku/PN cez `set_my_availability()`.
 - **5.6** Fronta „Na pridelenie“ pre adminov (zatiaľ ručné pridelenie). Prepínač „ručne / striedavo“ zatiaľ len v nastaveniach, striedanie je neskôr.
 - **5.7** Obrazovka **Financie** (rola `financie`): zoznam všetkých začatých náborov s filtrami (stav financovania, pobočka, maklér), zmena stavu cez `set_financing_status()`, poznámky. Meno a kontakt klienta čítaj cez `finance_view_client()` (zapíše do auditu a pustí len klienta s náborom). Maklér vidí stav a poznámky na svojom nábore.
 - **5.8** Knižnica **Dokumentov**: zoznam šablón s kategóriami a vyhľadávaním, akcie „Stiahnuť prázdnu“ a „Vyplniť pre klienta“. Šablóny len na čítanie (Storage politiky).
-- **5.9** V nábore: sekcia dokumentov so **zoznamom navrhnutých** (Zmluva o sprostredkovaní predaja vždy prvá), makléri môžu pridať/odobrať, stiahnuť, upraviť vo Worde a **nahrať späť ako novú verziu**.
+- **5.9** V nábore: sekcia dokumentov so **zoznamom navrhnutých** (z `suggest_documents()`) (Zmluva o sprostredkovaní predaja vždy prvá), makléri môžu pridať/odobrať, stiahnuť, upraviť vo Worde a **nahrať späť ako novú verziu**.
 
 ### 6. Dokončenie
 - **6.1** Monitoring chýb bez osobných údajov v logoch (I-056).
@@ -172,6 +176,8 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 | I-003 CI pre rozia | **hotové** vo vetve `claude/nifty-dijkstra-aqmzuc` (rozia), čaká na zlúčenie |
 | I-037 až I-042, I-048, I-049, I-083, I-084a, I-088a (základ) | **migrácie 0002 až 0004 a testy oprávnení hotové** (rozia PR #1 + vetva s 0004), overené len na simulovanom Postgrese, **nie na skutočnom Supabase** |
 | I-074d, I-074g | **v databáze hotové** (Nepridelené, limit, odovzdanie); obrazovky ešte nie |
+| I-084a až I-084e, I-074a, I-074e, I-074f, I-089e až I-089g (databázová časť) | **hotové v migrácii 0005** (archív a obnova, anonymizácia po 24 mesiacoch, vrátený klient so zhodou 80 %, ručné pridelenie adminom, automatické striedanie pripravené a vypnuté, návrh dokumentov, číselník obcí), testy `rls_crm_3.sql`; **nie je zlúčené**, obrazovky ešte nie |
+| I-018 (podklad zásad OÚ) | **podklad pre advokáta hotový** (`docs/ZASADY-OU-NAVRH.md`), texty na weboch sa nemenili |
 | I-072, I-073 príjem webhooku v rozia | **nie je hotové** (kolega, prompt 1, blok A1) |
 | I-006, I-007 staging Supabase a Vercel | návod `docs/PROSTREDIA.md` hotový, projekt zakladá majiteľ |
 | F2 audit duplikátu, F5 import | čaká na prístup k duplikátu |
