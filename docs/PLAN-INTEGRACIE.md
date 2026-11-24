@@ -80,22 +80,23 @@ Pravidlo pridelenia (potvrdené 21. 11.):
 - **Pobočky s jedným maklérom (Dolný Kubín, Martin/Vrútky) – potvrdené 21. 11.:** keď je maklér neprítomný (PN, dovolenka, neaktívny), nové ocenenia z jeho pobočky idú **automaticky do Ružomberka** (záložná pobočka, tam sa striedajú); admin ich môže presunúť aj inam. Maklér môže pred neprítomnosťou svoje rozpracované nábory odovzdať kolegovi v Ružomberku alebo inej pobočke. Záložná pobočka je nastavenie (pri každej pobočke), nie pevne v kóde.
 - Výnimky po obciach (obec na hranici okresov obsluhuje iná pobočka) sa dajú nastaviť bez programovania.
 
-## 2c. Stav realizácie (24. 11. 2026)
+## 2c. Stav realizácie (24. 11. 2026, večer)
 
-| Krok | Stav |
+| Časť | Stav |
 |---|---|
-| I-069 až I-071 podpis webhooku v nacenime | **hotové a zlúčené** (nacenime PR #63, 4 kontroly prešli, podpis vypnutý do nastavenia tajomstva) |
-| I-003 CI pre rozia | **hotové** vo vetve `claude/nifty-dijkstra-aqmzuc` (rozia), čaká na zlúčenie |
-| I-037 až I-042, I-048, I-049, I-083, I-084a, I-088a (základ) | **migrácie 0002 až 0004 a testy oprávnení hotové** (rozia PR #1 + vetva s 0004), overené len na simulovanom Postgrese, **nie na skutočnom Supabase** |
-| I-074d, I-074g | **v databáze hotové** (Nepridelené, limit, odovzdanie); obrazovky ešte nie |
-| I-084a až I-084e, I-074a, I-074e, I-074f, I-089e až I-089g (databázová časť) | **hotové v migrácii 0005** (archív a obnova, anonymizácia po 24 mesiacoch, vrátený klient so zhodou 80 %, ručné pridelenie adminom, automatické striedanie pripravené a vypnuté, návrh dokumentov, číselník obcí), testy `rls_crm_3.sql`; **nie je zlúčené**, obrazovky ešte nie |
-| I-018, I-077 zásady OÚ | **schválené 24. 11. 2026 a zverejnené** na nacenime.sk aj rozia.sk (údaje firmy doplnené v `lib/site.ts`, text súhlasu vo formulároch rozia zosúladený); lehoty vynucuje databáza (0007, denná údržba cez Vercel Cron). Obchodné podmienky rozia zostávajú návrh |
-| I-072, I-073 príjem webhooku v rozia | **kód a databáza hotové a overené na testovacom Supabase** (0006); nasadenie a zapnutie webhooku (I-078) čaká na majiteľa |
-| I-006, I-007 staging Supabase a Vercel | návod `docs/PROSTREDIA.md` hotový, projekt zakladá majiteľ |
-| F2 audit duplikátu, F5 import | čaká na prístup k duplikátu |
-| I-077 zásady ochrany OÚ, I-078 zapnutie webhooku, I-065/066 záloha a import | ručne majiteľ, zatiaľ nič |
+| Podpis webhooku v nacenime (I-069 až I-071) | hotové a zlúčené; webhook zostáva **vypnutý** do rozhodnutia majiteľa |
+| Databáza CRM v rozia (migrácie 0002 až 0008): pobočky, role, ocenenia, nábory, financovanie, odovzdanie, archív, anonymizácia, vrátený klient, pridelenie, návrh dokumentov, vytvorenie náboru z ocenenia | hotové, zlúčené, **overené na skutočnom testovacom Supabase** (6 sád testov, kontrola verejného kľúča) |
+| Príjem leadov z nacenime (route + databáza, 0006) | hotové a overené v databáze; route overená lokálne, **na nasadení neskúšaná** |
+| Uchovávanie údajov a denná údržba (0007, `/api/cron/retention/`) | hotové; vyžaduje `CRON_SECRET` vo Verceli |
+| CRM aplikácia v1 (`/crm/`): prihlásenie, ocenenia (detail, vrátený klient), Nepridelené, pridelenie adminom, nábory (detail, úprava, poznámky, archív, odovzdanie), financovanie | hotové a zlúčené; **neskúšané v prehliadači proti Supabase**, nenasadené |
+| Zásady ochrany osobných údajov (I-018, I-077) | schválené 24. 11. a zverejnené na nacenime.sk aj v rozia; obchodné podmienky rozia ostávajú návrh |
+| Skúška príjmu a skutoční zamestnanci | skript `scripts/send-test-lead.mjs` a šablóna `supabase/seed/staff_template.sql` hotové |
+| **Nasadenie rozia** (doména `rozia.sk`, Vercel, premenné) | **nezačaté** (doména v DNS neexistuje); zoznam krokov `docs/ULOHY-MAJITEL.md` |
+| Duplikát CRM NajBývania: audit, mapovanie, import, šablóny dokumentov (F2, F5, F8) | nezačaté, čaká na prístup len na čítanie |
+| Zapnutie webhooku (I-078), záloha a ostrý import (I-065, I-066) | ručne majiteľ, po nasadení a skúške |
+| Obrazovky, ktoré ešte chýbajú | pozvánky a správa členov, nastavenia (prepínač pridelenia), moja dostupnosť, knižnica a vyplnenie dokumentov |
 
-Rozhodnutie ešte čaká: ocenenia bez pobočky vidia a berú všetci makléri (implementované v 0004 podľa odporúčania, treba potvrdiť).
+Rozhodnuté: ocenenia bez pobočky vidí a berie každý maklér. Otvorené: vrátený klient na pôvodného makléra (dnes na toho, komu je pridelené nové ocenenie).
 
 ## 3. Bezpečnostné zásady (platia pre každý krok)
 
