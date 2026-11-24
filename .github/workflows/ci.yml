@@ -35,6 +35,8 @@ jobs:
         run: php backend/tests/crm.php
       - name: Oznámenia o leadoch
         run: php backend/tests/oznamenia.php
+      - name: Podpis webhooku (HMAC)
+        run: php backend/tests/webhook.php
       - name: Testy prevádzky (konfigurácia, záloha)
         run: php backend/tests/prevadzka.php
       - name: Testy zostavenia cenníka
